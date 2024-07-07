@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "arango_cti_processor"
+version = "0.0.1"
+authors = [
+  { name="DOGESEC", email="support@dogesec.com" },
+]
+description = "A package containing the stix definitions for custom objects used at dogesec"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "stix2",
+    "python-arango==7.9.1; python_version >= '3.8'",
+    "tqdm==4.66.4; python_version >= '3.7'",
+    "jsonschema==4.22.0; python_version >= '3.8'",
+    "requests==2.31.0; python_version >= '3.7'",
+    "https://github.com/muchdogesec/stix2arango/archive/cti_processor_merge.zip"
+  ]
+[project.urls]
+Homepage = "https://github.com/muchdogesec/arango_cti_processor"
+Issues = "https://github.com/muchdogesec/arango_cti_processor/issues"
+
+[project.scripts]
+arango_cti_processor = "arango_cti_processor.__main__:main"
