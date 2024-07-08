@@ -85,7 +85,8 @@ python3 arango_cti_processor.py \
 
 Where;
 
-* `--relationship` (optional, dictionary): you can apply updates to certain relationships at run time. Default is all . User can select from;
+* `--database` (required): the arangoDB database name where the objects you want to link are dound.
+* `--relationship` (optional, dictionary): you can apply updates to certain relationships at run time. Default is all. Note, you should ensure your `database` contains all the required seeded data. User can select from;
 	* `capec-attack`
     * `capec-cwe`
     * `cwe-capec`

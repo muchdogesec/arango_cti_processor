@@ -6,7 +6,7 @@ load_dotenv()
 
 ARANGO_USERNAME = os.getenv("ARANGODB_USERNAME")
 ARANGO_PASSWORD = os.getenv("ARANGODB_PASSWORD")
-ARANGODB_DATABASE = os.getenv("ARANGODB_DATABASE")
+ARANGODB_DATABASE = "arango_cti_processor_standard_tests"
 
 client = ArangoClient(hosts=f"http://{os.getenv('ARANGODB_HOST', 'localhost')}:{os.getenv('ARANGODB_PORT')}")
 

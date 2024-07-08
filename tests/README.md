@@ -1,8 +1,11 @@
+# Tests
+
 ## Importing data for Arango CTI Processor
 
-### TEST 0: setup env (read before all tests)
 
-Note, usually `ignore_embedded_relationships` would be false on import to include them. However, because this script does nothing with embedded relationships, they are ignored for this script.
+
+
+### TEST 0: setup env (read before all tests)
 
 First remove any old data that may exist for tests...
 
@@ -21,7 +24,7 @@ cd stix2arango
 source stix2arango-venv/bin/activate
 python3 stix2arango.py	\
 	--file backfill_data/mitre_attack_enterprise/enterprise-attack-v14_1.json \
-	--database cti \
+	--database arango_cti_processor_standard_tests \
 	--collection mitre_attack_enterprise \
 	--stix2arango_note v14.1 \
 	--ignore_embedded_relationships true
@@ -52,39 +55,35 @@ python3 design/mvp/test-helpers/create-all-collections.py
 Delete any old data that might exist from old tests:
 
 ```shell
-python3 design/mvp/test-helpers/remove-all-collections.py
+python3 tests/test-helpers/remove-all-collections.py
 ```
 
-Import required data:
+Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
 ```shell
-python3 stix2arango.py  \
-  --file backfill_data/mitre_attack_enterprise/enterprise-attack-v14_1.json \
-  --database cti \
-  --collection mitre_attack_enterprise \
-  --stix2arango_note v14.1 \
-  --ignore_embedded_relationships true
-python3 stix2arango.py  \
-  --file backfill_data/mitre_attack_ics/ics-attack-v14_1.json \
-  --database cti \
-  --collection mitre_attack_ics \
-  --stix2arango_note v14.1 \
-  --ignore_embedded_relationships true && \
-python3 stix2arango.py  \
-  --file backfill_data/mitre_attack_mobile/mobile-attack-v14_1.json \
-  --database cti \
-  --collection mitre_attack_mobile \
-  --stix2arango_note v14.1 \
-  --ignore_embedded_relationships true && \
-python3 stix2arango.py  \
-  --file backfill_data/mitre_capec/stix-capec-v3_9.json \
-  --database cti \
-  --collection mitre_capec \
-  --stix2arango_note v3.9 \
-  --ignore_embedded_relationships true
+python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
+  --database arango_cti_processor_standard_tests \
+  --ignore_embedded_relationships false \
+  --versions 14_1 && \
+python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
+  --database arango_cti_processor_standard_tests \
+  --ignore_embedded_relationships false \
+  --versions 14_1 && \
+python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
+  --database arango_cti_processor_standard_tests \
+  --ignore_embedded_relationships false \
+  --versions 14_1 && \
+python3 utilities/arango_cti_processor/insert_archive_capec.py \
+  --database arango_cti_processor_standard_tests \
+  --ignore_embedded_relationships false \
+  --versions 3_9
 ```
 
 Run the script;
+
+```shell
+python3 -m unittest tests/test_1_attack_to_capec_import.py
+```
 
 ```shell
 python3 arango_cti_processor.py \
@@ -296,7 +295,7 @@ First need to import the update using stix2arango;
 ```shell
 python3 stix2arango.py \
   --file design/mvp/tests/arango-cti-capec-update.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
   --stix2arango_note update \
   --ignore_embedded_relationships true
@@ -439,7 +438,7 @@ First need to import the update using stix2arango;
 ```shell
 python3 stix2arango.py \
   --file design/mvp/tests/arango-cti-capec-update-again.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
   --stix2arango_note update \
   --ignore_embedded_relationships true
@@ -549,7 +548,7 @@ First need to import the update using stix2arango;
 ```shell
 python3 stix2arango.py \
   --file design/mvp/tests/arango-cti-capec-update-final.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
   --stix2arango_note update \
   --ignore_embedded_relationships true
@@ -677,7 +676,7 @@ First need to import the update using stix2arango;
 ```shell
 python3 stix2arango.py \
   --file design/mvp/tests/arango-cti-capec-update-final-final.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
   --stix2arango_note update \
   --ignore_embedded_relationships true
@@ -800,7 +799,7 @@ This time we remove all of the ATT&CK references inside the CAPEC object (`attac
 ```shell
 python3 stix2arango.py \
   --file design/mvp/tests/arango-cti-capec-update-all-removed.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
   --stix2arango_note update \
   --ignore_embedded_relationships true
@@ -879,13 +878,13 @@ Import required data:
 ```shell
 python3 stix2arango.py  \
   --file backfill_data/mitre_capec/stix-capec-v3_9.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
   --stix2arango_note v3.9 \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
   --file backfill_data/mitre_cwe/cwe-bundle-4_13.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_cwe \
   --stix2arango_note v4.13 \
   --ignore_embedded_relationships true
@@ -984,7 +983,7 @@ In this file I update CAPEC-112 (`attack-pattern--7b423196-9de6-400f-91de-a1f26b
 ```shell
 python3 stix2arango.py \
   --file design/mvp/tests/capec-updated.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
   --stix2arango_note update \
   --ignore_embedded_relationships true
@@ -1063,13 +1062,13 @@ Import required data:
 ```shell
 python3 stix2arango.py  \
   --file backfill_data/mitre_cwe/cwe-bundle-4_13.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_cwe \
   --stix2arango_note v4.13 \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
   --file backfill_data/mitre_capec/stix-capec-v3_9.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
   --stix2arango_note v3.9 \
   --ignore_embedded_relationships true
@@ -1179,7 +1178,7 @@ Here we update CWE-521 (`weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5`) with o
 ```shell
 python3 stix2arango.py \
   --file design/mvp/tests/cwe-updated.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_cwe \
   --stix2arango_note update \
   --ignore_embedded_relationships true
@@ -1255,25 +1254,25 @@ Import required data:
 ```shell
 python3 stix2arango.py  \
   --file backfill_data/mitre_attack_enterprise/enterprise-attack-v14_1.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_attack_enterprise \
   --stix2arango_note v14.1 \
   --ignore_embedded_relationships true
 python3 stix2arango.py  \
   --file backfill_data/mitre_attack_ics/ics-attack-v14_1.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_attack_ics \
   --stix2arango_note v14.1 \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
   --file backfill_data/mitre_attack_mobile/mobile-attack-v14_1.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_attack_mobile \
   --stix2arango_note v14.1 \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
   --file backfill_data/mitre_capec/stix-capec-v3_9.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
   --stix2arango_note v3.9 \
   --ignore_embedded_relationships true
@@ -1360,13 +1359,13 @@ python3 design/mvp/test-helpers/remove-all-collections.py
 ```shell
 python3 stix2arango.py  \
     --file backfill_data/mitre_cwe/cwe-bundle-4_13.json \
-    --database cti \
+    --database arango_cti_processor_standard_tests \
     --collection mitre_cwe \
     --stix2arango_note v4.13 \
     --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
   --file design/mvp/tests/cve-bundle-for-sigma-rules.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
 ```
@@ -1442,7 +1441,7 @@ Adds CWE-787 to vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 (now has 2 C
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/cve-updated-with-cwe.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
 ```
@@ -1489,7 +1488,7 @@ Removes all CWEs from vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 (now h
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/cve-updated-with-removed-cwe.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
 ```
@@ -1542,12 +1541,12 @@ Import required data:
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/cve-bundle-for-sigma-rules.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
   --file design/mvp/tests/cpe-bundle-for-cves.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection nvd_cpe \
   --ignore_embedded_relationships true
 ```
@@ -1616,7 +1615,7 @@ Adds `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` to `indicator--
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/new-cpe-in-cve.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
 ```
@@ -1671,7 +1670,7 @@ Removes `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` (added in 6.
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/removed-cpe-in-cve.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
 ```
@@ -1724,25 +1723,25 @@ Import required data:
 ```shell
 python3 stix2arango.py  \
   --file backfill_data/mitre_attack_enterprise/enterprise-attack-v14_1.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_attack_enterprise \
   --stix2arango_note v14.1 \
   --ignore_embedded_relationships true
 python3 stix2arango.py  \
   --file backfill_data/mitre_attack_ics/ics-attack-v14_1.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_attack_ics \
   --stix2arango_note v14.1 \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
   --file backfill_data/mitre_attack_mobile/mobile-attack-v14_1.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection mitre_attack_mobile \
   --stix2arango_note v14.1 \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
   --file backfill_data/sigma_rules/sigma-rule-bundle.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection sigma_rules \
   --ignore_embedded_relationships true
 ```
@@ -1905,7 +1904,7 @@ Adds attack.t1543.003 (1 result) to indicator--74904ec1-cff3-5737-a1d4-408c789dc
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/sigma-rules-with-NEW-cve.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection sigma_rules \
   --ignore_embedded_relationships true
 ```
@@ -1984,7 +1983,7 @@ Removes all attack objects from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/sigma-rules-with-NO-cve.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection sigma_rules \
   --ignore_embedded_relationships true
 ```
@@ -2045,12 +2044,12 @@ Import required data:
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/sigma-rules-with-cves.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection sigma_rules \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
   --file design/mvp/tests/cve-bundle-for-sigma-rules.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
 ```
@@ -2115,7 +2114,7 @@ Check the IDs
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/sigma-rules-with-NEW-cve.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection sigma_rules \
   --ignore_embedded_relationships true
 ```
@@ -2170,7 +2169,7 @@ Should return 2 results (the two old objects from 8.1)
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/sigma-rules-with-NO-cve.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection sigma_rules \
   --ignore_embedded_relationships true
 ```
@@ -2233,7 +2232,7 @@ Import required data:
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/sample-cpe-bundle.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection nvd_cpe \
   --ignore_embedded_relationships true
 ```
@@ -2358,7 +2357,7 @@ This adds a 2 new products (softwares) for vendor = google
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/cpe-new-product.json \
-  --database cti \
+  --database arango_cti_processor_standard_tests \
   --collection nvd_cpe \
   --ignore_embedded_relationships true
 ```
@@ -2481,3 +2480,52 @@ FOR doc IN nvd_cpe_vertex_collection
 ```
 
 Check the `object_refs` now have 10 entries (was 9 for 9.1) the new Chrome version object has ID `software--a11b7906-7775-47ea-a97d-55c3968d2c9f`.
+
+
+### Volume tests
+
+Whilst the previous tests cover the logic of the script, it's also important we test it at scale (ultimately how it will be used in real life).
+
+To do this, install [stix2arango](https://github.com/muchdogesec/stix2arango/) separately and run the following to import all data;
+
+```shell
+python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships false && \
+python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships false && \
+python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships false && \
+python3 utilities/arango_cti_processor/insert_archive_capec.py \
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships false && \
+python3 utilities/arango_cti_processor/insert_archive_cwe.py \
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships false && \
+python3 utilities/arango_cti_processor/insert_archive_disarm.py \
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships false && \
+python3 utilities/arango_cti_processor/insert_archive_locations.py \
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships false && \
+python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships false && \
+python3 utilities/arango_cti_processor/insert_archive_yara_rules.py \
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships false && \
+python3 utilities/arango_cti_processor/insert_archive_cve.py \
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships false && \
+python3 utilities/arango_cti_processor/insert_archive_cpe.py \
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships true
+```
+
+Once this is done. You can run the 
+
+```
+
+
