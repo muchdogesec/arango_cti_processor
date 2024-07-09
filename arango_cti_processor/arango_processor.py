@@ -1,6 +1,5 @@
 import os
 import json
-
 import logging
 
 from . import config
@@ -8,25 +7,24 @@ from tqdm import tqdm
 from stix2arango.services.arangodb_service import ArangoDBService
 from jsonschema import validate
 
-
 from . import utils as processors
 module_logger = logging.getLogger("data_ingestion_service")
-
 
 class ArangoProcessor:
 
     def __init__(self, **kwargs):
+        self.database = kwargs.get("database") if kwargs.get("database", None) else config.ARANGODB_DATABASE
         self.relationship = kwargs.get("relationship") if kwargs.get("relationship", None) else None
         self.ignore_embedded_relationships = kwargs.get("ignore_embedded_relationships") if kwargs.get("ignore_embedded_relationships", None) else None
         self.arango_cti_processor_note = kwargs.get("arango_cti_processor_note") if kwargs.get("arango_cti_processor_note", None) else ""
 
-        self.arango = ArangoDBService(config.ARANGODB_DATABASE, config.COLLECTION_VERTEX, config.COLLECTION_EDGE, relationship=self.relationship)
+        self.arango = ArangoDBService(self.database, config.COLLECTION_VERTEX, config.COLLECTION_EDGE, relationship=self.relationship)
 
     def finalize_collections(self):
         if not config.SMET_ACTIVATE:
             logging.warning("SMET not activated, cve-attack relationships will not be processed")
 
-        relations_needs_to_run=[]
+        relations_needs_to_run = []
         if self.relationship:
             if self.relationship != "cpe-groups":
                 for key, value in processors.get_rel_func_mapping().get(self.relationship).items():
@@ -47,15 +45,13 @@ class ArangoProcessor:
         return object_list
 
     def get_is_latest(self, data, collection):
-
         for _type, obj, modified in tqdm(data):
             try:
                 processors.set_latest_for(self.arango, obj, collection)
             except Exception as e:
                 pass
 
-    def process_bundle_into_graph(self, filename: str, core_collection_vertex:str, data=None, notes=None):
-
+    def process_bundle_into_graph(self, filename: str, core_collection_vertex: str, data=None, notes=None):
         if data.get("type", None) != "bundle":
             module_logger.error("Provided file is not a STIX bundle. Aborted")
             return False
@@ -68,18 +64,18 @@ class ArangoProcessor:
                     f"doc._record_md5_hash == '{processors.generate_md5(obj)}' \n" \
                     "RETURN doc"
             result = self.arango.execute_raw_query(query)
-            if len(result)==0:
+            if len(result) == 0:
                 if obj.get("type") not in ["relationship"]:
                     obj['_arango_cti_processor_note'] = notes
                     obj['_record_md5_hash'] = processors.generate_md5(obj)
                     objects.append(obj)
                     insert_data.append([
-                            obj.get("type"), obj.get("id"),
-                            True if "modified" in obj else False])
+                        obj.get("type"), obj.get("id"),
+                        True if "modified" in obj else False])
 
         module_logger.info(f"Inserting objects into database. Total objects: {len(objects)}")
         self.arango.upsert_several_objects_chunked(objects, core_collection_vertex)
-        if len(insert_data)>0:
+        if len(insert_data) > 0:
             self.get_is_latest(insert_data, core_collection_vertex)
 
     def run(self):
@@ -120,6 +116,6 @@ class ArangoProcessor:
             if "sigma" in vertex:
                 processors.sigma_groups(self.arango)
 
-        if self.relationship =="cpe-groups":
+        if self.relationship == "cpe-groups":
             inserted_data = processors.cpe_groups(self.arango)
             self.get_is_latest(inserted_data, "nvd_cpe_vertex_collection")
