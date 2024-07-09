@@ -5,52 +5,15 @@
 
 
 
-### TEST 0: setup env (read before all tests)
+### Useful utilities
 
-First remove any old data that may exist for tests...
-
-```shell
-python3 design/mvp/test-helpers/remove-all-collections.py
-```
-
-Import one dataset, check that validation all expected collections exist.
-
-The following commands assume you have run the stix2arango backfill scripts listed here: https://github.com/signalscorps/stix2arango/blob/main/design/mvp/backfill.md
-
-ATT&CK Enterprise
+Remove all collections that are created for tests (use:
 
 ```shell
-cd stix2arango
-source stix2arango-venv/bin/activate
-python3 stix2arango.py	\
-	--file backfill_data/mitre_attack_enterprise/enterprise-attack-v14_1.json \
-	--database arango_cti_processor_standard_tests \
-	--collection mitre_attack_enterprise \
-	--stix2arango_note v14.1 \
-	--ignore_embedded_relationships true
+python3 tests/remove_all_collections.py
 ```
 
-Now try to run the script on the entire dataset.
-
-```shell
-python3 arango_cti_processor.py
-```
-
-Should show an error as not all collections expected exist. Expect is that the error message prints the missing collections.
-
-Now delete old import...
-
-```shell
-python3 design/mvp/test-helpers/remove-all-collections.py
-```
-
-Now add the required collections (but empty)...
-
-```shell
-python3 design/mvp/test-helpers/create-all-collections.py
-```
-
-### TEST 1.1: Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
+### TEST 1 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
 Delete any old data that might exist from old tests:
 
@@ -63,19 +26,19 @@ Import required data using a separate install of [stix2arango](https://github.co
 ```shell
 python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships false \
+  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships false \
+  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships false \
+  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_capec.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships false \
+  --ignore_embedded_relationships true \
   --versions 3_9
 ```
 
