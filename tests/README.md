@@ -10,7 +10,7 @@
 Remove all collections that are created for tests (use:
 
 ```shell
-python3 tests/remove_all_collections.py
+python3 tests/delete_all_databases.py
 ```
 
 ### TEST 1 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
@@ -18,7 +18,7 @@ python3 tests/remove_all_collections.py
 Delete any old data that might exist from old tests:
 
 ```shell
-python3 tests/test-helpers/remove-all-collections.py
+python3 tests/delete_all_databases.py
 ```
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
@@ -51,7 +51,8 @@ python3 -m unittest tests/test_1_attack_to_capec_import.py
 ```shell
 python3 arango_cti_processor.py \
   --database arango_cti_processor_standard_tests_database \
-  --relationship capec-attack
+  --relationship capec-attack \
+  --arango_cti_processor_note "test01"
 ```
 
 First see test-data-research.md for what is expected.
@@ -834,8 +835,9 @@ Should return 0 result, as no ATT&CK references exist in this CAPEC object now.
 Delete any old data:
 
 ```shell
-python3 design/mvp/test-helpers/remove-all-collections.py
+python3 tests/delete_all_databases.py
 ```
+
 
 Import required data:
 

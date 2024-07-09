@@ -20,8 +20,8 @@ def parse_arguments():
                         )
     parser.add_argument("--ignore_embedded_relationships", required=False,
                         help="This will stop any embedded relationships from being generated.")
-    parser.add_argument("--arango_cti_processor_note", required=False,
-                        help="Will be used as a value for `_arango_cti_processor_note` for all objects created by arango_cti_processor")
+    parser.add_argument("--stix2arango_note", required=False,
+                        help="Will be used as a value for `_stix2arango_note` for all objects created by arango_cti_processor")
     return parser.parse_args()
 
 def main():
