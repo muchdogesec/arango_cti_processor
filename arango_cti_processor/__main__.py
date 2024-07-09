@@ -3,14 +3,21 @@ from .arango_processor import ArangoProcessor
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Import STIX JSON into ArangoDB")
-    parser.add_argument("--database", required=False,
+    parser.add_argument("--database", required=True,
                         help="The arangoDB database name where the objects you want to link are found.")
     parser.add_argument("--relationship", required=False,
                         help="you can apply updates to certain collection at run time. "
-                             "Default is all collections. User can select from; "
-                             "mitre_attack_enterprise, mitre_attack_ics, "
-                             "mitre_attack_mobile, mitre_capec, nvd_cpe, "
-                             "nvd_cve, sigma_rules, disarm")
+                             "Default is all collections. Can select from; "
+                             "capec-attack"
+                             "capec-cwe"
+                             "cwe-capec"
+                             "attack-capec"
+                             "cve-cwe"
+                             "cve-cpe"
+                             "sigma-attack"
+                             "sigma-cve"
+                             "cve-attack"
+                        )
     parser.add_argument("--ignore_embedded_relationships", required=False,
                         help="This will stop any embedded relationships from being generated.")
     parser.add_argument("--arango_cti_processor_note", required=False,

@@ -18,7 +18,24 @@ class ArangoProcessor:
         self.ignore_embedded_relationships = kwargs.get("ignore_embedded_relationships") if kwargs.get("ignore_embedded_relationships", None) else None
         self.arango_cti_processor_note = kwargs.get("arango_cti_processor_note") if kwargs.get("arango_cti_processor_note", None) else ""
 
-        self.arango = ArangoDBService(self.database, config.COLLECTION_VERTEX, config.COLLECTION_EDGE, relationship=self.relationship)
+        self.vertex_collections, self.edge_collections = self.get_collections_for_relationship()
+        self.arango = ArangoDBService(self.database, self.vertex_collections, self.edge_collections, relationship=self.relationship)
+
+    def get_collections_for_relationship(self):
+        vertex_collections = []
+        edge_collections = []
+        
+        if self.relationship:
+            for mode in config.MODE_COLLECTION_VALIDATION:
+                if self.relationship in mode:
+                    vertex_collections = mode[self.relationship]
+                    edge_collections = [col.replace('_vertex_', '_edge_') for col in vertex_collections]
+                    break
+        else:
+            vertex_collections = config.COLLECTION_VERTEX
+            edge_collections = config.COLLECTION_EDGE
+
+        return vertex_collections, edge_collections
 
     def finalize_collections(self):
         if not config.SMET_ACTIVATE:
@@ -74,7 +91,7 @@ class ArangoProcessor:
                         True if "modified" in obj else False])
 
         module_logger.info(f"Inserting objects into database. Total objects: {len(objects)}")
-        self.arango.upsert_several_objects_chunked(objects, core_collection_vertex)
+        self.arango.insert_several_objects_chunked(objects, core_collection_vertex)
         if len(insert_data) > 0:
             self.get_is_latest(insert_data, core_collection_vertex)
 
@@ -83,7 +100,7 @@ class ArangoProcessor:
             return
 
         logging.info("Processing default objects now")
-        for collect in config.COLLECTION_VERTEX:
+        for collect in self.vertex_collections:
             logging.info(f"Checking: {collect}")
             self.process_bundle_into_graph(
                 filename="",

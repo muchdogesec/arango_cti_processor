@@ -11,10 +11,7 @@ from stix2arango.services.arangodb_service import ArangoDBService
 from stix2 import Relationship, Grouping
 from datetime import datetime
 
-
-
 module_logger = logging.getLogger("data_ingestion_service")
-
 
 def get_relationship():
     return {
@@ -65,13 +62,29 @@ def get_rel_func_mapping():
         "cve-attack": {"nvd_cve_vertex_collection":relate_cve_to_attack}
     }
 
-
 def validate_collections(collections):
-    required_collections = config.COLLECTION_EDGE + config.COLLECTION_VERTEX
-    if len(list(set(required_collections) - set(collections)))>0:
-        missing_collections = "\n ".join(list(set(required_collections) - set(collections)))
-        print(f"The following collections are missing. Please add them to continue. \n {missing_collections}")
+    required_collections = set(config.COLLECTION_EDGE + config.COLLECTION_VERTEX)
+    missing_collections = required_collections - set(collections)
+    
+    if missing_collections:
+        print(f"The following collections are missing. Please add them to continue: {', '.join(missing_collections)}")
         return True
+
+    # Now validate mode-specific collections
+    mode_errors = []
+    for mode in config.MODE_COLLECTION_VALIDATION:
+        for mode_name, mode_collections in mode.items():
+            missing_mode_collections = set(mode_collections) - set(collections)
+            if missing_mode_collections:
+                mode_errors.append(f"Mode '{mode_name}' is missing collections: {', '.join(missing_mode_collections)}")
+
+    if mode_errors:
+        print("Mode-specific collection errors found:")
+        for error in mode_errors:
+            print(error)
+        return True
+
+    return False
 
 
 def verify_duplication(obj, object_list):
@@ -81,7 +94,6 @@ def verify_duplication(obj, object_list):
         if len(filtered_list)>0:
             return True
     return False
-
 
 def parse_relation_object(data, result,collection, relationship_type: str):
     generated_id = "relationship--" + str(
@@ -107,7 +119,6 @@ def parse_relation_object(data, result,collection, relationship_type: str):
             ]
         ).serialize()
     )
-
 
 def relate_capec_to_cwe(data, db: ArangoDBService, collection, collect_edge, notes):
     insert_data = []
@@ -144,7 +155,6 @@ def relate_capec_to_cwe(data, db: ArangoDBService, collection, collect_edge, not
         return insert_data
     except Exception as e:
         print(e)
-
 
 def relate_cve_to_cpe(data, db: ArangoDBService, collection, collect_edge, notes):
     try:
@@ -236,7 +246,6 @@ def set_latest_for(db: ArangoDBService, id, collection):
         "id": id,
     })
 
-
 def relate_capec_to_attack(data, db: ArangoDBService, collection, collection_edge, notes:str):
     insert_data = []
     try:
@@ -274,7 +283,6 @@ def relate_capec_to_attack(data, db: ArangoDBService, collection, collection_edg
     except Exception as e:
         print(e)
 
-
 def relate_cwe_to_capec(data, db: ArangoDBService, collection, collection_edge, notes):
     logging.info("relate_cwe_to_capec")
     try:
@@ -308,7 +316,6 @@ def relate_cwe_to_capec(data, db: ArangoDBService, collection, collection_edge, 
         return insert_data
     except Exception as e:
         print(e)
-
 
 def relate_attack_to_capec(data, db: ArangoDBService, collection_vertex:str, collection_edge:str, notes:str):
     logging.info("relate_attack_to_capec")
@@ -345,7 +352,6 @@ def relate_attack_to_capec(data, db: ArangoDBService, collection_vertex:str, col
         return insert_data
     except Exception as e:
         print(e)
-
 
 def relate_sigma_to_attack(data, db: ArangoDBService, collection_vertex:str, collection_edge:str, notes:str):
     logging.info("relate_sigma_to_attack")
@@ -389,7 +395,6 @@ def relate_sigma_to_attack(data, db: ArangoDBService, collection_vertex:str, col
     except Exception as e:
         print(e)
 
-
 def relate_sigma_to_cve(data, db: ArangoDBService, collection_vertex:str, collection_edge:str, notes:str):
     logging.info("relate_sigma_to_cve")
     if data.get("type") != "indicator" or data.get("pattern_type") != "sigma":
@@ -421,14 +426,12 @@ def relate_sigma_to_cve(data, db: ArangoDBService, collection_vertex:str, collec
     except Exception as e:
         print(e)
 
-
 def verify_threshold(response):
     res_array = []
     for res in response:
         if res[1]>config.SMET_THRESHOLD:
             res_array.append(res[0])
     return res_array
-
 
 def relate_cve_to_attack(data, db: ArangoDBService, collection_vertex:str, collection_edge:str, notes:str):
     if not config.SMET_ACTIVATE or data.get("type")!="vulnerability":
@@ -467,7 +470,6 @@ def generate_md5(obj:dict):
     obj_copy["_arango_cti_processor_note"] = obj.get("_arango_cti_processor_note")
     json_str = json.dumps(obj_copy, sort_keys=True, default = str).encode('utf-8')
     return hashlib.md5(json_str).hexdigest()
-
 
 def prepare_vendor_group_object(db: ArangoDBService, vendor_list: object) -> list:
     def create_new_vendor_object(db: ArangoDBService, vendor,product, collect_name, created=None):
@@ -535,7 +537,6 @@ def prepare_vendor_group_object(db: ArangoDBService, vendor_list: object) -> lis
             print(e)
     return inserted_data
 
-
 def prepare_products_grouping_object(db:ArangoDBService, product_list:list) -> list:
     def create_new_product_group(db: ArangoDBService, product, org_product, collect_name, created=None):
         insert_statement = []; inserted_data = []
@@ -593,7 +594,6 @@ def prepare_products_grouping_object(db:ArangoDBService, product_list:list) -> l
                 )
     return inserted_data
 
-
 def cpe_groups(db: ArangoDBService):
     logging.info("Working on CPE - Grouping Task")
     logging.info("Working on CPE - Grouping Products")
@@ -616,6 +616,3 @@ def cpe_groups(db: ArangoDBService):
 
 def sigma_groups(db: ArangoDBService):
     pass
-
-
-

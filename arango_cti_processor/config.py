@@ -35,11 +35,24 @@ COLLECTION_EDGE = [
     "nvd_cve_edge_collection",
     "sigma_rules_edge_collection"
 ]
+
+MODE_COLLECTION_VALIDATION = [
+    {"capec-attack": ["mitre_capec_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"]},
+    {"capec-cwe": ["mitre_capec_vertex_collection","mitre_cwe_vertex_collection"]},
+    {"cwe-capec": ["mitre_cwe_vertex_collection","mitre_capec_vertex_collection"]},
+    {"attack-capec": ["mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection","mitre_capec_vertex_collection"]},
+    {"cve-cwe": ["nvd_cve_vertex_collection","mitre_cwe_vertex_collection"]},
+    {"cve-cpe": ["nvd_cve_vertex_collection","nvd_cpe_vertex_collection"]},
+    {"sigma-attack": ["sigma_rules_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"]},
+    {"sigma-cve": ["sigma_rules_vertex_collection","nvd_cve_vertex_collection"]},
+    {"cve-attack": ["nvd_cve_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"]}
+]
+
 namespace = UUID("2e51a631-99d8-52a5-95a6-8314d3f4fbf3")
 
 DEFAULT_OBJECT_URL = [
-    "https://github.com/muchdogesec/stix4doge/raw/main/objects/marking-definition/arango_cti_processor.json", # this is arango_cti_processor marking-definition
-    "https://github.com/muchdogesec/stix4doge/raw/main/objects/identity/arango_cti_processor.json" # this is arango_cti_processor identity
+    "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/arango_cti_processor.json", # this is arango_cti_processor marking-definition
+    "https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/arango_cti_processor.json" # this is arango_cti_processor identity
 ]
 SMET_ACTIVATE=False
 SMET_THRESHOLD=0.4

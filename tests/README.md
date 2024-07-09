@@ -87,6 +87,7 @@ python3 -m unittest tests/test_1_attack_to_capec_import.py
 
 ```shell
 python3 arango_cti_processor.py \
+  --database arango_cti_processor_standard_tests_database \
   --relationship capec-attack
 ```
 
