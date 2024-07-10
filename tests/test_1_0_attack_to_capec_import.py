@@ -22,7 +22,7 @@ subprocess.run([
     "--ignore_embedded_relationships", "false"
 ], check=True)
 
-print('Import script executed successfully.')
+print('Script executed successfully.')
 
 def test_01_auto_imported_objects():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
@@ -61,6 +61,8 @@ def test_02_arango_cti_processor_note():
 
 test_02_arango_cti_processor_note()
 
+# checks the cirret number of objects are generated, and that they are assigned the correct properties by the script
+
 def test_03_correct_object_properties():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
@@ -94,13 +96,7 @@ def test_04_correct_relationship_capec695():
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
           AND doc._arango_cti_processor_note == "capec-attack"
-          AND doc.relationship_type == "technique"
-          AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
           AND doc.source_ref == "attack-pattern--e3dd79e7-307b-42dd-9e22-d0345c0ec001"
-          AND doc.object_marking_refs == [
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-          ]
           RETURN doc.target_ref
     """
     cursor = db.aql.execute(query)
@@ -123,13 +119,7 @@ def test_05_relationship_id_generation695():
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
           AND doc._arango_cti_processor_note == "capec-attack"
-          AND doc.relationship_type == "technique"
-          AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
           AND doc.source_ref == "attack-pattern--e3dd79e7-307b-42dd-9e22-d0345c0ec001"
-          AND doc.object_marking_refs == [
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-          ]
           RETURN doc.id
     """
     cursor = db.aql.execute(query)
@@ -152,13 +142,7 @@ def test_06_correct_relationship_capec233():
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
           AND doc._arango_cti_processor_note == "capec-attack"
-          AND doc.relationship_type == "technique"
-          AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
           AND doc.source_ref == "attack-pattern--c05fff04-b965-4a11-9c18-379dac31969f"
-          AND doc.object_marking_refs == [
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-          ]
           RETURN doc.target_ref
     """
     cursor = db.aql.execute(query)
@@ -181,13 +165,7 @@ def test_07_relationship_id_generation233():
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
           AND doc._arango_cti_processor_note == "capec-attack"
-          AND doc.relationship_type == "technique"
-          AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
           AND doc.source_ref == "attack-pattern--c05fff04-b965-4a11-9c18-379dac31969f"
-          AND doc.object_marking_refs == [
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-          ]
           AND doc.id == ""
           RETURN doc.id
     """
@@ -211,13 +189,7 @@ def test_08_correct_relationship_capec13():
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
           AND doc._arango_cti_processor_note == "capec-attack"
-          AND doc.relationship_type == "technique"
-          AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
           AND doc.source_ref == "attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed"
-          AND doc.object_marking_refs == [
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-          ]
           RETURN doc.target_ref
     """
     cursor = db.aql.execute(query)
@@ -245,13 +217,7 @@ def test_09_relationship_id_generation13():
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
           AND doc._arango_cti_processor_note == "capec-attack"
-          AND doc.relationship_type == "technique"
-          AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
           AND doc.source_ref == "attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed"
-          AND doc.object_marking_refs == [
-            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-            "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-          ]
           RETURN doc.id
     """
     cursor = db.aql.execute(query)

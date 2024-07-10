@@ -1,19 +1,6 @@
 # Tests
 
-## Importing data for Arango CTI Processor
-
-
-
-
-### Useful utilities
-
-Remove all collections that are created for tests (use:
-
-```shell
-python3 tests/delete_all_databases.py
-```
-
-### TEST 1 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
+## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
 This test checks initial run of script on objects.
 
@@ -47,160 +34,38 @@ python3 utilities/arango_cti_processor/insert_archive_capec.py \
 Run the script;
 
 ```shell
-python3 -m unittest tests/test_1_attack_to_capec_import.py
+python3 -m unittest tests/test_1_0_attack_to_capec_import.py
 ```
 
+## TEST 1.1: Perform update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
+Note, test 1.0 must have been run for this test to work.
 
-### TEST 1.2: Perform update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
-
-Note, test 1.1 must have been run for this test to work.
-
-Here we provide an update with 2 objects in the CAPEC update bundle, 
+Here we provide an update to 2 objects in the CAPEC update bundle, 
 
 * 1 is brand new CAPEC with 1 att&ck reference `attack-pattern--39b37ebd-276c-48e7-b152-d94a29599f4b` (CAPEC-999) to T1650
 * 1 is an update to an existing CAPEC object (T1650 1 new att&ck reference is added) (2 previously existed T1040 and T1111) `attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a` (CAPEC-158) so now 3 attack objects.
 
-Expected is that the new object is read and relationship generated for it.
+Expected is that the new object is identified by the script and relationships generated.
 
 For the updated objects, expected is that old SROs created by arango_cti_processor are marked as `_is_latest==false` (2 total) and 3 new objects (1 new, 2 existing recreated)
 
-First need to import the update using stix2arango;
+Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
 ```shell
 python3 stix2arango.py \
-  --file design/mvp/tests/arango-cti-capec-update.json \
+  --file tests/files/arango_cti_processor/arango-cti-capec-update-1.json \
   --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
-  --stix2arango_note update \
+  --stix2arango_note v3.10 \
   --ignore_embedded_relationships true
 ```
 
-Now rerun the script to pickup the newest changes...
+Run the script;
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship capec-attack
+python3 -m unittest tests/test_1_1_attack_to_capec_import.py
 ```
-
-```sql
-FOR doc IN mitre_capec_vertex_collection
-  FILTER doc._arango_cti_processor_note == "automatically imported object at script runtime"
-  AND doc.id IN [
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
-    "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Expect still on 2 results (as no versioned objects should be created for auto imports -- b/c md5's are the same)
-
-```sql
-FOR doc IN mitre_capec_vertex_collection
-  FILTER doc.id == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
-  RETURN [doc]
-```
-
-Will return 2 results (the new and old version of `attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a`)
-
-```sql
-FOR doc IN mitre_capec_vertex_collection
-  FILTER doc.id == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
-  AND doc._is_latest == false
-  RETURN [doc]
-```
-
-Should return 1 result, the old object.
-
-```sql
-FOR doc IN mitre_capec_edge_collection
-  FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
-  AND doc._is_latest == false
-  AND doc._arango_cti_processor_note == "capec-attack"
-  AND doc.target_ref like "attack-pattern%"
-  RETURN [doc]
-```
-
-Should return 2 results, because old version of `attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a` had 2 ATT&CK references.
-
-```sql
-FOR doc IN mitre_capec_edge_collection
-  FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
-  AND doc._is_latest == true
-  AND doc._arango_cti_processor_note == "capec-attack"
-  AND doc.target_ref like "attack-pattern%"
-  RETURN [doc]
-```
-
-Should return 3 results, because new version of `attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a` has 3 ATT&CK references.
-
-```sql
-FOR doc IN mitre_capec_edge_collection
-  FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
-  AND doc._is_latest == false
-  AND doc._arango_cti_processor_note == "capec-attack"
-  RETURN [doc]
-```
-
-Should return 4 results, because old version of `attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a` had 2 ATT&CK references (each with 2 ATT&CK destinations)
-
-```sql
-FOR doc IN mitre_capec_edge_collection
-  FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
-  AND doc._is_latest == true
-  AND doc._arango_cti_processor_note == "capec-attack"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 5 results, because new version of `attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a` has 3 ATT&CK references (2 with 2 ATT&CK destinations, 1 with 1 ATT&CK reference)
-
-* T1650: 1 attack-pattern (`attack-pattern--d21bb61f-08ad-4dc1-b001-81ca6cb79954` Enterprise matrix) 
-* T1040: 1 attack-pattern (`attack-pattern--3257eb21-f9a7-4430-8de1-d8b6e288f529` Enterprise matrix), 1 course-of-action (`course-of-action--46b7ef91-4e1d-43c5-a2eb-00fa9444f6f4` Enterprise matrix)
-* T1111: 1 attack-pattern (`attack-pattern--dd43c543-bb85-4a6f-aa6e-160d90d06a49` Enterprise matrix), 1 course-of-action (`course-of-action--e8d22ec6-2236-48de-954b-974d17492782` Enterprise matrix)
-
-Now for the NEW object...
-
-```sql
-FOR doc IN mitre_capec_vertex_collection
-  FILTER doc.id == "attack-pattern--39b37ebd-276c-48e7-b152-d94a29599f4b"
-  RETURN [doc]
-```
-
-Should return one result, as only one version of this object (it was only just created)
-
-```sql
-FOR doc IN mitre_capec_edge_collection
-  FILTER doc.source_ref == "attack-pattern--39b37ebd-276c-48e7-b152-d94a29599f4b"
-  AND doc._is_latest == true
-  AND doc._arango_cti_processor_note == "capec-attack"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return one result, as only one ATT&CK reference in source object.
-
-```sql
-FOR doc IN mitre_capec_edge_collection
-  FILTER doc.source_ref == "attack-pattern--39b37ebd-276c-48e7-b152-d94a29599f4b"
-  AND doc._is_latest == false
-  AND doc._arango_cti_processor_note == "capec-attack"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 0 results, as no previous versions of these relationships exist.
 
 ### TEST 1.3: Perform ANOTHER update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
