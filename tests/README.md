@@ -296,9 +296,12 @@ python3 -m unittest tests/test_4_0_attack_to_capec.py
 
 ---
 
-## TEST 5.0: Validate CVE Vulnerability -> CWE Weakness Relationship
+## TEST 5.0: Validate CVE Vulnerability -> CWE Weakness Relationship (`cve-cwe`)
 
 **You need to delete all other test data**
+
+Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
+
 
 ```shell
 python3 utilities/arango_cti_processor/insert_archive_cwe.py \
@@ -325,7 +328,11 @@ You will see one `ERROR - AQL exception in the query` error on this run. That's 
 
 ## TEST 5.1: Add CWE to CVE Vulnerability
 
+Need to run test 5.0 beforehand
+
 Adds CWE-787 to vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 (now has 2 CWE refs total, used to be 1 just CWE-863)
+
+Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
 ```shell
 python3 stix2arango.py  \
@@ -343,7 +350,11 @@ python3 -m unittest tests/test_5_1_cve_to_cwe.py
 
 ## TEST 5.2: Remove all CWEs from CVE Vulnerability
 
+Need to run test 5.1 beforehand
+
 Removes all CWEs from vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 (now has 0 CWE refs total)
+
+Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
 ```shell
 python3 stix2arango.py  \
@@ -361,16 +372,13 @@ python3 -m unittest tests/test_5_2_cve_to_cwe.py
 
 ---
 
+### TEST 6.0: Validate CVE Indicator -> CPE Software Relationship (`cve-cpe`)
 
-### TEST 6.1: Validate CVE Indicator -> CPE Software Relationship
+condensed_cve_bundle.json has 6 cpes
 
-Delete any old data:
+**You need to delete all other test data**
 
-```shell
-python3 design/mvp/test-helpers/remove-all-collections.py
-```
-
-Import required data:
+Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
 ```shell
 python3 stix2arango.py  \
@@ -379,170 +387,59 @@ python3 stix2arango.py  \
   --collection nvd_cve \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
-  --file design/mvp/tests/cpe-bundle-for-cves.json \
+  --file design/mvp/tests/condensed_cpe_bundle.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cpe \
   --ignore_embedded_relationships true
 ```
 
-Run the script:
+Run the test script;
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship cve-cpe
+python3 -m unittest tests/test_6_0_cve_to_cpe.py
 ```
 
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "pattern-contains"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
+## TEST 6.1: Add new CPE to CVE object
 
-Should return 6 objects (see test-data-research.md for info)
-
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "pattern-contains"
-  AND doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 2 results, as has 2 CPEs in Pattern
-
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "pattern-contains"
-  AND doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  AND doc.id IN [
-    "relationship--e1dc49aa-f82a-5119-9917-c4b6e4526ba8",
-    "relationship--ad350647-5fd5-50ba-bc6c-6247dfbd1144"
-  ]
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Same search (so should return results) used to check the IDs generated correctly;
-
-* `cpe:2.3:a:atlassian:confluence_server:7.19.9:*:*:*:*:*:*:*`
-  * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `pattern-contains+nvd_cve_vertex_collection/indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6+nvd_cpe_vertex_collection/software--50fa0834-9c63-5b0f-bf0e-dce02183253a` = `relationship--e1dc49aa-f82a-5119-9917-c4b6e4526ba8`
-* `cpe:2.3:a:atlassian:confluence_server:7.19.7:*:*:*:*:*:*:*`
-  * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `pattern-contains+nvd_cve_vertex_collection/indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6+nvd_cpe_vertex_collection/software--23b14f0d-c539-50bc-bdc2-38d68d849732` = `relationship--ad350647-5fd5-50ba-bc6c-6247dfbd1144`
-
-### TEST 6.2: Add new CPE to CVE object
+Need to run test 6.0 beforehand
 
 Adds `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` to `indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6`. Used to have 2 patterns, so now has 3.
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/new-cpe-in-cve.json \
+  --file design/mvp/tests/condensed_cpe_bundle-update-1.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
 ```
 
-Run the script:
+Run the test script;
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship cve-cpe
+python3 -m unittest tests/test_6_1_cve_to_cpe.py
 ```
 
-```sql
-FOR doc IN nvd_cve_vertex_collection
-  FILTER doc.id == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  RETURN [doc]
-```
+## TEST 6.2: Remove CPE from CVE object
 
-Should return 2 results, the new and old version of `indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6` (CVE-2023-22518)
-
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "pattern-contains"
-  AND doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 3 results, as now has 3 CPEs in Pattern
-
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == false
-  AND doc.relationship_type == "pattern-contains"
-  AND doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 2 results, as the original indicator before update has 2 CPEs in pattern.
-
-### TEST 6.3: Remove CPE from CVE object
+Need to run test 6.1 beforehand
 
 Removes `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` (added in 6.2) from `indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6`
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/removed-cpe-in-cve.json \
+  --file design/mvp/tests/condensed_cpe_bundle-update-2.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
 ```
 
-Run the script:
+Run the test script;
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship cve-cpe
+python3 -m unittest tests/test_6_2_cve_to_cpe.py
 ```
 
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "pattern-contains"
-  AND doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 2 results, as latest Indicator has 2 CPEs in Pattern
-
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == false
-  AND doc.relationship_type == "pattern-contains"
-  AND doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 5 result, the 2 old one from 5.2 and 3 old ones from this update 5.3.
+---
 
 ### TEST 7.1: Test Sigma Rule Indicator to ATT&CK Attack Pattern relationship
 

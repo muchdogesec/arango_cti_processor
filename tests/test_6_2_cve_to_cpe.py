@@ -17,8 +17,8 @@ client = ArangoClient(hosts=f"http://{ARANGO_HOST}:{ARANGO_PORT}")
 subprocess.run([
     "python3", "arango_cti_processor.py",
     "--database", "arango_cti_processor_standard_tests_database",
-    "--relationship", "cve-cwe",
-    "--stix2arango_note", "test05",
+    "--relationship", "cve-cpe",
+    "--stix2arango_note", "test06",
     "--ignore_embedded_relationships", "false"
 ], check=True)
 
@@ -42,19 +42,36 @@ def test_01_auto_imported_objects():
     assert result_count == expected_ids, f"Expected {expected_ids}, but found {result_count}."
     print(f"Test passed. Found documents with the specified note: {result_count}")
 
-test_01_auto_imported_objects()
+# Should return 3 results, the new and 2 old version of `indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6` (CVE-2023-22518)
 
-# Should return 2 results. As CVE-2023-22518 now has two CWEs; CWE-863 and CWE-787
+def test_02_test_update_to_indicator():
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    query = """
+    RETURN COUNT(
+      FOR doc IN nvd_cve_vertex_collection
+        FILTER doc.id == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
+          RETURN doc
+    )
+    """
+    cursor = db.aql.execute(query)
+    result_count = [count for count in cursor]
 
-def test_02_CVE_2023_22518_sro_new():
+    assert result_count == [3], f"Expected 3 documents, but found {result_count}."
+    print(f"Test passed. Found {result_count[0]} documents with the specified criteria.")
+
+test_02_test_update_to_indicator()
+
+# test 3 Should return 2 results, as now has 2 CPEs in Pattern
+
+def test_03_test_relationships_to_cpes_new():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
       FOR doc IN nvd_cve_edge_collection
-      FILTER doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-      AND doc._arango_cti_processor_note == "cve-cwe"
-      AND doc._is_latest == true
-        RETURN doc
+          FILTER doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
+          AND doc.relationship_type == "pattern-contains"
+          AND doc._is_latest == true
+          RETURN doc
     )
     """
     cursor = db.aql.execute(query)
@@ -63,25 +80,25 @@ def test_02_CVE_2023_22518_sro_new():
     assert result_count == [2], f"Expected 2 documents, but found {result_count}."
     print(f"Test passed. Found {result_count[0]} documents with the specified criteria.")
 
-test_02_CVE_2023_22518_sro_new()
+test_03_test_relationships_to_cpes_new()
 
-# Should return 1 result as test 5.0 only had one link
+# Should return 5 results, as the original indicator (in 6.0) had 2 CPEs in pattern and updated in 6.1 had 3
 
-def test_03_CVE_2023_22518_sro_old():
+def test_04_test_relationships_to_cpes_old():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
       FOR doc IN nvd_cve_edge_collection
-      FILTER doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-      AND doc._arango_cti_processor_note == "cve-cwe"
-      AND doc._is_latest == false
-        RETURN doc
+          FILTER doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
+          AND doc.relationship_type == "pattern-contains"
+          AND doc._is_latest == false
+          RETURN doc
     )
     """
     cursor = db.aql.execute(query)
     result_count = [count for count in cursor]
 
-    assert result_count == [1], f"Expected 1 documents, but found {result_count}."
+    assert result_count == [5], f"Expected 5 documents, but found {result_count}."
     print(f"Test passed. Found {result_count[0]} documents with the specified criteria.")
 
-test_03_CVE_2023_22518_sro_old()
+test_04_test_relationships_to_cpes_old()
