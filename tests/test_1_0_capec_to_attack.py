@@ -44,6 +44,8 @@ def test_01_auto_imported_objects():
 
 test_01_auto_imported_objects()
 
+# test 2 checks all objects generated correctly
+
 def test_02_arango_cti_processor_note():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
@@ -61,15 +63,14 @@ def test_02_arango_cti_processor_note():
 
 test_02_arango_cti_processor_note()
 
-# checks the cirret number of objects are generated, and that they are assigned the correct properties by the script
+# checks the corret number of objects are generated, and that they are assigned the correct properties by the script
 
 def test_03_correct_object_properties():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
       FOR doc IN mitre_capec_edge_collection
-        FILTER doc._is_latest == true
-        AND doc.type == "relationship"
+        FILTER doc.type == "relationship"
         AND doc.relationship_type == "technique"
         AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
         AND doc.object_marking_refs == [

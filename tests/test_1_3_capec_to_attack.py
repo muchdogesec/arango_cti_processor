@@ -61,6 +61,8 @@ def test_02_updated_capec158_old_relationships():
     assert result_count == [15], f"Expected 15 documents, but found {result_count}."
     print(f"Test passed. Found {result_count[0]} documents with the specified criteria.")
 
+test_02_updated_capec158_old_relationships()
+
 # test 3 Should return 4 results because the new object has both T1040 (1 coa, 1 attack pattern) and T1111 (1 coa, 1 attack pattern)
 
 def test_03_updated_capec158_new_relationships():
@@ -107,3 +109,45 @@ def test_04_updated_capec158_new_relationships_check_ids():
     print(f"Test passed. Found documents with the specified note: {result_count}")
 
 test_04_updated_capec158_new_relationships_check_ids()
+
+# test 5 check t1650 (attack-pattern--d21bb61f-08ad-4dc1-b001-81ca6cb79954). this only exists in updates 1.1. and 1.2.
+
+def test_05_updated_capec158_new_relationships_t1650():
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    query = """
+    RETURN COUNT(
+      FOR doc IN mitre_capec_vertex_collection
+          FILTER doc.target_ref == "attack-pattern--d21bb61f-08ad-4dc1-b001-81ca6cb79954"
+          AND doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
+          AND doc._is_latest == false
+          RETURN doc
+    )
+    """
+    cursor = db.aql.execute(query)
+    result_count = [count for count in cursor]
+
+    assert result_count == [2], f"Expected 2 documents, but found {result_count}."
+    print(f"Test passed. Found {result_count[0]} documents with the specified criteria.")
+
+test_05_updated_capec158_new_relationships_t1650()
+
+# test 6 is extension of test 5, but checks there is no latest version
+
+def test_06_updated_capec158_new_relationships_t1650_new():
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    query = """
+    RETURN COUNT(
+      FOR doc IN mitre_capec_vertex_collection
+          FILTER doc.target_ref == "attack-pattern--d21bb61f-08ad-4dc1-b001-81ca6cb79954"
+          AND doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
+          AND doc._is_latest == true
+          RETURN doc
+    )
+    """
+    cursor = db.aql.execute(query)
+    result_count = [count for count in cursor]
+
+    assert result_count == [0], f"Expected 0 documents, but found {result_count}."
+    print(f"Test passed. Found {result_count[0]} documents with the specified criteria.")
+
+test_06_updated_capec158_new_relationships_t1650_new()

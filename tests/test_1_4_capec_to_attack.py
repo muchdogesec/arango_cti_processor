@@ -24,7 +24,7 @@ subprocess.run([
 
 print('Script executed successfully.')
 
-# test 1 Should return 3 objects, the newest version, and two old ones.
+# test 1 Should return 5 objects, the newest version, and 4 old ones.
 
 def test_01_updated_capec158():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
@@ -38,12 +38,12 @@ def test_01_updated_capec158():
     cursor = db.aql.execute(query)
     result_count = [count for count in cursor]
 
-    assert result_count == [3], f"Expected 3 documents, but found {result_count}."
+    assert result_count == [5], f"Expected 5 documents, but found {result_count}."
     print(f"Test passed. Found {result_count[0]} documents with the specified criteria.")
 
 test_01_updated_CAPEC158()
 
-# test 2 Should return 9 results. oldest version (1.0) of CAPEC158 had 4 ATT&CK references, old version 1.1 had 5 ATT&CK references
+# test 2 Should return 19 results. oldest version (1.0) of CAPEC158 had 4 ATT&CK references, old version 1.1 had 5 ATT&CK references, old version 1.2 had 6, 1.3 had 4
 
 def test_02_updated_capec158_old_relationships():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
@@ -58,7 +58,7 @@ def test_02_updated_capec158_old_relationships():
     cursor = db.aql.execute(query)
     result_count = [count for count in cursor]
 
-    assert result_count == [9], f"Expected 9 documents, but found {result_count}."
+    assert result_count == [19], f"Expected 19 documents, but found {result_count}."
     print(f"Test passed. Found {result_count[0]} documents with the specified criteria.")
 
 test_02_updated_capec158_old_relationships()
@@ -78,7 +78,7 @@ def test_03_updated_capec158_new_relationships():
     cursor = db.aql.execute(query)
     result_count = [count for count in cursor]
 
-    assert result_count == [6], f"Expected 6 documents, but found {result_count}."
+    assert result_count == [4], f"Expected 4 documents, but found {result_count}."
     print(f"Test passed. Found {result_count[0]} documents with the specified criteria.")
 
 test_03_updated_capec158_new_relationships()
@@ -112,7 +112,7 @@ def test_04_updated_capec158_new_relationships_check_ids():
 
 test_04_updated_capec158_new_relationships_check_ids()
 
-# test 5 check T1040 only. should return 6 results. for each object; the newest SRO, and the 2 old versions of it
+# test 5 check T1040 only. Should return 10 objects total for relationship to T1040 -- attack pattern 4 old objects (from 1.0, 1.1, 1.2, 1.3) and 1 new object from this update 1.3. + same again for coa
 
 def test_05_updated_capec158_new_relationships_t1040():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
@@ -121,15 +121,14 @@ def test_05_updated_capec158_new_relationships_t1040():
       FOR doc IN mitre_capec_vertex_collection
           FILTER doc.target_ref == "course-of-action--46b7ef91-4e1d-43c5-a2eb-00fa9444f6f4"
           OR doc.target_ref == "attack-pattern--3257eb21-f9a7-4430-8de1-d8b6e288f529"
+          AND doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
           RETURN doc
     )
     """
     cursor = db.aql.execute(query)
     result_count = [count for count in cursor]
 
-    assert result_count == [6], f"Expected 6 documents, but found {result_count}."
+    assert result_count == [10], f"Expected 10 documents, but found {result_count}."
     print(f"Test passed. Found {result_count[0]} documents with the specified criteria.")
 
 test_05_updated_capec158_new_relationships_t1040()
-
-### need to still write tests to check SRO ids
