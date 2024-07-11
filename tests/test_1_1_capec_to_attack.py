@@ -156,9 +156,10 @@ def test_07_new_capec999():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-        FOR doc IN mitre_capec_vertex_collection
+        FOR doc IN mitre_capec_edge_collection
           FILTER doc.id == "attack-pattern--39b37ebd-276c-48e7-b152-d94a29599f4b"
           AND doc._is_latest == true
+          AND doc._arango_cti_processor_note == "capec-attack"
           RETURN doc
     )
     """
@@ -176,9 +177,10 @@ def test_08_new_capec999_update():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-        FOR doc IN mitre_capec_vertex_collection
+        FOR doc IN mitre_capec_edge_collection
           FILTER doc.id == "attack-pattern--39b37ebd-276c-48e7-b152-d94a29599f4b"
           AND doc._is_latest == false
+          AND doc._arango_cti_processor_note == "capec-attack"
           RETURN doc
     )
     """

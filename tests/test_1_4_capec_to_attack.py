@@ -49,9 +49,10 @@ def test_02_updated_capec158_old_relationships():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-      FOR doc IN mitre_capec_vertex_collection
+      FOR doc IN mitre_capec_edge_collection
           FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
           AND doc._is_latest == false
+          AND doc._arango_cti_processor_note == "capec-attack"
           RETURN [doc]
     )
     """
@@ -69,9 +70,10 @@ def test_03_updated_capec158_new_relationships():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-      FOR doc IN mitre_capec_vertex_collection
+      FOR doc IN mitre_capec_edge_collection
           FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
           AND doc._is_latest == true
+          AND doc._arango_cti_processor_note == "capec-attack"
           RETURN [doc]
     )
     """
@@ -89,9 +91,10 @@ def test_04_updated_capec158_new_relationships_check_ids():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-      FOR doc IN mitre_capec_vertex_collection
+      FOR doc IN mitre_capec_edge_collection
           FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
           AND doc._is_latest == true
+          AND doc._arango_cti_processor_note == "capec-attack"
           RETURN doc.target_ref
     )
     """
@@ -118,10 +121,11 @@ def test_05_updated_capec158_new_relationships_t1040():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-      FOR doc IN mitre_capec_vertex_collection
+      FOR doc IN mitre_capec_edge_collection
           FILTER doc.target_ref == "course-of-action--46b7ef91-4e1d-43c5-a2eb-00fa9444f6f4"
           OR doc.target_ref == "attack-pattern--3257eb21-f9a7-4430-8de1-d8b6e288f529"
           AND doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
+          AND doc._arango_cti_processor_note == "capec-attack"
           RETURN doc
     )
     """

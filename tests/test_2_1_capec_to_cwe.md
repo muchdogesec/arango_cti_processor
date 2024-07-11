@@ -1,1 +1,0 @@
-tests/test_2_1_capec_to_cwe.py

@@ -49,9 +49,10 @@ def test_02_updated_capec158_old_relationships():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-      FOR doc IN mitre_capec_vertex_collection
+      FOR doc IN mitre_capec_edge_collection
           FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
           AND doc._is_latest == false
+          AND doc._arango_cti_processor_note == "capec-attack"
           RETURN [doc]
     )
     """
@@ -69,9 +70,10 @@ def test_03_updated_capec158_new_relationships():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-      FOR doc IN mitre_capec_vertex_collection
+      FOR doc IN mitre_capec_edge_collection
           FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
           AND doc._is_latest == true
+          AND doc._arango_cti_processor_note == "capec-attack"
           RETURN [doc]
     )
     """
@@ -89,9 +91,10 @@ def test_04_updated_capec158_new_relationships_check_ids():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-      FOR doc IN mitre_capec_vertex_collection
+      FOR doc IN mitre_capec_edge_collection
           FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
           AND doc._is_latest == true
+          AND doc._arango_cti_processor_note == "capec-attack"
           RETURN doc.target_ref
     )
     """
@@ -116,10 +119,11 @@ def test_05_updated_capec158_new_relationships_t1650():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-      FOR doc IN mitre_capec_vertex_collection
+      FOR doc IN mitre_capec_edge_collection
           FILTER doc.target_ref == "attack-pattern--d21bb61f-08ad-4dc1-b001-81ca6cb79954"
           AND doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
           AND doc._is_latest == false
+          AND doc._arango_cti_processor_note == "capec-attack"
           RETURN doc
     )
     """
@@ -137,10 +141,11 @@ def test_06_updated_capec158_new_relationships_t1650_new():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-      FOR doc IN mitre_capec_vertex_collection
+      FOR doc IN mitre_capec_edge_collection
           FILTER doc.target_ref == "attack-pattern--d21bb61f-08ad-4dc1-b001-81ca6cb79954"
           AND doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
           AND doc._is_latest == true
+          AND doc._arango_cti_processor_note == "capec-attack"
           RETURN doc
     )
     """

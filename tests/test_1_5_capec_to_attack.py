@@ -49,8 +49,9 @@ def test_02_updated_capec158_old_relationships():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-      FOR doc IN mitre_capec_vertex_collection
+      FOR doc IN mitre_capec_edge_collection
           FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
+          AND doc._arango_cti_processor_note == "capec-attack"
           AND doc._is_latest == false
           RETURN [doc]
     )
@@ -69,8 +70,9 @@ def test_03_updated_capec158_new_relationships():
     db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
     query = """
     RETURN COUNT(
-      FOR doc IN mitre_capec_vertex_collection
+      FOR doc IN mitre_capec_edge_collection
           FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
+          AND doc._arango_cti_processor_note == "capec-attack"
           AND doc._is_latest == true
           RETURN [doc]
     )

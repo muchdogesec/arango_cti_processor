@@ -1,14 +1,14 @@
 # Tests
 
-## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
-
-This test checks initial run of script on objects.
+## Utilities
 
 Delete any old data that might exist from old tests:
 
 ```shell
 python3 tests/delete_all_databases.py
 ```
+
+## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
@@ -163,13 +163,11 @@ python3 -m unittest tests/test_1_5_capec_to_attack.py
 
 Should return 0 result, as no ATT&CK references exist in this CAPEC object now.
 
+---
+
 ## TEST 2.0: Validate CAPEC Attack Pattern -> CWE Weakness relationship (`capec-cwe`)
 
-Delete any old data from test 1.x for easier debugging:
-
-```shell
-python3 tests/delete_all_databases.py
-```
+**You need to delete test 1 data before running test 2**
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
@@ -192,6 +190,8 @@ python3 -m unittest tests/test_2_0_capec_to_cwe.py
 
 ## TEST 2.1: Add new CWE Weakness to CAPEC (`capec-cwe`)
 
+Test 2.0 should be run beforehand.
+
 In this file I update CAPEC-112 (`attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1`) with one new CWE; CWE-1004. It now has 4 CWE references.
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
@@ -211,254 +211,53 @@ Run the test script;
 python3 -m unittest tests/test_2_1_capec_to_cwe.py
 ```
 
+---
 
+## TEST 3.0: Validate CWE Weakness -> CAPEC Attack Pattern relationship (`cwe-capec`)
 
-```sql
-FOR doc IN mitre_capec_vertex_collection
-  FILTER doc.id == "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1"
-  RETURN [doc]
-```
+**You need to delete test 2 data before running test 3**
 
-Should return 2 objects, the new and old version.
-
-```sql
-FOR doc IN mitre_capec_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "exploits"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1"
-  AND doc._arango_cti_processor_note == "capec-cwe"
-  RETURN [doc]
-```
-
-Should return 4 results, as 4 objects in latest version.
-
-```sql
-FOR doc IN mitre_capec_edge_collection
-  FILTER doc._is_latest == false
-  AND doc.relationship_type == "exploits"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1"
-  AND doc._arango_cti_processor_note == "capec-cwe"
-  RETURN [doc]
-```
-
-Should return 3 results, as old object from 2.1 had 3 references.
-
-```sql
-FOR doc IN mitre_capec_edge_collection
-  FILTER doc.relationship_type == "exploits"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1"
-  AND doc._arango_cti_processor_note == "capec-cwe"
-  RETURN [doc]
-```
-
-Should return 7 results, both new and old objects.
-
-### TEST 3.1: Validate CWE Weakness -> CAPEC Attack Pattern relationship (`cwe-capec`)
-
-Delete any old data:
+Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
 ```shell
-python3 design/mvp/test-helpers/remove-all-collections.py
-```
-
-Import required data:
-
-```shell
-python3 stix2arango.py  \
-  --file backfill_data/mitre_cwe/cwe-bundle-4_13.json \
+python3 utilities/arango_cti_processor/insert_archive_capec.py \
   --database arango_cti_processor_standard_tests \
-  --collection mitre_cwe \
-  --stix2arango_note v4.13 \
-  --ignore_embedded_relationships true && \
-python3 stix2arango.py  \
-  --file backfill_data/mitre_capec/stix-capec-v3_9.json \
+  --ignore_embedded_relationships true \
+  --versions 3_9 && \
+python3 utilities/arango_cti_processor/insert_archive_cwe.py \
   --database arango_cti_processor_standard_tests \
-  --collection mitre_capec \
-  --stix2arango_note v3.9 \
-  --ignore_embedded_relationships true
+  --ignore_embedded_relationships true \
+  --versions 4_13
 ```
 
-Run the script:
+Run the test script;
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship cwe-capec
+python3 -m unittest tests/test_3_0_cwe_to_capec.py
 ```
 
-```sql
-RETURN LENGTH(
-  FOR doc IN mitre_cwe_edge_collection
-    FILTER doc._is_latest == true
-    AND doc.relationship_type == "exploited-using"
-    AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-    AND doc.object_marking_refs == [
-      "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-      "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-    ]
-    RETURN [doc]
-)
-```
+### TEST 3.1 Adding a new CAPEC to a CWE
 
-Should return all the SROs generated by arango_cti_processor -- expected = 1212
-
-To check objects are created as expected, you can pick a CWE object with CAPEC references and then check all the SROs for CAPECs are generated for it, as follows...
-
-e.g. CWE-521 (weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5) which has links to 9 CAPEC IDs;
-
-* CAPEC-112 (`attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1`)
-* CAPEC-16 (`attack-pattern--a9dc4914-409a-4f71-80df-c5cc3923d112`)
-* CAPEC-49 (`attack-pattern--8d88a81c-bde9-4fb3-acbe-901c783d6427`)
-* CAPEC-55 (`attack-pattern--a390cb72-b4de-4750-ae05-be556c89f4be`)
-* CAPEC-555 (`attack-pattern--06e8782a-87af-4863-b6b1-99e09edda3be`)
-* CAPEC-561 (`attack-pattern--f2654def-b86d-4ddb-888f-de6b50a103a2`)
-* CAPEC-565 (`attack-pattern--f724f0f3-20e6-450c-be4a-f373ea08834d`)
-* CAPEC-70 (`attack-pattern--8c7bab16-5ecd-4778-9b04-c185bceed170`)
-* CAPEC-509 (`attack-pattern--9197c7a2-6a03-40da-b2a6-df5f1d69e8fb`)
-
-```sql
-FOR doc IN mitre_cwe_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5"
-  RETURN [doc]
-```
-
-Should therefore return 9 results.
-
-```sql
-FOR doc IN mitre_cwe_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5"
-  AND doc.id IN [
-    "relationship--08e771e1-43a8-5274-a40e-6e0c2a80a839",
-    "relationship--cba7ab38-92a9-5a3e-b764-6c0eee7115f4",
-    "relationship--3160ac44-e035-501c-bae3-5703a18b90e1",
-    "relationship--e8bad1cc-0fba-51fd-abd2-cae943c239fb",
-    "relationship--0adef775-32cd-577e-80e8-dfc71a48550c",
-    "relationship--67b0c619-cb12-5cd2-b99e-a212eff1a8b4",
-    "relationship--9389d23b-35e6-5c5e-8591-8f0f28e537d1",
-    "relationship--80ebe0d5-7379-5f3a-9b65-9030d9621153",
-    "relationship--7148d7f6-3588-5398-9c3c-bf294e989bb4",
-  ]
-  RETURN [doc]
-```
-
-You should check the IDs for each object are correct as follows;
-
-* CAPEC-112 (`attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1`)
-  * object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1` = `relationship--08e771e1-43a8-5274-a40e-6e0c2a80a839`
-* CAPEC-16 (`attack-pattern--a9dc4914-409a-4f71-80df-c5cc3923d112`)
-  * object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--a9dc4914-409a-4f71-80df-c5cc3923d112` = `relationship--cba7ab38-92a9-5a3e-b764-6c0eee7115f4`
-* CAPEC-49 (`attack-pattern--8d88a81c-bde9-4fb3-acbe-901c783d6427`)
-  * object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--8d88a81c-bde9-4fb3-acbe-901c783d6427` = `relationship--3160ac44-e035-501c-bae3-5703a18b90e1`
-* CAPEC-55 (`attack-pattern--a390cb72-b4de-4750-ae05-be556c89f4be`)
-  * object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--a390cb72-b4de-4750-ae05-be556c89f4be` = `relationship--e8bad1cc-0fba-51fd-abd2-cae943c239fb`
-* CAPEC-555 (`attack-pattern--06e8782a-87af-4863-b6b1-99e09edda3be`)
-  * object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--06e8782a-87af-4863-b6b1-99e09edda3be` = `relationship--0adef775-32cd-577e-80e8-dfc71a48550c`
-* CAPEC-561 (`attack-pattern--f2654def-b86d-4ddb-888f-de6b50a103a2`)
-  * object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--f2654def-b86d-4ddb-888f-de6b50a103a2` = `relationship--67b0c619-cb12-5cd2-b99e-a212eff1a8b4`
-* CAPEC-565 (`attack-pattern--f724f0f3-20e6-450c-be4a-f373ea08834d`)
-  * object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--f724f0f3-20e6-450c-be4a-f373ea08834d` = `relationship--9389d23b-35e6-5c5e-8591-8f0f28e537d1`
-* CAPEC-70 (`attack-pattern--8c7bab16-5ecd-4778-9b04-c185bceed170`)
-  * object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--8c7bab16-5ecd-4778-9b04-c185bceed170` = `relationship--80ebe0d5-7379-5f3a-9b65-9030d9621153`
-* CAPEC-509 (`attack-pattern--9197c7a2-6a03-40da-b2a6-df5f1d69e8fb`)
-  * object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--9197c7a2-6a03-40da-b2a6-df5f1d69e8fb` = `relationship--7148d7f6-3588-5398-9c3c-bf294e989bb4`
-
-### TEST 3.2 Adding a new CAPEC to a CWE
+Test 3.0 should be run beforehand.
 
 Here we update CWE-521 (`weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5`) with one new object (CAPEC-10 `attack-pattern--4a29d66d-8617-4382-b456-578ecdb1609e`)
 
+Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
+
 ```shell
 python3 stix2arango.py \
-  --file design/mvp/tests/cwe-updated.json \
+  --file tests/files/arango_cti_processor/arango-cti-cwe-capec-update-1.json \
   --database arango_cti_processor_standard_tests \
-  --collection mitre_cwe \
-  --stix2arango_note update \
+  --collection mitre_capec \
+  --stix2arango_note v4.14 \
   --ignore_embedded_relationships true
 ```
 
+Run the test script;
+
 ```shell
-python3 arango_cti_processor.py \
-  --relationship cwe-capec
+python3 -m unittest tests/test_3_1_capec_to_cwe.py
 ```
-
-```sql
-FOR doc IN mitre_cwe_vertex_collection
-  FILTER doc.id == "weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5"
-  RETURN [doc]
-```
-
-Should return 2 results, the new and the old object.
-
-```sql
-FOR doc IN mitre_cwe_edge_collection
-  FILTER doc._is_latest == false
-  AND doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5"
-  RETURN [doc]
-```
-
-Should return 9 results, the old objects in 3.1.
-
-```sql
-FOR doc IN mitre_cwe_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5"
-  RETURN [doc]
-```
-
-Should return 10 results, as this object now has 10 CWEs
-
-```sql
-FOR doc IN mitre_cwe_edge_collection
-  FILTER doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5"
-  RETURN [doc]
-```
-
-Should return all 19 objects.
 
 ### TEST 4.1: Validate ATT&CK Attack Pattern -> CAPEC Attack Pattern relationship (`attack-capec`)
 
