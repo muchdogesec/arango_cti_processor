@@ -441,40 +441,29 @@ python3 -m unittest tests/test_6_2_cve_to_cpe.py
 
 ---
 
-### TEST 7.1: Test Sigma Rule Indicator to ATT&CK Attack Pattern relationship
+### TEST 7.0: Test Sigma Rule Indicator to ATT&CK Attack Pattern relationship (`sigma-attack`)
 
-Delete any old data:
-
-```shell
-python3 design/mvp/test-helpers/remove-all-collections.py
-```
+**You need to delete all other test data**
 
 Import required data:
 
 ```shell
-python3 stix2arango.py  \
-  --file backfill_data/mitre_attack_enterprise/enterprise-attack-v14_1.json \
+python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
   --database arango_cti_processor_standard_tests \
-  --collection mitre_attack_enterprise \
-  --stix2arango_note v14.1 \
-  --ignore_embedded_relationships true
-python3 stix2arango.py  \
-  --file backfill_data/mitre_attack_ics/ics-attack-v14_1.json \
+  --ignore_embedded_relationships true \
+  --versions 14_1 && \
+python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
   --database arango_cti_processor_standard_tests \
-  --collection mitre_attack_ics \
-  --stix2arango_note v14.1 \
-  --ignore_embedded_relationships true && \
-python3 stix2arango.py  \
-  --file backfill_data/mitre_attack_mobile/mobile-attack-v14_1.json \
+  --ignore_embedded_relationships true \
+  --versions 14_1 && \
+python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
   --database arango_cti_processor_standard_tests \
-  --collection mitre_attack_mobile \
-  --stix2arango_note v14.1 \
-  --ignore_embedded_relationships true && \
-python3 stix2arango.py  \
-  --file backfill_data/sigma_rules/sigma-rule-bundle.json \
-  --database arango_cti_processor_standard_tests \
-  --collection sigma_rules \
-  --ignore_embedded_relationships true
+  --ignore_embedded_relationships true \
+  --versions 14_1 && \
+python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
+  --database arango_cti_processor_volume_tests \
+  --ignore_embedded_relationships false \
+  --versions 2024-05-13 && \
 ```
 
 Run the script:
@@ -1235,16 +1224,7 @@ python3 utilities/arango_cti_processor/insert_archive_capec.py \
 python3 utilities/arango_cti_processor/insert_archive_cwe.py \
   --database arango_cti_processor_volume_tests \
   --ignore_embedded_relationships false && \
-python3 utilities/arango_cti_processor/insert_archive_disarm.py \
-  --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships false && \
-python3 utilities/arango_cti_processor/insert_archive_locations.py \
-  --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships false && \
 python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
-  --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships false && \
-python3 utilities/arango_cti_processor/insert_archive_yara_rules.py \
   --database arango_cti_processor_volume_tests \
   --ignore_embedded_relationships false && \
 python3 utilities/arango_cti_processor/insert_archive_cve.py \
