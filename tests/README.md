@@ -10,6 +10,8 @@ python3 tests/delete_all_databases.py
 
 ## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
+**You need to delete all other test data**
+
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
 ```shell
@@ -167,7 +169,7 @@ Should return 0 result, as no ATT&CK references exist in this CAPEC object now.
 
 ## TEST 2.0: Validate CAPEC Attack Pattern -> CWE Weakness relationship (`capec-cwe`)
 
-**You need to delete test 1 data before running test 2**
+**You need to delete all other test data**
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
@@ -215,7 +217,7 @@ python3 -m unittest tests/test_2_1_capec_to_cwe.py
 
 ## TEST 3.0: Validate CWE Weakness -> CAPEC Attack Pattern relationship (`cwe-capec`)
 
-**You need to delete test 2 data before running test 3**
+**You need to delete all other test data**
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
@@ -259,292 +261,106 @@ Run the test script;
 python3 -m unittest tests/test_3_1_capec_to_cwe.py
 ```
 
-### TEST 4.1: Validate ATT&CK Attack Pattern -> CAPEC Attack Pattern relationship (`attack-capec`)
+---
 
-Delete any old data:
+## TEST 4.0: Validate ATT&CK Attack Pattern -> CAPEC Attack Pattern relationship (`attack-capec`)
 
-```shell
-python3 design/mvp/test-helpers/remove-all-collections.py
-```
+**You need to delete all other test data**
 
-Import required data:
+Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
 ```shell
-python3 stix2arango.py  \
-  --file backfill_data/mitre_attack_enterprise/enterprise-attack-v14_1.json \
+python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
   --database arango_cti_processor_standard_tests \
-  --collection mitre_attack_enterprise \
-  --stix2arango_note v14.1 \
-  --ignore_embedded_relationships true
-python3 stix2arango.py  \
-  --file backfill_data/mitre_attack_ics/ics-attack-v14_1.json \
+  --ignore_embedded_relationships true \
+  --versions 14_1 && \
+python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
   --database arango_cti_processor_standard_tests \
-  --collection mitre_attack_ics \
-  --stix2arango_note v14.1 \
-  --ignore_embedded_relationships true && \
-python3 stix2arango.py  \
-  --file backfill_data/mitre_attack_mobile/mobile-attack-v14_1.json \
+  --ignore_embedded_relationships true \
+  --versions 14_1 && \
+python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
   --database arango_cti_processor_standard_tests \
-  --collection mitre_attack_mobile \
-  --stix2arango_note v14.1 \
-  --ignore_embedded_relationships true && \
-python3 stix2arango.py  \
-  --file backfill_data/mitre_capec/stix-capec-v3_9.json \
+  --ignore_embedded_relationships true \
+  --versions 14_1 && \
+python3 utilities/arango_cti_processor/insert_archive_capec.py \
   --database arango_cti_processor_standard_tests \
-  --collection mitre_capec \
-  --stix2arango_note v3.9 \
-  --ignore_embedded_relationships true
+  --ignore_embedded_relationships true \
+  --versions 3_9
 ```
 
-Run the script:
+Run the test script;
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship attack-capec
+python3 -m unittest tests/test_4_0_attack_to_capec.py
 ```
 
-```sql
-FOR doc IN UNION(
-    (FOR d IN mitre_attack_enterprise_edge_collection RETURN d),
-    (FOR d IN mitre_attack_ics_edge_collection RETURN d),
-    (FOR d IN mitre_attack_mobile_edge_collection RETURN d)
-)
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "relies-on"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
+---
 
-Should return 36 results (see `test-data-research.md` for how to calculate this) -- all the generated objects created by arango_cti_processor.
+## TEST 5.0: Validate CVE Vulnerability -> CWE Weakness Relationship
 
-To check objects are created as expected, you can pick a ATT&CK object with CAPEC references and then check all the SROs for CAPECs are generated for it, as follows...
-
-T1162: `attack-pattern--36675cd3-fe00-454c-8516-aebecacbe9d9` (Enterprise Vertex) has a link to CAPEC-564 (`attack-pattern--b63b2869-11e6-4849-8ddf-ae2557bf554b`)
-
-```sql
-FOR doc IN UNION(
-    (FOR d IN mitre_attack_enterprise_edge_collection RETURN d),
-    (FOR d IN mitre_attack_ics_edge_collection RETURN d),
-    (FOR d IN mitre_attack_mobile_edge_collection RETURN d)
-)
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "relies-on"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "attack-pattern--36675cd3-fe00-454c-8516-aebecacbe9d9"
-  RETURN [doc]
-```
-
-Should return 1 result.
-
-```sql
-FOR doc IN UNION(
-    (FOR d IN mitre_attack_enterprise_edge_collection RETURN d),
-    (FOR d IN mitre_attack_ics_edge_collection RETURN d),
-    (FOR d IN mitre_attack_mobile_edge_collection RETURN d)
-)
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "relies-on"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "attack-pattern--36675cd3-fe00-454c-8516-aebecacbe9d9"
-  AND doc.id == "relationship--6c3e4427-b4fc-5968-91a1-f5072299e876"
-  RETURN doc
-```
-
-Check the ID is correct:
-
-* `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `relies-on+mitre_attack_enterprise_vertex_collection/attack-pattern--36675cd3-fe00-454c-8516-aebecacbe9d9+mitre_capec_vertex_collection/attack-pattern--b63b2869-11e6-4849-8ddf-ae2557bf554b` = `relationship--6c3e4427-b4fc-5968-91a1-f5072299e876`
-
-### TEST 5.1: Validate CVE Vulnerability -> CWE Weakness Relationship
-
-Delete any old data:
+**You need to delete all other test data**
 
 ```shell
-python3 design/mvp/test-helpers/remove-all-collections.py
+python3 utilities/arango_cti_processor/insert_archive_cwe.py \
+  --database arango_cti_processor_standard_tests \
+  --ignore_embedded_relationships true \
+  --versions 4_13
 ```
 
 ```shell
 python3 stix2arango.py  \
-    --file backfill_data/mitre_cwe/cwe-bundle-4_13.json \
-    --database arango_cti_processor_standard_tests \
-    --collection mitre_cwe \
-    --stix2arango_note v4.13 \
-    --ignore_embedded_relationships true && \
-python3 stix2arango.py  \
-  --file design/mvp/tests/cve-bundle-for-sigma-rules.json \
+  --file design/mvp/tests/condensed_cve_bundle.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
 ```
 
+Run the test script;
+
 ```shell
-python3 arango_cti_processor.py \
-  --relationship cve-cwe
+python3 -m unittest tests/test_5_0_cve_to_cwe.py
 ```
 
-You will see one `ERROR - AQL exception in the query` error on this run. That's because one CVE has a duplicate CWE reference.
+You will see one `ERROR - AQL exception in the query` error on this run. That's because one CVE has a duplicate CWE reference. This is normal in real-world data.
 
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 3 results generated by arango_cti_processor
-
-To check objects are created as expected, you can pick a CVE object with CWE references and then check all the SROs for CWESs are generated for it, as follows...
-
-CVE-2023-22518 (`vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6`) has two CWEs
-
-* CWE-863 (`weakness--b6cae21a-55f9-5280-a5e9-8c367a004e63`)
-* CWE-863
-
-Note, due to errors in the NVD data, this is a duplicate. So expected only one relationship created
-
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  RETURN [doc]
-```
-
-Should return 1 result. As CVE-2023-22518 only has one CWE; CWE-863
-
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  AND doc.id == "relationship--d775e730-b349-5fba-8080-cd5f57f1dc3c"
-  RETURN [doc]
-```
-
-Check the ID of that SRO is correct as follows;
-
-* CWE-862: `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+nvd_cve_vertex_collection/vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6+mitre_cwe_vertex_collection/weakness--b6cae21a-55f9-5280-a5e9-8c367a004e63` = `relationship--d775e730-b349-5fba-8080-cd5f57f1dc3c`  
-
-
-### TEST 5.2: Add CWE to CVE Vulnerability
+## TEST 5.1: Add CWE to CVE Vulnerability
 
 Adds CWE-787 to vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 (now has 2 CWE refs total, used to be 1 just CWE-863)
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/cve-updated-with-cwe.json \
+  --file design/mvp/tests/condensed_cve_bundle-updated-1.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
 ```
 
+Run the test script;
+
 ```shell
-python3 arango_cti_processor.py \
-  --relationship cve-cwe
+python3 -m unittest tests/test_5_1_cve_to_cwe.py
 ```
 
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  RETURN [doc]
-```
-
-Should return 2 results. As CVE-2023-22518 now has two CWEs; CWE-863 and CWE-787
-
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == false
-  AND doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  RETURN [doc]
-```
-
-Should return one result as old version of CVE-2023-22518 only had CWE-863
-
-### TEST 5.3: Remove all CWEs from CVE Vulnerability
+## TEST 5.2: Remove all CWEs from CVE Vulnerability
 
 Removes all CWEs from vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 (now has 0 CWE refs total)
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/cve-updated-with-removed-cwe.json \
+  --file design/mvp/tests/condensed_cve_bundle-updated-2.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
 ```
 
+Run the test script;
+
 ```shell
-python3 arango_cti_processor.py \
-  --relationship cve-cwe
+python3 -m unittest tests/test_5_2_cve_to_cwe.py
 ```
 
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  RETURN [doc]
-```
+---
 
-Should return 0 results. As CVE-2023-22518 now has no CWEs
-
-```sql
-FOR doc IN nvd_cve_edge_collection
-  FILTER doc._is_latest == false
-  AND doc.relationship_type == "exploited-using"
-  AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-  RETURN [doc]
-```
-
-Should return 3 results, 2 entries for the old CWEs that were latest in 5.2 and 1 entry for the old CWE that was present in 5.1.
 
 ### TEST 6.1: Validate CVE Indicator -> CPE Software Relationship
 
@@ -558,7 +374,7 @@ Import required data:
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/cve-bundle-for-sigma-rules.json \
+  --file design/mvp/tests/condensed_cve_bundle.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true && \
@@ -1066,7 +882,7 @@ python3 stix2arango.py  \
   --collection sigma_rules \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
-  --file design/mvp/tests/cve-bundle-for-sigma-rules.json \
+  --file design/mvp/tests/condensed_cve_bundle.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true

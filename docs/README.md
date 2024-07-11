@@ -51,7 +51,6 @@ At a high-level the data in CTI Butler is joined follows:
 6. Sigma Rule (`indicator`) -> CVE (`vulnerability`) [`detects`]
 7. CVE (`vulnerability`) -> CWE (`weakness`) [`exploited-using`]
 8. CVE (`indicator`) -> CPE (`software`) [`pattern-contains`]
-9. CVE (`vulnerability`) -> ATT&CK (`attack-pattern`) [`technique-used`]
 
 The parenthesis (`()`) in the list above denote the STIX Object types in each knowledge-base that are used as the `source_ref` and `target_ref` used to create the joins. The square brackets (`[]`) define the STIX `relationship_type` used in the relationship object used to link them.
 
@@ -954,112 +953,6 @@ When a CVE label is identified in a Sigma STIX Indicator object a relationship i
 To generate the id of SRO, a UUIDv5 is generated using the namespace `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` and the `relationship_type+source_collection_name/source_ref+target_collection_name/target_ref`  values.
 
 All generated objects are stored in the source edge collection.
-
-#### 9. CVE (`vulnerability`) -> ATT&CK (`attack-pattern`)
-
-At the time of writing, this is my favourite relationship in CTI Butler. It makes it possible to search for CVEs using MITRE ATT&CK Techniques.
-
-To do this, arango_cti_processor uses the latest OpenAI models to generate mappings.
-
-Using `description` inside each Vulnerability object inside the `nvd_cpe_vertex_collection`, the following prompt is used;
-
-```
-[CVE DESCRIPTION]
-
-What MITRE ATT&CK techniques and subtechniques are being described in this text?
-
-For each ATT&CK technique or sub-technique identified, print your response as only JSON in the following structure:
-
-{
-    attack_id: "ID",
-    attack_name: "NAME",
-    confidence_score: "SCORE"
-}
-
-Where confidence score defines how sure you are this technique or subtechnique is being described in the text (between 0 [lowest] and 1 [highest])
-```
-
-This will return response that looks as follows;
-
-```json
-[
-    {
-        "attack_id": "T1078",
-        "attack_name": "Valid Accounts",
-        "confidence_score": "0.9"
-    },
-    {
-        "attack_id": "T1110.001",
-        "attack_name": "Password Guessing",
-        "confidence_score": "0.6"
-    }
-]
-```
-
-Anything with a confidence greater than 0.4 (e.g. Active Scanning above) is considered that the CVE is referencing an ATT&CK technique in CTI Butler (this threshold can be manually set in your own install of stix2arango if you disagree).
-
-The `attack_id` returned by the AI can be searched against the STIX `attack-pattern` object `external_references.external_id` property values (where `external_references.source_name=mitre-attack`) as follows
-
-```sql
-LET attack_ids = ["<ATTACK IDS>"]
-
-LET lowercased_attack_ids = (
-    FOR id IN attack_ids
-        RETURN LOWER(id)
-)
-
-LET enterprise_results = (
-    FOR doc IN mitre_attack_enterprise_vertex_collection
-        FILTER doc._stix2arango_note != "automatically imported on collection creation"
-        AND doc._is_latest == true
-        AND IS_ARRAY(doc.external_references)
-        FOR ext_ref IN doc.external_references
-            FILTER LOWER(ext_ref.external_id) IN lowercased_attack_ids
-            RETURN doc
-)
-
-LET ics_results = (
-    FOR doc IN mitre_attack_ics_vertex_collection
-        FILTER doc._stix2arango_note != "automatically imported on collection creation"
-        AND doc._is_latest == true
-        AND IS_ARRAY(doc.external_references)
-        FOR ext_ref IN doc.external_references
-            FILTER LOWER(ext_ref.external_id) IN lowercased_attack_ids
-            RETURN doc
-)
-
-LET mobile_results = (
-    FOR doc IN mitre_attack_mobile_vertex_collection
-        FILTER doc._stix2arango_note != "automatically imported on collection creation"
-        AND doc._is_latest == true
-        AND IS_ARRAY(doc.external_references)
-        FOR ext_ref IN doc.external_references
-            FILTER LOWER(ext_ref.external_id) IN lowercased_attack_ids
-            RETURN doc
-)
-
-RETURN UNION(enterprise_results, ics_results, mobile_results)
-```
-
-When a match is found, an SRO is created as follows;
-
-```json
-{
-    "type": "relationship",
-    "spec_version": "2.1",
-    "id": "relationship--<UUID V5 LOGIC>",
-    "created_by_ref": "<IMPORTED IDENTITY OBJECT>",
-    "created": "<indicator.created>",
-    "modified": "<indicator.modified>",
-    "relationship_type": "exploited-using",
-    "source_ref": "vulnerability--<SIGMA INDICATOR STIX OBJECT>",
-    "target_ref": "attack-pattern--<CVE VULNERABILITY STIX OBJECT>",
-    "object_marking_refs": [
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "<MARKING DEFINITION IMPORTED>"
-    ]
-}
-```
 
 #### Updating SROs on subsequent runs
 

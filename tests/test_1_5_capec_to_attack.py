@@ -32,7 +32,7 @@ def test_01_updated_capec158():
     RETURN COUNT(
       FOR doc IN mitre_capec_vertex_collection
           FILTER doc.id == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
-          RETURN [doc]
+          RETURN doc
     )
     """
     cursor = db.aql.execute(query)
@@ -53,7 +53,7 @@ def test_02_updated_capec158_old_relationships():
           FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
           AND doc._arango_cti_processor_note == "capec-attack"
           AND doc._is_latest == false
-          RETURN [doc]
+          RETURN doc
     )
     """
     cursor = db.aql.execute(query)
@@ -74,7 +74,7 @@ def test_03_updated_capec158_new_relationships():
           FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
           AND doc._arango_cti_processor_note == "capec-attack"
           AND doc._is_latest == true
-          RETURN [doc]
+          RETURN doc
     )
     """
     cursor = db.aql.execute(query)

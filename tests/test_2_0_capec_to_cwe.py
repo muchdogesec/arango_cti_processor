@@ -52,7 +52,7 @@ def test_02_arango_cti_processor_note():
     RETURN COUNT(
       FOR doc IN mitre_capec_edge_collection
       FILTER doc._arango_cti_processor_note == "capec-cwe"
-        RETURN [doc]
+        RETURN doc
     )
     """
     cursor = db.aql.execute(query)
@@ -78,7 +78,7 @@ def test_03_correct_object_properties():
           "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
         ]
         AND doc._arango_cti_processor_note == "capec-cwe"
-        RETURN [doc]
+        RETURN doc
     )
     """
     cursor = db.aql.execute(query)
