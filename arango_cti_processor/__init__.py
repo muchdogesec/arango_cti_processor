@@ -1,1 +1,1 @@
-from .arango_processor import ArangoProcessor
+from .cti_processor import ArangoProcessor

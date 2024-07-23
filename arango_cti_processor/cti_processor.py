@@ -6,24 +6,40 @@ from . import config
 from tqdm import tqdm
 from stix2arango.services.arangodb_service import ArangoDBService
 from jsonschema import validate
+import itertools
+
 
 from . import utils as processors
 module_logger = logging.getLogger("data_ingestion_service")
 
 class ArangoProcessor:
 
-    def __init__(self, **kwargs):
-        self.database = kwargs.get("database") if kwargs.get("database", None) else config.ARANGODB_DATABASE
-        self.relationship = kwargs.get("relationship") if kwargs.get("relationship", None) else None
-        self.ignore_embedded_relationships = kwargs.get("ignore_embedded_relationships") if kwargs.get("ignore_embedded_relationships", None) else None
-        self.arango_cti_processor_note = kwargs.get("arango_cti_processor_note") if kwargs.get("arango_cti_processor_note", None) else ""
-
+    def __init__(self, arango_database=None, **kwargs):
+        self.relationship = kwargs.get("relationship")
+        self.ignore_embedded_relationships = kwargs.get("ignore_embedded_relationships")
+        self.arango_cti_processor_note = kwargs.get("arango_cti_processor_note", "")
+        self.stix2arango_note = kwargs.get("stix2arango_note", "")
+        self.arango_database = arango_database
         self.vertex_collections, self.edge_collections = self.get_collections_for_relationship()
-        self.arango = ArangoDBService(self.database, self.vertex_collections, self.edge_collections, relationship=self.relationship)
+
+        self.arango = ArangoDBService(self.arango_database, self.vertex_collections, self.edge_collections, relationship=self.relationship, host_url=config.ARANGO_HOST, username=config.ARANGO_USERNAME, password=config.ARANGO_PASSWORD)
+        self.validate_collections()
+
+    def validate_collections(self):
+        missing_collections = set()
+        for collection in itertools.chain(config.COLLECTION_EDGE, config.COLLECTION_VERTEX):
+            try:
+                self.arango.db.collection(collection).info()
+            except Exception as e:
+                missing_collections.add(collection)
+        if missing_collections:
+            raise Exception(f"The following collections are missing. Please add them to continue. \n {missing_collections}")
 
     def get_collections_for_relationship(self):
         vertex_collections = []
         edge_collections = []
+        vertex_collections = config.COLLECTION_VERTEX
+        edge_collections = config.COLLECTION_EDGE
         
         if self.relationship:
             for mode in config.MODE_COLLECTION_VALIDATION:
@@ -31,15 +47,9 @@ class ArangoProcessor:
                     vertex_collections = mode[self.relationship]
                     edge_collections = [col.replace('_vertex_', '_edge_') for col in vertex_collections]
                     break
-        else:
-            vertex_collections = config.COLLECTION_VERTEX
-            edge_collections = config.COLLECTION_EDGE
-
         return vertex_collections, edge_collections
 
     def finalize_collections(self):
-        if not config.SMET_ACTIVATE:
-            logging.warning("SMET not activated, cve-attack relationships will not be processed")
 
         relations_needs_to_run = []
         if self.relationship:
@@ -61,12 +71,6 @@ class ArangoProcessor:
 
         return object_list
 
-    def get_is_latest(self, data, collection):
-        for _type, obj, modified in tqdm(data):
-            try:
-                processors.set_latest_for(self.arango, obj, collection)
-            except Exception as e:
-                pass
 
     def process_bundle_into_graph(self, filename: str, core_collection_vertex: str, data=None, notes=None):
         if data.get("type", None) != "bundle":
@@ -91,9 +95,8 @@ class ArangoProcessor:
                         True if "modified" in obj else False])
 
         module_logger.info(f"Inserting objects into database. Total objects: {len(objects)}")
-        self.arango.insert_several_objects_chunked(objects, core_collection_vertex)
-        if len(insert_data) > 0:
-            self.get_is_latest(insert_data, core_collection_vertex)
+        inserted_ids, existing = self.arango.insert_several_objects_chunked(objects, core_collection_vertex)
+        self.arango.update_is_latest_several_chunked(inserted_ids, core_collection_vertex)
 
     def run(self):
         if not self.arango.missing_collection:
@@ -117,22 +120,48 @@ class ArangoProcessor:
             logging.info(f"Checking: {vertex}")
             query = f"for doc in {vertex} FILTER doc._is_latest==true return doc"
             data = self.arango.execute_raw_query(query=query)
-            inserted_data = self.arango.map_relationships(
+            inserted_data = self.map_relationships(
                 data=data,
                 func=func,
                 collection_vertex=vertex,
                 collection_edge=vertex.replace("vertex", "edge"),
                 notes=self.arango_cti_processor_note
             )
-            print("inserted_data:", inserted_data)
-            self.get_is_latest(inserted_data, vertex.replace("vertex", "edge"))
-            self.get_is_latest(inserted_data, vertex)
             if "cpe" in vertex:
-                inserted_data = processors.cpe_groups(self.arango)
-                self.get_is_latest(inserted_data, vertex)
+                processors.cpe_groups(self.arango)
             if "sigma" in vertex:
                 processors.sigma_groups(self.arango)
 
-        if self.relationship == "cpe-groups":
-            inserted_data = processors.cpe_groups(self.arango)
-            self.get_is_latest(inserted_data, "nvd_cpe_vertex_collection")
+        if self.relationship =="cpe-groups":
+            processors.cpe_groups(self.arango)
+
+
+    def filter_objects_in_collection_using_custom_query(self, collection, custom_query):
+        return self.arango.filter_objects_in_collection_using_custom_query(collection, custom_query)
+    
+    def filter_objects_in_list_collection_using_custom_query(self, *args, **kw):
+        return self.arango.filter_objects_in_list_collection_using_custom_query(*args, **kw)
+    
+    def upsert_several_objects_chunked(self, objects, collection):
+        for obj in objects:
+            if not obj.get('_stix2arango_note'):
+                obj['_stix2arango_note'] = self.stix2arango_note
+        inserted_ids, _ = self.arango.insert_several_objects_chunked(objects, collection, chunk_size=1000)
+        self.arango.update_is_latest_several_chunked(inserted_ids, collection_name=collection, chunk_size=2000)
+        return []
+
+    def map_relationships(self, data, func, collection_vertex, collection_edge, notes):
+        objects = []
+        for obj in tqdm(data):
+            if obj.get("type") not in [
+                "relationship",
+                "report",
+                "identity",
+                "marking-definition",
+            ]:
+                objects += func(
+                    obj, self, collection_vertex, collection_edge, notes
+                )
+
+        self.upsert_several_objects_chunked(objects, collection_edge)
+        return objects
