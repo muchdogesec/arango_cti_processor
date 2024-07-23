@@ -14,12 +14,12 @@ module_logger = logging.getLogger("data_ingestion_service")
 
 class ArangoProcessor:
 
-    def __init__(self, arango_database=None, **kwargs):
+    def __init__(self, database=None, **kwargs):
         self.relationship = kwargs.get("relationship")
         self.ignore_embedded_relationships = kwargs.get("ignore_embedded_relationships")
         self.arango_cti_processor_note = kwargs.get("arango_cti_processor_note", "")
         self.stix2arango_note = kwargs.get("stix2arango_note", "")
-        self.arango_database = arango_database
+        self.arango_database = database
         self.vertex_collections, self.edge_collections = self.get_collections_for_relationship()
 
         self.arango = ArangoDBService(self.arango_database, self.vertex_collections, self.edge_collections, host_url=config.ARANGO_HOST, username=config.ARANGO_USERNAME, password=config.ARANGO_PASSWORD)
