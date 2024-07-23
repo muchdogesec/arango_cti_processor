@@ -15,17 +15,17 @@ ARANGO_USERNAME = os.getenv("ARANGODB_USERNAME")
 ARANGO_PASSWORD = os.getenv("ARANGODB_PASSWORD")
 
 
-MODE_COLLECTION_VALIDATION = [
-    {"capec-attack": ["mitre_capec_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"]},
-    {"capec-cwe": ["mitre_capec_vertex_collection","mitre_cwe_vertex_collection"]},
-    {"cwe-capec": ["mitre_cwe_vertex_collection","mitre_capec_vertex_collection"]},
-    {"attack-capec": ["mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection","mitre_capec_vertex_collection"]},
-    {"cve-cwe": ["nvd_cve_vertex_collection","mitre_cwe_vertex_collection"]},
-    {"cve-cpe": ["nvd_cve_vertex_collection","nvd_cpe_vertex_collection"]},
-    {"sigma-attack": ["sigma_rules_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"]},
-    {"sigma-cve": ["sigma_rules_vertex_collection","nvd_cve_vertex_collection"]},
-    {"cve-attack": ["nvd_cve_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"]}
-]
+MODE_COLLECTION_MAP = {
+    "capec-attack": ["mitre_capec_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"],
+    "capec-cwe":    ["mitre_capec_vertex_collection","mitre_cwe_vertex_collection"],
+    "cwe-capec":    ["mitre_cwe_vertex_collection","mitre_capec_vertex_collection"],
+    "attack-capec": ["mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection","mitre_capec_vertex_collection"],
+    "cve-cwe": ["nvd_cve_vertex_collection","mitre_cwe_vertex_collection"],
+    "cve-cpe": ["nvd_cve_vertex_collection","nvd_cpe_vertex_collection"],
+    "sigma-attack": ["sigma_rules_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"],
+    "sigma-cve":    ["sigma_rules_vertex_collection","nvd_cve_vertex_collection"],
+    "cve-attack":   ["nvd_cve_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"]
+    }
 
 
 COLLECTION_VERTEX= [

@@ -22,11 +22,13 @@ class ArangoProcessor:
         self.arango_database = arango_database
         self.vertex_collections, self.edge_collections = self.get_collections_for_relationship()
 
-        self.arango = ArangoDBService(self.arango_database, self.vertex_collections, self.edge_collections, relationship=self.relationship, host_url=config.ARANGO_HOST, username=config.ARANGO_USERNAME, password=config.ARANGO_PASSWORD)
+        self.arango = ArangoDBService(self.arango_database, self.vertex_collections, self.edge_collections, host_url=config.ARANGO_HOST, username=config.ARANGO_USERNAME, password=config.ARANGO_PASSWORD)
         self.validate_collections()
 
     def validate_collections(self):
         missing_collections = set()
+        if len(self.vertex_collections) == 0:
+            raise Exception(f"no collection selected")
         for collection in itertools.chain(config.COLLECTION_EDGE, config.COLLECTION_VERTEX):
             try:
                 self.arango.db.collection(collection).info()
@@ -38,15 +40,17 @@ class ArangoProcessor:
     def get_collections_for_relationship(self):
         vertex_collections = []
         edge_collections = []
-        vertex_collections = config.COLLECTION_VERTEX
-        edge_collections = config.COLLECTION_EDGE
         
-        if self.relationship:
-            for mode in config.MODE_COLLECTION_VALIDATION:
-                if self.relationship in mode:
-                    vertex_collections = mode[self.relationship]
-                    edge_collections = [col.replace('_vertex_', '_edge_') for col in vertex_collections]
-                    break
+        modes = self.relationship.split(",")
+        if not modes:
+            return config.COLLECTION_VERTEX, config.COLLECTION_EDGE
+        for mode in modes:
+            if mode in config.MODE_COLLECTION_MAP:
+                vertex_collections.extend(config.MODE_COLLECTION_MAP[mode])
+            else:
+                raise Exception(f"unknown mode {mode}")
+
+        edge_collections = [col.replace('_vertex_', '_edge_') for col in vertex_collections]
         return vertex_collections, edge_collections
 
     def finalize_collections(self):
@@ -143,10 +147,12 @@ class ArangoProcessor:
         return self.arango.filter_objects_in_list_collection_using_custom_query(*args, **kw)
     
     def upsert_several_objects_chunked(self, objects, collection):
+        logging.info("inserting %d items into %s", len(objects), collection)
         for obj in objects:
             if not obj.get('_stix2arango_note'):
                 obj['_stix2arango_note'] = self.stix2arango_note
-        inserted_ids, _ = self.arango.insert_several_objects_chunked(objects, collection, chunk_size=1000)
+        inserted_ids, existing = self.arango.insert_several_objects_chunked(objects, collection, chunk_size=1000)
+        logging.info("removed %d already existing object", len(existing))
         self.arango.update_is_latest_several_chunked(inserted_ids, collection_name=collection, chunk_size=2000)
         return []
 

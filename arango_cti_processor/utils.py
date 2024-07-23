@@ -19,6 +19,7 @@ from datetime import datetime
 module_logger = logging.getLogger("data_ingestion_service")
 
 
+
 def get_relationship():
     return {
         "mitre_capec_vertex_collection": {
