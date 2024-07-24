@@ -9,7 +9,7 @@ ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME")
 ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD")
 ARANGODB_DATABASE = "arango_cti_processor_standard_tests_database"
 
-client = ArangoClient(hosts=f"http://{ARANGODB_HOST_URL}")
+client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
 
 # Connect to the database with your credentials
 db = client.db(
@@ -29,8 +29,8 @@ collections = [
     "mitre_capec_edge_collection",
     "mitre_cwe_vertex_collection",
     "mitre_cwe_edge_collection",
-    "sigma_rules_vertex_collection",
-    "sigma_rules_edge_collection",
+    "sigmahq_rules_vertex_collection",
+    "sigmahq_rules_edge_collection",
     "nvd_cve_vertex_collection",
     "nvd_cve_edge_collection",
     "nvd_cpe_vertex_collection",

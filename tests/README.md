@@ -33,6 +33,16 @@ python3 utilities/arango_cti_processor/insert_archive_capec.py \
   --versions 3_9
 ```
 
+Then run arango_cti_processor:
+
+```shell
+python3 arango_cti_processor.py \
+  --database arango_cti_processor_standard_tests_database \
+  --relationship", "capec-attack \
+  --stix2arango_note", "test01 \
+  --ignore_embedded_relationships false 
+```
+
 Run the test script;
 
 ```shell
@@ -63,6 +73,16 @@ python3 stix2arango.py \
   --ignore_embedded_relationships true
 ```
 
+Then run arango_cti_processor:
+
+```shell
+python3 arango_cti_processor.py \
+  --database arango_cti_processor_standard_tests_database \
+  --relationship", "capec-attack \
+  --stix2arango_note", "test01 \
+  --ignore_embedded_relationships false 
+```
+
 Run the test script;
 
 ```shell
@@ -86,6 +106,16 @@ python3 stix2arango.py \
   --ignore_embedded_relationships true
 ```
 
+Then run arango_cti_processor:
+
+```shell
+python3 arango_cti_processor.py \
+  --database arango_cti_processor_standard_tests_database \
+  --relationship", "capec-attack \
+  --stix2arango_note", "test01 \
+  --ignore_embedded_relationships false 
+```
+
 Run the test script;
 
 ```shell
@@ -107,6 +137,16 @@ python3 stix2arango.py \
   --collection mitre_capec \
   --stix2arango_note v3.12 \
   --ignore_embedded_relationships true
+```
+
+Then run arango_cti_processor:
+
+```shell
+python3 arango_cti_processor.py \
+  --database arango_cti_processor_standard_tests_database \
+  --relationship", "capec-attack \
+  --stix2arango_note", "test01 \
+  --ignore_embedded_relationships false 
 ```
 
 Run the test script;

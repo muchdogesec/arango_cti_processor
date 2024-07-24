@@ -64,6 +64,7 @@ python3 stix2arango.py	\
 RETURN LENGTH(
 FOR doc IN mitre_capec_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc._is_latest == true
   RETURN [doc]
 )
@@ -74,6 +75,7 @@ Should return 1494 -- number of CAPEC objects.
 ```sql
 FOR doc IN mitre_capec_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc._is_latest == true
   COLLECT type = doc.type WITH COUNT INTO typeCount
   RETURN { type, typeCount }
@@ -92,6 +94,7 @@ Sum = 1494
 RETURN LENGTH(
 FOR doc IN mitre_capec_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "attack-pattern"
     LET attackReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
@@ -109,6 +112,7 @@ This should return 177 results -- the number of CAPEC objects that have at least
 LET attackReferenceCount = SUM(
     FOR doc IN mitre_capec_vertex_collection
         FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
         AND doc.type == "attack-pattern"
         LET attackReferences = (
             FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
@@ -124,6 +128,7 @@ In total (because some objects can multiple ATT&CK references) there are 272 `"s
 ```sql
 FOR doc IN mitre_capec_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "attack-pattern"
     LET attackReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
@@ -161,12 +166,13 @@ RETURN LENGTH(
     (FOR d IN mitre_attack_mobile_vertex_collection RETURN d)
   )
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc._is_latest == true
     RETURN [doc]
 )
 ```
 
-Should return 2655. The number of ATT&CK objects.
+Should return 2715. The number of ATT&CK objects.
 
 ```sql
 FOR doc IN UNION(
@@ -175,6 +181,7 @@ FOR doc IN UNION(
     (FOR d IN mitre_attack_mobile_vertex_collection RETURN d)
   )
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc._is_latest == true
     COLLECT type = doc.type WITH COUNT INTO typeCount
     RETURN { type, typeCount }
@@ -184,13 +191,14 @@ Should return 13 elements, with the count of each STIX object type;
 
 * `attack-pattern`: 1043
 * `campaign`: 28
-* `course-of-action`: 333
+* `course-of-action`: 384
 * `identity`: 3
-* `intrusion-set`: 179
-* `malware`: 700
+* `intrusion-set`: 182
+* `malware`: 702
 * `marking-definition`: 3
-* `tool`: 87
+* `tool`: 88
 * `x-mitre-asset`: 14
+* `x-mitre-collection`: 3
 * `x-mitre-data-component`: 160
 * `x-mitre-data-source`: 61
 * `x-mitre-matrix`: 4
@@ -199,29 +207,7 @@ Should return 13 elements, with the count of each STIX object type;
 Sum = 2655
 
 ```sql
-LET ids = [ 
-    "T1001.002", "T1003", "T1005", "T1007", "T1012", "T1014", "T1016", "T1018", "T1021", "T1021.002", 
-    "T1027", "T1027.001", "T1027.003", "T1027.004", "T1027.006", "T1027.009", "T1033", "T1036", "T1036.001", 
-    "T1036.003", "T1036.004", "T1036.005", "T1036.006", "T1036.007", "T1037", "T1039", "T1040", "T1046", 
-    "T1049", "T1052", "T1055", "T1055.003", "T1056", "T1056.001", "T1056.004", "T1057", "T1069", "T1070", 
-    "T1072", "T1078", "T1078.001", "T1080", "T1082", "T1083", "T1087", "T1090.001", "T1090.004", "T1091", 
-    "T1092", "T1110", "T1110.001", "T1110.002", "T1110.003", "T1110.004", "T1111", "T1112", "T1113", 
-    "T1114.002", "T1115", "T1119", "T1120", "T1123", "T1124", "T1125", "T1127", "T1133", "T1134", 
-    "T1134.001", "T1134.002", "T1134.003", "T1135", "T1176", "T1185", "T1195", "T1195.001", "T1195.002", 
-    "T1195.003", "T1200", "T1211", "T1213", "T1217", "T1218.001", "T1221", "T1491", "T1495", "T1498.001", 
-    "T1498.002", "T1499", "T1499.001", "T1499.002", "T1499.003", "T1499.004", "T1505.003", "T1505.004", 
-    "T1505.005", "T1513", "T1518.001", "T1528", "T1530", "T1531", "T1534", "T1539", "T1542.001", "T1542.002", 
-    "T1542.003", "T1543", "T1543.001", "T1543.003", "T1543.004", "T1546.001", "T1546.004", "T1546.008", 
-    "T1546.016", "T1547", "T1547.001", "T1547.004", "T1547.006", "T1547.009", "T1547.014", "T1548", 
-    "T1548.004", "T1550.001", "T1550.002", "T1550.003", "T1550.004", "T1552.001", "T1552.002", "T1552.003", 
-    "T1552.004", "T1552.006", "T1553.002", "T1553.004", "T1554", "T1555", "T1555.001", "T1556", "T1556.006", 
-    "T1557", "T1557.002", "T1557.003", "T1558", "T1558.003", "T1562.001", "T1562.002", "T1562.003", 
-    "T1562.004", "T1562.006", "T1562.007", "T1562.008", "T1562.009", "T1563", "T1564.009", "T1565.002", 
-    "T1566", "T1566.001", "T1566.002", "T1566.003", "T1574.001", "T1574.002", "T1574.004", "T1574.005", 
-    "T1574.006", "T1574.007", "T1574.008", "T1574.009", "T1574.010", "T1574.011", "T1574.013", "T1584.002", 
-    "T1587.001", "T1589", "T1590", "T1592", "T1592.002", "T1595", "T1598", "T1598.001", "T1598.002", 
-    "T1598.003", "T1599", "T1600", "T1602", "T1606", "T1606.001", "T1611", "T1614", "T1615", "T1620", "T1647"
-]
+LET ids = ["T1001.002","T1003","T1005","T1007","T1012","T1014","T1016","T1018","T1021","T1021.002","T1027","T1027.001","T1027.003","T1027.004","T1027.006","T1027.009","T1033","T1036","T1036.001","T1036.003","T1036.004","T1036.005","T1036.006","T1036.007","T1037","T1039","T1040","T1046","T1049","T1052","T1055","T1055.003","T1056","T1056.001","T1056.004","T1057","T1069","T1070","T1072","T1078","T1078.001","T1080","T1082","T1083","T1087","T1090.001","T1090.004","T1091","T1092","T1110","T1110.001","T1110.002","T1110.003","T1110.004","T1111","T1112","T1113","T1114.002","T1115","T1119","T1120","T1123","T1124","T1125","T1127","T1133","T1134","T1134.001","T1134.002","T1134.003","T1135","T1176","T1185","T1195","T1195.001","T1195.002","T1195.003","T1200","T1211","T1213","T1217","T1218.001","T1221","T1491","T1495","T1498.001","T1498.002","T1499","T1499.001","T1499.002","T1499.003","T1499.004","T1505.003","T1505.004","T1505.005","T1513","T1518.001","T1528","T1530","T1531","T1534","T1539","T1542.001","T1542.002","T1542.003","T1543","T1543.001","T1543.003","T1543.004","T1546.001","T1546.004","T1546.008","T1546.016","T1547","T1547.001","T1547.004","T1547.006","T1547.009","T1547.014","T1548","T1548.004","T1550.001","T1550.002","T1550.003","T1550.004","T1552.001","T1552.002","T1552.003","T1552.004","T1552.006","T1553.002","T1553.004","T1554","T1555","T1555.001","T1556","T1556.006","T1557","T1557.002","T1557.003","T1558","T1558.003","T1562.001","T1562.002","T1562.003","T1562.004","T1562.006","T1562.007","T1562.008","T1562.009","T1563","T1564.009","T1565.002","T1566","T1566.001","T1566.002","T1566.003","T1574.001","T1574.002","T1574.004","T1574.005","T1574.006","T1574.007","T1574.008","T1574.009","T1574.010","T1574.011","T1574.013","T1584.002","T1587.001","T1589","T1590","T1592","T1592.002","T1595","T1598","T1598.001","T1598.002","T1598.003","T1599","T1600","T1602","T1606","T1606.001","T1611","T1614","T1615","T1620","T1647"]
 
 FOR doc IN UNION(
     (FOR d IN mitre_attack_enterprise_vertex_collection RETURN d),
@@ -237,11 +223,11 @@ FOR doc IN UNION(
 
 The list is from the ATT&CK IDs we know exist in CAPEC objects from previous searches.
 
-Should return 189 results, with a count for each. The sum of the count should equal 239.
+Should return 189 results, with a count for each. The sum of the count should equal 244.
 
-Using the previous two results, we can calculate the number SROs arango_cti_processor should create -- 339 - 1 so...
+Using the previous two results (count of ATT&CK refs in CAPECs, and count of ATT&CK objects), we can calculate the number SROs arango_cti_processor should create -- 347 - 1 so...
 
-338 SRO results expected on first run to be generated by arango_cti_processor
+336 SRO results expected on first run to be generated by arango_cti_processor
 
 ## 2. CAPEC Attack Pattern -> CWE Weakness
 
@@ -259,6 +245,7 @@ python3 stix2arango.py	\
 ```sql
 FOR doc IN mitre_capec_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "attack-pattern"
     LET cweReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
@@ -317,6 +304,7 @@ so 1212 SRO results expected on first run to be generated by arango_cti_processo
 ```sql
 FOR doc IN mitre_cwe_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "weakness"
     LET capecReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
@@ -475,6 +463,7 @@ LET lowercased_attack_ids = (
 LET enterprise_results = (
     FOR doc IN mitre_attack_enterprise_vertex_collection
         FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
         AND doc._is_latest == true
         AND IS_ARRAY(doc.external_references)
         FOR ext_ref IN doc.external_references
@@ -485,6 +474,7 @@ LET enterprise_results = (
 LET ics_results = (
     FOR doc IN mitre_attack_ics_vertex_collection
         FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
         AND doc._is_latest == true
         AND IS_ARRAY(doc.external_references)
         FOR ext_ref IN doc.external_references
@@ -495,6 +485,7 @@ LET ics_results = (
 LET mobile_results = (
     FOR doc IN mitre_attack_mobile_vertex_collection
         FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
         AND doc._is_latest == true
         AND IS_ARRAY(doc.external_references)
         FOR ext_ref IN doc.external_references
@@ -688,6 +679,7 @@ LET lowercased_cves = (
 LET cve_results = (
 	FOR doc IN nvd_cve_vertex_collection
 		FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
 		AND doc.type == "vulnerability"
         AND IS_ARRAY(doc.external_references)
         FOR ext_ref IN doc.external_references
@@ -847,6 +839,7 @@ python3 stix2arango.py	\
 ```sql
 FOR doc IN nvd_cpe_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "software"
     RETURN [doc]
 ```
@@ -856,6 +849,7 @@ Should return 223 results -- the number of software objects in the bundle.
 ```sql
 FOR doc IN nvd_cpe_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc.type == "software"
   LET cpe_parts = SPLIT(doc.cpe, ":")
   RETURN {
@@ -880,6 +874,7 @@ Will show a table of the CPE property split out by its part. Should return 223 e
 ```sql
 FOR doc IN nvd_cpe_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc.type == "software"
   LET cpe_parts = SPLIT(doc.cpe, ":")
   LET vendor = cpe_parts[3]
@@ -892,6 +887,7 @@ Should return 175 entries -- showing that some vendors have more than one CPE li
 ```sql
 FOR doc IN nvd_cpe_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc.type == "software"
   LET cpe_parts = SPLIT(doc.cpe, ":")
   LET product = cpe_parts[4]
@@ -919,6 +915,7 @@ python3 stix2arango.py  \
 RETURN LENGTH(
     FOR doc IN nvd_cpe_vertex_collection
         FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
         AND doc.type == "software"
         RETURN [doc]
 )
@@ -929,6 +926,7 @@ Should return 178,063 results
 ```sql
 FOR doc IN nvd_cpe_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc.type == "software"
   LET cpe_parts = SPLIT(doc.cpe, ":")
   LIMIT @offset, @count
@@ -973,6 +971,7 @@ etc.
 LET uniqueVendors = (
   FOR doc IN nvd_cpe_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "software"
     LET cpe_parts = SPLIT(doc.cpe, ":")
     LET vendor = cpe_parts[3]
@@ -989,6 +988,7 @@ Returns 3982 unique vendors -- the number of vendor objects expected to be produ
 LET uniqueVendorProducts = (
   FOR doc IN nvd_cpe_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "software"
     LET cpe_parts = SPLIT(doc.cpe, ":")
     LET vendor = cpe_parts[3]
