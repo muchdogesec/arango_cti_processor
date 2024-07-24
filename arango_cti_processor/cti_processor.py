@@ -22,7 +22,7 @@ class ArangoProcessor:
         self.arango_database = database
         self.vertex_collections, self.edge_collections = self.get_collections_for_relationship()
 
-        self.arango = ArangoDBService(self.arango_database, self.vertex_collections, self.edge_collections, host_url=config.ARANGO_HOST, username=config.ARANGO_USERNAME, password=config.ARANGO_PASSWORD)
+        self.arango = ArangoDBService(self.arango_database, self.vertex_collections, self.edge_collections, host_url=config.ARANGODB_HOST_URL, username=config.ARANGODB_USERNAME, password=config.ARANGODB_PASSWORD)
         self.validate_collections()
 
     def validate_collections(self):

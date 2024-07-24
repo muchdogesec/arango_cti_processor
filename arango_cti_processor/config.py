@@ -10,9 +10,9 @@ logging.basicConfig(
     format="[%(asctime)s] %(levelname)s - %(message)s",  # noqa D100 E501
     datefmt="%Y-%m-%d - %H:%M:%S",
 )
-ARANGO_HOST = os.environ["ARANGODB_HOST_URL"]
-ARANGO_USERNAME = os.getenv("ARANGODB_USERNAME")
-ARANGO_PASSWORD = os.getenv("ARANGODB_PASSWORD")
+ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL")
+ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME")
+ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD")
 
 
 MODE_COLLECTION_MAP = {

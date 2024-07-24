@@ -6,12 +6,11 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-ARANGO_USERNAME = os.getenv("ARANGODB_USERNAME")
-ARANGO_PASSWORD = os.getenv("ARANGODB_PASSWORD")
-ARANGO_HOST = os.getenv("ARANGODB_HOST", "localhost")
-ARANGO_PORT = os.getenv("ARANGODB_PORT", "8529")
+ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME")
+ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD")
+ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL")
 
-client = ArangoClient(hosts=f"http://{ARANGO_HOST}:{ARANGO_PORT}")
+client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
 
 # Run the import script
 subprocess.run([
@@ -25,7 +24,7 @@ subprocess.run([
 print('Script executed successfully.')
 
 def test_01_auto_imported_objects():
-    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     query = """
       FOR doc IN mitre_capec_vertex_collection
         FILTER doc._arango_cti_processor_note == "automatically imported object at script runtime"
@@ -47,7 +46,7 @@ test_01_auto_imported_objects()
 # test 2 checks all objects generated correctly
 
 def test_02_arango_cti_processor_note():
-    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     query = """
     RETURN COUNT(
       FOR doc IN mitre_capec_edge_collection
@@ -66,7 +65,7 @@ test_02_arango_cti_processor_note()
 # checks the corret number of objects are generated, and that they are assigned the correct properties by the script
 
 def test_03_correct_object_properties():
-    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     query = """
     RETURN COUNT(
       FOR doc IN mitre_capec_edge_collection
@@ -92,7 +91,7 @@ test_03_correct_object_properties()
 # test 4 checks [CAPEC-695](https://github.com/mitre/cti/blob/master/capec/2.1/attack-pattern/attack-pattern--e3dd79e7-307b-42dd-9e22-d0345c0ec001.json) -> T1195.001
 
 def test_04_correct_relationship_capec695():
-    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     query = """
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
@@ -115,7 +114,7 @@ test_04_correct_relationship_capec695()
 # test 5 is extension of test 4 to check id generation: `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` value: `technique+mitre_capec_vertex_collection/attack-pattern--e3dd79e7-307b-42dd-9e22-d0345c0ec001+mitre_attack_enterprise_vertex_collection/attack-pattern--191cc6af-1bb2-4344-ab5f-28e496638720` = 34d58beb-5d4c-5899-b3aa-2a0d5995e82d
 
 def test_05_relationship_id_generation695():
-    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     query = """
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
@@ -138,7 +137,7 @@ test_05_relationship_id_generation695()
 # test 6 checks [CAPEC-233](https://github.com/mitre/cti/blob/master/capec/2.1/attack-pattern/attack-pattern--c05fff04-b965-4a11-9c18-379dac31969f.json) -> T1548
 
 def test_06_correct_relationship_capec233():
-    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     query = """
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
@@ -161,7 +160,7 @@ test_06_correct_relationship_capec233()
 # test 7 is extension of test 6 to check id generation: `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--c05fff04-b965-4a11-9c18-379dac31969f+mitre_attack_enterprise_vertex_collection/attack-pattern--67720091-eee3-4d2d-ae16-8264567f6f5b` = bc0d764e-f1ba-55ff-b871-7735ec140789
 
 def test_07_relationship_id_generation233():
-    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     query = """
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
@@ -185,7 +184,7 @@ test_07_relationship_id_generation233()
 # test 8 checks [CAPEC-13](https://github.com/mitre/cti/blob/master/capec/2.1/attack-pattern/attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed.json -> T1562.003, T1574.006, T1574.007
 
 def test_08_correct_relationship_capec13():
-    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     query = """
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
@@ -213,7 +212,7 @@ test_08_correct_relationship_capec13()
 # object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed+mitre_attack_enterprise_vertex_collection/attack-pattern--0c2d00da-7742-49e7-9928-4514e5075d32` = 23bd53cf-0f53-53e3-8ba1-92b4077bd460
 
 def test_09_relationship_id_generation13():
-    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     query = """
         FOR doc IN mitre_capec_edge_collection
           FILTER doc._is_latest == true
@@ -236,7 +235,7 @@ def test_09_relationship_id_generation13():
 test_09_relationship_id_generation13()
 
 def test_10_check_no_updates():
-    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     query = """
         RETURN LENGTH(
           FOR doc IN mitre_capec_edge_collection

@@ -8,10 +8,9 @@ load_dotenv()
 
 ARANGO_USERNAME = os.getenv("ARANGODB_USERNAME")
 ARANGO_PASSWORD = os.getenv("ARANGODB_PASSWORD")
-ARANGO_HOST = os.getenv("ARANGODB_HOST", "localhost")
-ARANGO_PORT = os.getenv("ARANGODB_PORT", "8529")
+ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL", "localhost")
 
-client = ArangoClient(hosts=f"http://{ARANGO_HOST}:{ARANGO_PORT}")
+client = ArangoClient(hosts=f"{ARANGO_HOST_URL}:{ARANGO_PORT}")
 
 # Run the import script
 subprocess.run([
