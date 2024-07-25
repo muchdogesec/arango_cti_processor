@@ -1,4 +1,5 @@
 import os
+import subprocess
 import unittest
 from arango import ArangoClient
 from dotenv import load_dotenv
@@ -14,8 +15,18 @@ client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
 
 class TestArangoDB(unittest.TestCase):
 
-    def setUp(self):
-        self.db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
+    @classmethod
+    def setUpClass(cls):
+        # Run the arango_cti_processor.py script
+        subprocess.run([
+            "python3", "arango_cti_processor.py",
+            "--database", "arango_cti_processor_standard_tests_database",
+            "--relationship", "capec-attack",
+            "--stix2arango_note", "test01",
+            "--ignore_embedded_relationships", "false"
+        ], check=True)
+        
+        cls.db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
 
     def run_query(self, query):
         cursor = self.db.aql.execute(query)

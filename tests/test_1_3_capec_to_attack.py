@@ -1,4 +1,5 @@
 import os
+import subprocess
 import unittest
 from arango import ArangoClient
 from dotenv import load_dotenv
@@ -16,6 +17,15 @@ class TestArangoDB(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # Run the arango_cti_processor.py script
+        subprocess.run([
+            "python3", "arango_cti_processor.py",
+            "--database", "arango_cti_processor_standard_tests_database",
+            "--relationship", "capec-attack",
+            "--stix2arango_note", "test01",
+            "--ignore_embedded_relationships", "false"
+        ], check=True)
+        
         cls.db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
 
     def run_query(self, query):
@@ -35,7 +45,7 @@ class TestArangoDB(unittest.TestCase):
         result_count = self.run_query(query)
         self.assertEqual(result_count, [4], f"Expected 4 documents, but found {result_count}.")
 
-# test 2 Should return 13 results. oldest version (1.0) of CAPEC158 had 4 ATT&CK references, old version 1.1 had 5 ATT&CK references, old version 1.2 had 6 (2 of these still remain, each with 4 lines)
+# test 2 Should return 15 results. oldest version (1.0) of CAPEC158 had 4 ATT&CK references, old version 1.1 had 5 ATT&CK references, old version 1.2 had 6
 
     def test_02_updated_capec158_old_relationships(self):
         query = """

@@ -31,16 +31,6 @@ python3 utilities/arango_cti_processor/insert_archive_capec.py \
   --versions 3_9
 ```
 
-Run arango_cti_processor:
-
-```shell
-python3 arango_cti_processor.py \
-  --database arango_cti_processor_standard_tests_database \
-  --relationship capec-attack \
-  --stix2arango_note test01 \
-  --ignore_embedded_relationships false 
-```
-
 Run the test script;
 
 ```shell
@@ -49,15 +39,7 @@ python3 -m unittest tests/test_1_0_capec_to_attack.py
 
 ## TEST 1.0.5: Perform update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
-This time don't import any new data, but run the arango_cti_processor command again
-
-```shell
-python3 arango_cti_processor.py \
-  --database arango_cti_processor_standard_tests_database \
-  --relationship capec-attack \
-  --stix2arango_note test01 \
-  --ignore_embedded_relationships false
-```
+This time we don't import any new data, but run the arango_cti_processor command again
 
 This should generate 0 new objects, because the output should be identical to first run, and thus no new versions should be created.
 
@@ -90,16 +72,6 @@ python3 stix2arango.py \
   --stix2arango_note v3.10
 ```
 
-Run arango_cti_processor:
-
-```shell
-python3 arango_cti_processor.py \
-  --database arango_cti_processor_standard_tests_database \
-  --relationship capec-attack \
-  --stix2arango_note test01 \
-  --ignore_embedded_relationships false 
-```
-
 Run the test script;
 
 ```shell
@@ -120,16 +92,6 @@ python3 stix2arango.py \
   --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
   --stix2arango_note v3.11
-```
-
-Run arango_cti_processor:
-
-```shell
-python3 arango_cti_processor.py \
-  --database arango_cti_processor_standard_tests_database \
-  --relationship capec-attack \
-  --stix2arango_note test01 \
-  --ignore_embedded_relationships false 
 ```
 
 Run the test script;
@@ -154,16 +116,6 @@ python3 stix2arango.py \
   --stix2arango_note v3.12
 ```
 
-Run arango_cti_processor:
-
-```shell
-python3 arango_cti_processor.py \
-  --database arango_cti_processor_standard_tests_database \
-  --relationship capec-attack \
-  --stix2arango_note test01 \
-  --ignore_embedded_relationships false 
-```
-
 Run the test script;
 
 ```shell
@@ -185,8 +137,7 @@ python3 stix2arango.py \
   --file tests/files/arango_cti_processor/arango-cti-capec-attack-update-4.json \
   --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
-  --stix2arango_note v3.13 \
-  --ignore_embedded_relationships true
+  --stix2arango_note v3.13
 ```
 
 Run the test script;
@@ -208,8 +159,7 @@ python3 stix2arango.py \
   --file tests/files/arango_cti_processor/arango-cti-capec-attack-update-5.json \
   --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
-  --stix2arango_note v3.14 \
-  --ignore_embedded_relationships true
+  --stix2arango_note v3.14
 ```
 
 Run the test script;
@@ -231,11 +181,9 @@ Import required data using a separate install of [stix2arango](https://github.co
 ```shell
 python3 utilities/arango_cti_processor/insert_archive_capec.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 3_9 && \
 python3 utilities/arango_cti_processor/insert_archive_cwe.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 4_13
 ```
 
@@ -258,8 +206,7 @@ python3 stix2arango.py \
   --file tests/files/arango_cti_processor/arango-cti-capec-cwe-update-1.json \
   --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
-  --stix2arango_note v3.10 \
-  --ignore_embedded_relationships true
+  --stix2arango_note v3.10
 ```
 
 Run the test script;
@@ -279,11 +226,9 @@ Import required data using a separate install of [stix2arango](https://github.co
 ```shell
 python3 utilities/arango_cti_processor/insert_archive_capec.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 3_9 && \
 python3 utilities/arango_cti_processor/insert_archive_cwe.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 4_13
 ```
 
@@ -306,8 +251,7 @@ python3 stix2arango.py \
   --file tests/files/arango_cti_processor/arango-cti-cwe-capec-update-1.json \
   --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
-  --stix2arango_note v4.14 \
-  --ignore_embedded_relationships true
+  --stix2arango_note v4.14
 ```
 
 Run the test script;
@@ -327,19 +271,15 @@ Import required data using a separate install of [stix2arango](https://github.co
 ```shell
 python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_capec.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 3_9
 ```
 
@@ -361,7 +301,6 @@ Import required data using a separate install of [stix2arango](https://github.co
 ```shell
 python3 utilities/arango_cti_processor/insert_archive_cwe.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 4_13
 ```
 
@@ -369,8 +308,7 @@ python3 utilities/arango_cti_processor/insert_archive_cwe.py \
 python3 stix2arango.py  \
   --file design/mvp/tests/condensed_cve_bundle.json \
   --database arango_cti_processor_standard_tests \
-  --collection nvd_cve \
-  --ignore_embedded_relationships true
+  --collection nvd_cve
 ```
 
 Run the test script;
@@ -393,8 +331,7 @@ Import required data using a separate install of [stix2arango](https://github.co
 python3 stix2arango.py  \
   --file design/mvp/tests/condensed_cve_bundle-updated-1.json \
   --database arango_cti_processor_standard_tests \
-  --collection nvd_cve \
-  --ignore_embedded_relationships true
+  --collection nvd_cve
 ```
 
 Run the test script;
@@ -505,28 +442,26 @@ Import required data:
 ```shell
 python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
   --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships false \
   --versions 2024-05-13 && \
 ```
 
-Run the script:
+Run the test script;
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship sigma-attack
+python3 -m unittest tests/test_7_0_sigma_to_attack.py
 ```
+
+
+
 
 ```sql
 RETURN LENGTH(
