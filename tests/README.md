@@ -451,7 +451,7 @@ python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
   --database arango_cti_processor_volume_tests \
-  --versions 2024-05-13 && \
+  --versions 2024-05-13
 ```
 
 Run the test script;
@@ -460,233 +460,24 @@ Run the test script;
 python3 -m unittest tests/test_7_0_sigma_to_attack.py
 ```
 
+### TEST 7.1: Update Sigma Rule Indicator adding a new ATT&CK pattern
 
-
-
-```sql
-RETURN LENGTH(
-  FOR doc IN sigma_rules_edge_collection
-    FILTER doc._is_latest == true
-    AND doc.relationship_type == "detects"
-    RETURN [doc]
-)
-```
-
-Expects 14437 results (see test-data-research.md for why)
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--49150a4c-d831-51fa-9f61-aede5570a969"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-The `indicator--49150a4c-d831-51fa-9f61-aede5570a969` has two ATT&CK references, `attack.t1016` and `attack.discovery`, which should create 5 SROs...
-
-Enterprise
-
-* `attack.t1016` (`course-of-action--684feec3-f9ba-4049-9d8f-52d52f3e0e40`)
-  * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--49150a4c-d831-51fa-9f61-aede5570a969+mitre_attack_enterprise_vertex_collection/course-of-action--684feec3-f9ba-4049-9d8f-52d52f3e0e40` = `relationship--00ce4b29-1c68-59cf-9ec4-49fe9e7eaff6`
-* `attack.t1016` (`attack-pattern--707399d6-ab3e-4963-9315-d9d3818cd6a0`)
-  * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--49150a4c-d831-51fa-9f61-aede5570a969+mitre_attack_enterprise_vertex_collection/attack-pattern--707399d6-ab3e-4963-9315-d9d3818cd6a0` = `relationship--3dce842a-fd66-562f-81c0-d2351f787d0a`
-* `attack.discovery` (TA0007) (`x-mitre-tactic--c17c5845-175e-4421-9713-829d0573dbc9`)
-  * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--49150a4c-d831-51fa-9f61-aede5570a969+mitre_attack_enterprise_vertex_collection/x-mitre-tactic--c17c5845-175e-4421-9713-829d0573dbc9` = `relationship--fecb5591-2cc4-5557-9092-06f3ae5728ea`
-
-ICS
-
-* `attack.t1016`: none
-* `attack.discovery` (TA0102) (`x-mitre-tactic--696af733-728e-49d7-8261-75fdc590f453`)
-  * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--49150a4c-d831-51fa-9f61-aede5570a969+mitre_attack_ics_vertex_collection/x-mitre-tactic--696af733-728e-49d7-8261-75fdc590f453` = `relationship--6f7e0e11-02fb-5ad0-b0fd-b04deab4c8d6`
-
-Mobile
-
-* `attack.t1016`: none
-* `attack.discovery` (TA0032) (`x-mitre-tactic--d418cdeb-1b9f-4a6b-a15d-2f89f549f8c1`)
-  * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--49150a4c-d831-51fa-9f61-aede5570a969+mitre_attack_mobile_vertex_collection/x-mitre-tactic--d418cdeb-1b9f-4a6b-a15d-2f89f549f8c1` = `relationship--f549d020-7c11-528d-ab25-1cb868fc2f6e`
-
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--49150a4c-d831-51fa-9f61-aede5570a969"
-  AND doc.id IN [
-    "relationship--00ce4b29-1c68-59cf-9ec4-49fe9e7eaff6",
-    "relationship--3dce842a-fd66-562f-81c0-d2351f787d0a",
-    "relationship--fecb5591-2cc4-5557-9092-06f3ae5728ea",
-    "relationship--6f7e0e11-02fb-5ad0-b0fd-b04deab4c8d6",
-    "relationship--f549d020-7c11-528d-ab25-1cb868fc2f6e"
-  ]
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Check passing the correct IDs still returns 5 results.
-
-Now another test...
-
-`indicator--f85a0947-bf4e-5e19-b67e-6652a1277f61` has a links to:
-
-* `attack.defense_evasion`:
-  * `x-mitre-tactic--78b23412-0651-46d7-a540-170a1ce8bd5a` (enterprise) 
-  * `x-mitre-tactic--987cda6d-eb77-406b-bf68-bcb5f3d2e1df` (mobile)
-* `attack.t1218.001`: `attack-pattern--a6937325-9321-4e2e-bb2b-3ed2d40b2a9d` (enterprise)
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--f85a0947-bf4e-5e19-b67e-6652a1277f61"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 3 results.
-
-Now another test...
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--afcd1642-b090-511f-8805-78f54d9aae3a"
-  RETURN [doc]
-```
-
-```json
-"attack.persistence",
-"attack.g0049",
-"attack.t1053.005",
-"attack.s0111",
-"attack.t1543.003",
-"attack.defense_evasion",
-"attack.t1112",
-"attack.command_and_control",
-"attack.t1071.004",
-"detection.emerging_threats"
-```
-
-Expect 16 results (note, one results in dupe IDs, but collections are different)
-
-indicator--afcd1642-b090-511f-8805-78f54d9aae3a has links to:
-
-* attack.persistence
-  * x-mitre-tactic--5bc1d813-693e-4823-9961-abf9af4b0e92 (enterprise)
-  * x-mitre-tactic--78f1d2ae-a579-44c4-8fc5-3e1775c73fac (ics)
-  * x-mitre-tactic--363bbeff-bb2a-4734-ac74-d6d37202fe54 (mobile)
-* attack.defense_evasion
-  * x-mitre-tactic--78b23412-0651-46d7-a540-170a1ce8bd5a (enterprise)
-  * x-mitre-tactic--987cda6d-eb77-406b-bf68-bcb5f3d2e1df (mobile)
-* attack.command_and_control
-  * x-mitre-tactic--f72804c5-f15a-449e-a5da-2eecd181f813 (enterprise)
-  * x-mitre-tactic--97c8ff73-bd14-4b6c-ac32-3d91d2c41e3f (ics)
-  * x-mitre-tactic--3f660805-fa2e-42e8-8851-57f9e9b653e3 (mobile)
-* attack.g0049
-  * intrusion-set--4ca1929c-7d64-4aab-b849-badbfc0c760d (enterprise)
-  * intrusion-set--4ca1929c-7d64-4aab-b849-badbfc0c760d (ics) DUPLICATE IDs
-* attack.t1053.005
-  * attack-pattern--005a06c6-14bf-4118-afa0-ebcd8aebb0c9 (enterprise)
-* attack.s0111
-  * tool--c9703cd3-141c-43a0-a926-380082be5d04 (enterprise)
-* attack.t1543.003
-  * attack-pattern--2959d63f-73fd-46a1-abd2-109d7dcede32 (enterprise)
-* attack.t1112
-  * course-of-action--ed202147-4026-4330-b5bd-1e8dfa8cf7cc (enterprise)
-  * attack-pattern--57340c81-c025-4189-8fa0-fc7ede51bae4 (enterprise)
-* attack.t1071.004
-  * attack-pattern--1996eef1-ced3-4d7f-bf94-33298cabbf72 (enterprise)
-
-### TEST 7.2: Update Sigma Rule Indicator adding a new ATT&CK pattern
-
-Adds attack.t1543.003 (1 result) to indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 2 attack.initial_access (1 entry in each matrix = 3), attack.t1190 (2 in enterprise) so now has 3.
+Adds attack.t1543.003 (1 result) to indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 2 attack.initial_access (1 entry in each matrix = 3), attack.t1190 (2 in enterprise) so now has 3 generation 6 sros total
 
 ```shell
 python3 stix2arango.py  \
   --file design/mvp/tests/sigma-rules-with-NEW-cve.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigma_rules \
-  --ignore_embedded_relationships true
+  --collection sigmahq_rules
 ```
 
 Run the script:
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship sigma-attack
+python3 -m unittest tests/test_7_1_sigma_to_attack.py
 ```
 
-```sql
-FOR doc IN sigma_rules_vertex_collection
-  FILTER doc.id == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  RETURN [doc]
-```
-
-Should return 2 results, the new and old object.
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == false
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 5 objects, the old versions in 7.1
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should now return 6 results:
-
-* attack.initial_access
-  * x-mitre-tactic--ffd5bcee-6e16-4dd2-8eca-7b3beedf33ca (enterprise)
-  * x-mitre-tactic--69da72d2-f550-41c5-ab9e-e8255707f28a (ics)
-  * x-mitre-tactic--10fa8d8d-1b04-4176-917e-738724239981 (mobile)
-* attack.t1190
-  * course-of-action--65da1eb6-d35d-4853-b280-98a76c0aef53 (enterprise)
-  * attack-pattern--3f886f2a-874f-4333-b794-aa6075009b1c (enterprise)
-* attack.t1543.003
-  * attack-pattern--2959d63f-73fd-46a1-abd2-109d7dcede32 (enterprise)
-
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 11 results (5 old, 6 new).
-
-### TEST 7.3: Update Sigma Rule Indicator removing all ATT&CK pattern
+### TEST 7.2: Update Sigma Rule Indicator removing all ATT&CK pattern
 
 Removes all attack objects from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1
 
@@ -694,52 +485,16 @@ Removes all attack objects from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1
 python3 stix2arango.py  \
   --file design/mvp/tests/sigma-rules-with-NO-cve.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigma_rules \
-  --ignore_embedded_relationships true
+  --collection sigmahq_rules
 ```
 
 Run the script:
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship sigma-attack
+python3 -m unittest tests/test_7_2_sigma_to_attack.py
 ```
 
-```sql
-FOR doc IN sigma_rules_vertex_collection
-  FILTER doc.id == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  RETURN [doc]
-```
-
-Should return 3 results, the new and 2 old objects.
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 0 results, as not ATT&CK objects in newest version of Sigma rule.
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == false
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return the 11 old objects (5 from 7.1, and 6 from 7.2).
+---
 
 ### TEST 8.1: Test Sigma Rule Indicator to CVE Vulnerability 
 
@@ -755,7 +510,7 @@ Import required data:
 python3 stix2arango.py  \
   --file design/mvp/tests/sigma-rules-with-cves.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigma_rules \
+  --collection sigmahq_rules \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
   --file design/mvp/tests/condensed_cve_bundle.json \
@@ -825,7 +580,7 @@ Check the IDs
 python3 stix2arango.py  \
   --file design/mvp/tests/sigma-rules-with-NEW-cve.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigma_rules \
+  --collection sigmahq_rules \
   --ignore_embedded_relationships true
 ```
 
@@ -880,7 +635,7 @@ Should return 2 results (the two old objects from 8.1)
 python3 stix2arango.py  \
   --file design/mvp/tests/sigma-rules-with-NO-cve.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigma_rules \
+  --collection sigmahq_rules \
   --ignore_embedded_relationships true
 ```
 
@@ -1200,27 +955,19 @@ To do this, install [stix2arango](https://github.com/muchdogesec/stix2arango/) s
 
 ```shell
 python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
-  --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships false && \
+  --database arango_cti_processor_volume_tests && \
 python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
-  --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships false && \
-python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py
-  --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships false && \
+  --database arango_cti_processor_volume_tests && \
+python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
+  --database arango_cti_processor_volume_tests && \
 python3 utilities/arango_cti_processor/insert_archive_capec.py \
-  --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships false && \
+  --database arango_cti_processor_volume_tests && \
 python3 utilities/arango_cti_processor/insert_archive_cwe.py \
-  --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships false && \
+  --database arango_cti_processor_volume_tests && \
 python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
-  --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships false && \
+  --database arango_cti_processor_volume_tests && \
 python3 utilities/arango_cti_processor/insert_archive_cve.py \
-  --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships false && \
+  --database arango_cti_processor_volume_tests && \
 python3 utilities/arango_cti_processor/insert_archive_cpe.py \
-  --database arango_cti_processor_volume_tests \
-  --ignore_embedded_relationships true
+  --database arango_cti_processor_volume_tests
 ```

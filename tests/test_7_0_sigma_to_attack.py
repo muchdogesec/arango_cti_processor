@@ -130,29 +130,44 @@ class TestArangoDB(unittest.TestCase):
 #indicator--afcd1642-b090-511f-8805-78f54d9aae3a has links to:
 #* attack.persistence
 #  * x-mitre-tactic--5bc1d813-693e-4823-9961-abf9af4b0e92 (enterprise)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_enterprise_vertex_collection/x-mitre-tactic--5bc1d813-693e-4823-9961-abf9af4b0e92` = `relationship--e8fb72b4-8751-54c6-92c6-849112993ec6`
 #  * x-mitre-tactic--78f1d2ae-a579-44c4-8fc5-3e1775c73fac (ics)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_ics_vertex_collection/x-mitre-tactic--78f1d2ae-a579-44c4-8fc5-3e1775c73fac` = `relationship--8b18b7ef-3de5-5485-bf92-0240cb243eb0`
 #  * x-mitre-tactic--363bbeff-bb2a-4734-ac74-d6d37202fe54 (mobile)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_mobile_vertex_collection/x-mitre-tactic--363bbeff-bb2a-4734-ac74-d6d37202fe54` = `relationship--b6e298d4-387d-530a-b9e6-579f6e4af4f8`
 #* attack.defense_evasion
 #  * x-mitre-tactic--78b23412-0651-46d7-a540-170a1ce8bd5a (enterprise)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_enterprise_vertex_collection/x-mitre-tactic--78b23412-0651-46d7-a540-170a1ce8bd5a` = `relationship--8240d7bd-9ada-5836-bc86-0f7e7f6e4295`
 #  * x-mitre-tactic--987cda6d-eb77-406b-bf68-bcb5f3d2e1df (mobile)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_mobile_vertex_collection/x-mitre-tactic--987cda6d-eb77-406b-bf68-bcb5f3d2e1df` = `relationship--ace89f1f-4779-5524-aba8-cc6b7fa17602`
 #* attack.command_and_control
 #  * x-mitre-tactic--f72804c5-f15a-449e-a5da-2eecd181f813 (enterprise)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_enterprise_vertex_collection/x-mitre-tactic--f72804c5-f15a-449e-a5da-2eecd181f813` = `relationship--d3bfffe5-c415-51e8-9db2-764ff8891750`
 #  * x-mitre-tactic--97c8ff73-bd14-4b6c-ac32-3d91d2c41e3f (ics)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_ics_vertex_collection/x-mitre-tactic--97c8ff73-bd14-4b6c-ac32-3d91d2c41e3f` = `relationship--ca26dfa4-239f-5eca-a2ff-691d93b4f54a`
 #  * x-mitre-tactic--3f660805-fa2e-42e8-8851-57f9e9b653e3 (mobile)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_mobile_vertex_collection/x-mitre-tactic--3f660805-fa2e-42e8-8851-57f9e9b653e3` = `relationship--a3491141-ac05-5285-82eb-d1a1b1050d97`
 #* attack.g0049
 #  * intrusion-set--4ca1929c-7d64-4aab-b849-badbfc0c760d (enterprise)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_enterprise_vertex_collection/intrusion-set--4ca1929c-7d64-4aab-b849-badbfc0c760d` = `relationship--d41b495b-c1bf-5d9e-87ab-e0da2fee67ee`
 #  * intrusion-set--4ca1929c-7d64-4aab-b849-badbfc0c760d (ics) DUPLICATE IDs but collections are different so should generate data
 #* attack.t1053.005
 #  * attack-pattern--005a06c6-14bf-4118-afa0-ebcd8aebb0c9 (enterprise)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_enterprise_vertex_collection/attack-pattern--005a06c6-14bf-4118-afa0-ebcd8aebb0c9` = `relationship--d0e3ff99-61ff-5838-940b-23a3624fc8b1`
 #* attack.s0111
 #  * tool--c9703cd3-141c-43a0-a926-380082be5d04 (enterprise)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_enterprise_vertex_collection/tool--c9703cd3-141c-43a0-a926-380082be5d04` = `relationship--0eb75854-13b4-50c0-bee5-f6d47bc2b95d`
 #* attack.t1543.003
 #  * attack-pattern--2959d63f-73fd-46a1-abd2-109d7dcede32 (enterprise)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_enterprise_vertex_collection/attack-pattern--2959d63f-73fd-46a1-abd2-109d7dcede32` = `relationship--e97d2d67-acda-5331-a293-7e8c56590fc6`
 #* attack.t1112
 #  * course-of-action--ed202147-4026-4330-b5bd-1e8dfa8cf7cc (enterprise)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_enterprise_vertex_collection/course-of-action--ed202147-4026-4330-b5bd-1e8dfa8cf7cc` = `relationship--d933f949-bde7-557d-aedb-84b36a8ffaa8`
 #  * attack-pattern--57340c81-c025-4189-8fa0-fc7ede51bae4 (enterprise)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_enterprise_vertex_collection/attack-pattern--57340c81-c025-4189-8fa0-fc7ede51bae4` = `relationship--4a278cef-9b6d-5a5b-9e68-5ed9288e3c57`
 #* attack.t1071.004
 #  * attack-pattern--1996eef1-ced3-4d7f-bf94-33298cabbf72 (enterprise)
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--afcd1642-b090-511f-8805-78f54d9aae3a+mitre_attack_enterprise_vertex_collection/attack-pattern--1996eef1-ced3-4d7f-bf94-33298cabbf72` = `relationship--6b4b873b-4447-5b5f-95df-b3894d203ff0`
 
     def test_05_check_relationship_gen_for_object3(self):
         query = """
@@ -164,14 +179,39 @@ class TestArangoDB(unittest.TestCase):
         """
         result_count = self.run_query(query)
         expected_ids = [
-            ""
+            "relationship--e8fb72b4-8751-54c6-92c6-849112993ec6",
+            "relationship--8b18b7ef-3de5-5485-bf92-0240cb243eb0",
+            "relationship--b6e298d4-387d-530a-b9e6-579f6e4af4f8",
+            "relationship--8240d7bd-9ada-5836-bc86-0f7e7f6e4295",
+            "relationship--ace89f1f-4779-5524-aba8-cc6b7fa17602",
+            "relationship--d3bfffe5-c415-51e8-9db2-764ff8891750",
+            "relationship--ca26dfa4-239f-5eca-a2ff-691d93b4f54a",
+            "relationship--a3491141-ac05-5285-82eb-d1a1b1050d97",
+            "relationship--d41b495b-c1bf-5d9e-87ab-e0da2fee67ee",
+            "relationship--d0e3ff99-61ff-5838-940b-23a3624fc8b1",
+            "relationship--0eb75854-13b4-50c0-bee5-f6d47bc2b95d",
+            "relationship--e97d2d67-acda-5331-a293-7e8c56590fc6",
+            "relationship--d933f949-bde7-557d-aedb-84b36a8ffaa8",
+            "relationship--4a278cef-9b6d-5a5b-9e68-5ed9288e3c57",
+            "relationship--6b4b873b-4447-5b5f-95df-b3894d203ff0",
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
+# no updates to the objects should have happened yet
 
+    def test_06_check_no_updates(self):
+        query = """
+            RETURN LENGTH(
+              FOR doc IN sigma_rules_edge_collection
+                FILTER doc._is_latest == false
+                AND doc._arango_cti_processor_note == "sigma-attack"
+                RETURN doc
+            )
+        """
+        cursor = self.db.aql.execute(query)
+        result_count = [count for count in cursor]
 
-
-
+        self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
 
 if __name__ == '__main__':
     unittest.main()
