@@ -35,7 +35,7 @@ class TestArangoDB(unittest.TestCase):
     # should still return 2 objects b/c these never update
     def test_01_auto_imported_objects(self):
         query = """
-          FOR doc IN sigma_rules_edge_collection
+          FOR doc IN sigma_rules_vertex_collection
             FILTER doc._arango_cti_processor_note == "automatically imported object at script runtime"
             RETURN doc.id
         """
@@ -98,7 +98,6 @@ class TestArangoDB(unittest.TestCase):
             "relationship--f549d020-7c11-528d-ab25-1cb868fc2f6e"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
-
 
 # `indicator--f85a0947-bf4e-5e19-b67e-6652a1277f61` has a links to:
 #* `attack.defense_evasion`:

@@ -519,60 +519,13 @@ Run the script:
 python3 -m unittest tests/test_8_0_sigma_to_cve.py
 ```
 
-
-
-
-```sql
-
-```
-
-
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should only return two results. Should not link to any indicator objects.
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  AND doc.id IN [
-    "relationship--23d454f2-0db1-571b-a85e-6b1c6d413357",
-    "relationship--f5773e09-7b38-56b1-a574-01861d597f04"
-  ]
-  RETURN [doc]
-```
-
-Check the IDs
-
-* `CVE-2022-26134`: `vulnerability--b4fd2041-12ff-5a64-9c00-51ba39b29fe4`
-  * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1+nvd_cve_vertex_collection/vulnerability--b4fd2041-12ff-5a64-9c00-51ba39b29fe4` = `relationship--23d454f2-0db1-571b-a85e-6b1c6d413357`
-* `CVE-2021-26084`: `vulnerability--ff040ea3-f2d9-5d38-80ae-065a2db41e64`
-  * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1+nvd_cve_vertex_collection/vulnerability--ff040ea3-f2d9-5d38-80ae-065a2db41e64` = `relationship--f5773e09-7b38-56b1-a574-01861d597f04`
-
-### TEST 8.2: Update Sigma Rule Indicator with another CVE Vulnerability 
+### TEST 8.1: Update Sigma Rule Indicator with another CVE Vulnerability 
 
 ```shell
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/sigma-rules-with-NEW-cve.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigmahq_rules \
-  --ignore_embedded_relationships true
+  --collection sigmahq_rules
 ```
 
 Adds cve.2023.43621 to indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 2 CVEs in 8.1 (cve.2022.26134, cve.2021.26084) so now has 3.
@@ -580,108 +533,30 @@ Adds cve.2023.43621 to indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to 
 Run the script:
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship sigma-cve
+python3 -m unittest tests/test_8_1_sigma_to_cve.py
 ```
 
-```sql
-FOR doc IN sigma_rules_vertex_collection
-  FILTER doc.id == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  RETURN [doc]
-```
-
-Should return 2 objects, the new and the old version of the indicator.
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 3 results. 
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == false
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 2 results (the two old objects from 8.1)
-
-### TEST 8.3: Remove all CVEs from Sigma rule
+### TEST 8.2: Remove all CVEs from Sigma rule
 
 ```shell
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/sigma-rules-with-NO-cve.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigmahq_rules \
-  --ignore_embedded_relationships true
+  --collection sigmahq_rules
 ```
 
-Removes all CVEs from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 3 CVEs in 8.2.
-
-Run the script:
+Removes all CVEs from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 3 CVEs in 8.2, 2 in 8.1, now 0 in 8.3.
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship sigma-cve
+python3 -m unittest tests/test_8_2_sigma_to_cve.py
 ```
 
-```sql
-FOR doc IN sigma_rules_vertex_collection
-  FILTER doc.id == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  RETURN [doc]
-```
+---
 
-Should return 3 objects, the new and the 2 old versions of the indicator.
+### TEST 9.0: Test CPE Groups
 
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
+**You need to delete all other test data**
 
-Should return 0 results (as no CVEs in latest version of Sigma Rule)
-
-```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == false
-  AND doc.relationship_type == "detects"
-  AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-  AND doc.object_marking_refs == [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-  RETURN [doc]
-```
-
-Should return 5 results, the 3 old objects from 8.2 and 2 old objects from 8.1.
-
-### TEST 9.1: Test CPE Groups
-
-Delete any old data:
-
-```shell
-python3 design/mvp/test-helpers/remove-all-collections.py
-```
 
 Import required data:
 
@@ -689,30 +564,16 @@ Import required data:
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/sample-cpe-bundle.json \
   --database arango_cti_processor_standard_tests \
-  --collection nvd_cpe \
-  --ignore_embedded_relationships true
+  --collection nvd_cpe
 ```
 
 Run the script:
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship cpe-groups
+python3 -m unittest tests/test_9_0_cpe_groups.py
 ```
 
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-    FILTER doc._arango_cti_processor_note != "automatically imported object at script runtime"
-    AND doc._arango_cti_processor_note == "cpe-groups"
-    AND doc.name LIKE "Product:%"
-    AND doc.object_marking_refs == [
-      "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-      "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-    ]
-    RETURN doc.name
-```
 
-Should return 202 results, as 202 unique software objects in dataset
 
 ```sql
 FOR doc IN nvd_cpe_vertex_collection

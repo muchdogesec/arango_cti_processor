@@ -35,7 +35,7 @@ class TestArangoDB(unittest.TestCase):
     # should still return 2 objects b/c these never update
     def test_01_auto_imported_objects(self):
         query = """
-          FOR doc IN sigma_rules_edge_collection
+          FOR doc IN sigma_rules_vertex_collection
             FILTER doc._arango_cti_processor_note == "automatically imported object at script runtime"
             RETURN doc.id
         """

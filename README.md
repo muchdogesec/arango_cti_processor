@@ -90,13 +90,14 @@ Where;
 * `--database` (required): the arangoDB database name where the objects you want to link are found. It must contain the collections required for the `--relationship` option(s) selected
 * `--relationship` (optional, dictionary): you can apply updates to certain relationships at run time. Default is all. Note, you should ensure your `database` contains all the required seeded data. User can select from;
 	* `capec-attack`
-    * `capec-cwe`
-    * `cwe-capec`
-    * `attack-capec`
-    * `cve-cwe`
-    * `cve-cpe`
-    * `sigma-attack`
-    * `sigma-cve`
+  * `capec-cwe`
+  * `cwe-capec`
+  * `attack-capec`
+  * `cve-cwe`
+  * `cve-cpe`
+  * `sigma-attack`
+  * `sigma-cve`
+  * `cpe-groups`
 * `--ignore_embedded_relationships` (optional, boolean). Default is false. if `true` passed, this will stop any embedded relationships from being generated. This is a stix2arango feature where STIX SROs will also be created for `_ref` and `_refs` properties inside each object (e.g. if `_ref` property = `identity--1234` and SRO between the object with the `_ref` property and `identity--1234` will be created). See stix2arango docs for more detail if required.
 * `--stix2arango_note` (optional, string): will be used as a value for `_stix2arango_note` for all objects created by arango_cti_processor
 
