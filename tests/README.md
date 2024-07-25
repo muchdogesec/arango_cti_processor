@@ -306,7 +306,7 @@ python3 utilities/arango_cti_processor/insert_archive_cwe.py \
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/condensed_cve_bundle.json \
+  --file tests/files/arango_cti_processor/condensed_cve_bundle.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve
 ```
@@ -329,7 +329,7 @@ Import required data using a separate install of [stix2arango](https://github.co
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/condensed_cve_bundle-updated-1.json \
+  --file tests/files/arango_cti_processor/condensed_cve_bundle-updated-1.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve
 ```
@@ -350,7 +350,7 @@ Import required data using a separate install of [stix2arango](https://github.co
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/condensed_cve_bundle-updated-2.json \
+  --file tests/files/arango_cti_processor/condensed_cve_bundle-updated-2.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
@@ -374,12 +374,12 @@ Import required data using a separate install of [stix2arango](https://github.co
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/condensed_cve_bundle.json \
+  --file tests/files/arango_cti_processor/condensed_cve_bundle.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true && \
 python3 stix2arango.py  \
-  --file design/mvp/tests/condensed_cpe_bundle.json \
+  --file tests/files/arango_cti_processor/condensed_cpe_bundle.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cpe \
   --ignore_embedded_relationships true
@@ -399,7 +399,7 @@ Adds `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` to `indicator--
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/condensed_cpe_bundle-update-1.json \
+  --file tests/files/arango_cti_processor/condensed_cpe_bundle-update-1.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
@@ -419,7 +419,7 @@ Removes `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` (added in 6.
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/condensed_cpe_bundle-update-2.json \
+  --file tests/files/arango_cti_processor/condensed_cpe_bundle-update-2.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve \
   --ignore_embedded_relationships true
@@ -466,7 +466,7 @@ Adds attack.t1543.003 (1 result) to indicator--74904ec1-cff3-5737-a1d4-408c789dc
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/sigma-rules-with-NEW-cve.json \
+  --file tests/files/arango_cti_processor/sigma-rules-with-NEW-cve.json \
   --database arango_cti_processor_standard_tests \
   --collection sigmahq_rules
 ```
@@ -483,7 +483,7 @@ Removes all attack objects from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/sigma-rules-with-NO-cve.json \
+  --file tests/files/arango_cti_processor/sigma-rules-with-NO-cve.json \
   --database arango_cti_processor_standard_tests \
   --collection sigmahq_rules
 ```
@@ -496,46 +496,37 @@ python3 -m unittest tests/test_7_2_sigma_to_attack.py
 
 ---
 
-### TEST 8.1: Test Sigma Rule Indicator to CVE Vulnerability 
+### TEST 8.0: Test Sigma Rule Indicator to CVE Vulnerability 
 
-Delete any old data:
-
-```shell
-python3 design/mvp/test-helpers/remove-all-collections.py
-```
+**You need to delete all other test data**
 
 Import required data:
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/sigma-rules-with-cves.json \
+  --file tests/files/arango_cti_processor/sigma-rules-with-cves.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigmahq_rules \
-  --ignore_embedded_relationships true && \
+  --collection sigmahq_rules && \
 python3 stix2arango.py  \
-  --file design/mvp/tests/condensed_cve_bundle.json \
+  --file tests/files/arango_cti_processor/condensed_cve_bundle.json \
   --database arango_cti_processor_standard_tests \
-  --collection nvd_cve \
-  --ignore_embedded_relationships true
+  --collection nvd_cve
 ```
 
 Run the script:
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship sigma-cve
+python3 -m unittest tests/test_8_0_sigma_to_cve.py
 ```
+
+
+
 
 ```sql
-FOR doc IN sigma_rules_edge_collection
-  FILTER doc._is_latest == true
-  AND doc.relationship_type == "detects"
-  RETURN [doc]
+
 ```
 
-Expecting 4 results (see test-data-research.md for info as to why).
 
-`indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1` links to `cve.2022.26134` (`vulnerability--b4fd2041-12ff-5a64-9c00-51ba39b29fe4`) and `cve.2021.26084` (`vulnerability--ff040ea3-f2d9-5d38-80ae-065a2db41e64`)
 
 ```sql
 FOR doc IN sigma_rules_edge_collection
@@ -578,7 +569,7 @@ Check the IDs
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/sigma-rules-with-NEW-cve.json \
+  --file tests/files/arango_cti_processor/sigma-rules-with-NEW-cve.json \
   --database arango_cti_processor_standard_tests \
   --collection sigmahq_rules \
   --ignore_embedded_relationships true
@@ -633,7 +624,7 @@ Should return 2 results (the two old objects from 8.1)
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/sigma-rules-with-NO-cve.json \
+  --file tests/files/arango_cti_processor/sigma-rules-with-NO-cve.json \
   --database arango_cti_processor_standard_tests \
   --collection sigmahq_rules \
   --ignore_embedded_relationships true
@@ -696,7 +687,7 @@ Import required data:
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/sample-cpe-bundle.json \
+  --file tests/files/arango_cti_processor/sample-cpe-bundle.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cpe \
   --ignore_embedded_relationships true
@@ -821,7 +812,7 @@ This adds a 2 new products (softwares) for vendor = google
 
 ```shell
 python3 stix2arango.py  \
-  --file design/mvp/tests/cpe-new-product.json \
+  --file tests/files/arango_cti_processor/cpe-new-product.json \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cpe \
   --ignore_embedded_relationships true
