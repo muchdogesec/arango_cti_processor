@@ -33,6 +33,8 @@ class TestArangoDB(unittest.TestCase):
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
+# test 2 checks all objects generated correctly
+
     def test_02_arango_cti_processor_note(self):
         query = """
         RETURN COUNT(
@@ -45,6 +47,8 @@ class TestArangoDB(unittest.TestCase):
         result_count = [count for count in cursor]
 
         self.assertEqual(result_count, [346], f"Expected 346 documents, but found {result_count}.")
+
+# checks the corret number of objects are generated, and that they are assigned the correct properties by the script
 
     def test_03_correct_object_properties(self):
         query = """
@@ -64,7 +68,9 @@ class TestArangoDB(unittest.TestCase):
         cursor = self.db.aql.execute(query)
         result_count = [count for count in cursor]
 
-        self.assertEqual(result_count, [338], f"Expected 338 documents, but found {result_count}.")
+        self.assertEqual(result_count, [346], f"Expected 338 documents, but found {result_count}.")
+
+# test 4 checks [CAPEC-695](https://github.com/mitre/cti/blob/master/capec/2.1/attack-pattern/attack-pattern--e3dd79e7-307b-42dd-9e22-d0345c0ec001.json) -> T1195.001
 
     def test_04_correct_relationship_capec695(self):
         query = """
@@ -83,6 +89,8 @@ class TestArangoDB(unittest.TestCase):
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
+# test 5 is extension of test 4 to check id generation: `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` value: `technique+mitre_capec_vertex_collection/attack-pattern--e3dd79e7-307b-42dd-9e22-d0345c0ec001+mitre_attack_enterprise_vertex_collection/attack-pattern--191cc6af-1bb2-4344-ab5f-28e496638720` = 34d58beb-5d4c-5899-b3aa-2a0d5995e82d
+
     def test_05_relationship_id_generation695(self):
         query = """
             FOR doc IN mitre_capec_edge_collection
@@ -99,6 +107,8 @@ class TestArangoDB(unittest.TestCase):
         ]
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
+# test 6 checks [CAPEC-233](https://github.com/mitre/cti/blob/master/capec/2.1/attack-pattern/attack-pattern--c05fff04-b965-4a11-9c18-379dac31969f.json) -> T1548
 
     def test_06_correct_relationship_capec233(self):
         query = """
@@ -117,6 +127,8 @@ class TestArangoDB(unittest.TestCase):
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
+# test 7 is extension of test 6 to check id generation: `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--c05fff04-b965-4a11-9c18-379dac31969f+mitre_attack_enterprise_vertex_collection/attack-pattern--67720091-eee3-4d2d-ae16-8264567f6f5b` = bc0d764e-f1ba-55ff-b871-7735ec140789
+
     def test_07_relationship_id_generation233(self):
         query = """
             FOR doc IN mitre_capec_edge_collection
@@ -133,6 +145,8 @@ class TestArangoDB(unittest.TestCase):
         ]
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
+# test 8 checks [CAPEC-13](https://github.com/mitre/cti/blob/master/capec/2.1/attack-pattern/attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed.json -> T1562.003, T1574.006, T1574.007
 
     def test_08_correct_relationship_capec13(self):
         query = """
@@ -153,6 +167,11 @@ class TestArangoDB(unittest.TestCase):
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
+# test 9 is extension of test 8 to check id generation:
+# object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed+mitre_attack_enterprise_vertex_collection/attack-pattern--8f504411-cb96-4dac-a537-8d2bb7679c59` = c1100173-c259-52a1-926d-48919b067224
+# object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed+mitre_attack_enterprise_vertex_collection/attack-pattern--633a100c-b2c9-41bf-9be5-905c1b16c825` = d66bcc7d-19c0-5c2c-a7f7-44b13d6af09c
+# object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed+mitre_attack_enterprise_vertex_collection/attack-pattern--0c2d00da-7742-49e7-9928-4514e5075d32` = 23bd53cf-0f53-53e3-8ba1-92b4077bd460
+
     def test_09_relationship_id_generation13(self):
         query = """
             FOR doc IN mitre_capec_edge_collection
@@ -171,6 +190,8 @@ class TestArangoDB(unittest.TestCase):
         ]
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
+# no updates to the objects should have happened yet
 
     def test_10_check_no_updates(self):
         query = """

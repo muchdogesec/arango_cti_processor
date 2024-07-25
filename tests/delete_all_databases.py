@@ -4,10 +4,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ARANGO_USERNAME = os.getenv("ARANGODB_USERNAME")
-ARANGO_PASSWORD = os.getenv("ARANGODB_PASSWORD")
+ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL")
+ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME")
+ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD")
 
-client = ArangoClient(hosts=f"http://{os.getenv('ARANGODB_HOST', 'localhost')}:{os.getenv('ARANGODB_PORT')}")
+client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
 
 # Database names
 databases = [
@@ -17,7 +18,7 @@ databases = [
 
 # Function to delete a database
 def delete_database(db_name):
-    sys_db = client.db('_system', username=ARANGO_USERNAME, password=ARANGO_PASSWORD)
+    sys_db = client.db('_system', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     if sys_db.has_database(db_name):
         sys_db.delete_database(db_name)
         print(f'Deleted database {db_name}')

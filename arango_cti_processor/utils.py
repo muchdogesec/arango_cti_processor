@@ -15,10 +15,7 @@ if TYPE_CHECKING:
 from stix2 import Relationship, Grouping
 from datetime import datetime
 
-
 module_logger = logging.getLogger("data_ingestion_service")
-
-
 
 def get_relationship():
     return {
@@ -44,7 +41,6 @@ def get_relationship():
             "sigma-cve": relate_sigma_to_cve,
         },
     }
-
 
 def load_file_from_url(url):
     try:
@@ -122,11 +118,8 @@ def parse_relation_object(data, result, collection, relationship_type: str, note
             relationship_type=relationship_type,
             source_ref=data.get("id"),
             target_ref=result.get("id"),
-            created_by_ref="identity--af79980e-cce7-5a67-becb-82ad5a68e850",
+            created_by_ref="identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
             object_marking_refs=config.OBJECT_MARKING_REFS,
-            custom_properties={
-                "created_by_ref": "identity--af79980e-cce7-5a67-becb-82ad5a68e850",
-            },
             external_references=[
                 # ExternalReference(source_name="cti2stix_version", external_id=config.cti2stix_version),
             ],

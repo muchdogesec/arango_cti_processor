@@ -6,6 +6,8 @@ Delete any old data that might exist from old tests:
 
 ```shell
 python3 tests/delete_all_databases.py
+
+python3 tests/temp_add_collections.py
 ```
 
 ## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
@@ -17,33 +19,49 @@ Import required data using a separate install of [stix2arango](https://github.co
 ```shell
 python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_capec.py \
   --database arango_cti_processor_standard_tests \
-  --ignore_embedded_relationships true \
   --versions 3_9
 ```
 
-Then run arango_cti_processor:
+Run arango_cti_processor:
 
 ```shell
 python3 arango_cti_processor.py \
   --database arango_cti_processor_standard_tests_database \
-  --relationship", "capec-attack \
-  --stix2arango_note", "test01 \
+  --relationship capec-attack \
+  --stix2arango_note test01 \
   --ignore_embedded_relationships false 
 ```
 
 Run the test script;
+
+```shell
+python3 -m unittest tests/test_1_0_capec_to_attack.py
+```
+
+## TEST 1.0.5: Perform update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
+
+This time don't import any new data, but run the arango_cti_processor command again
+
+```shell
+python3 arango_cti_processor.py \
+  --database arango_cti_processor_standard_tests_database \
+  --relationship capec-attack \
+  --stix2arango_note test01 \
+  --ignore_embedded_relationships false
+```
+
+This should generate 0 new objects, because the output should be identical to first run, and thus no new versions should be created.
+
+Run the test script for 1.0 (results should still be the same, as nothing should have changed);
 
 ```shell
 python3 -m unittest tests/test_1_0_capec_to_attack.py
@@ -69,17 +87,16 @@ python3 stix2arango.py \
   --file tests/files/arango_cti_processor/arango-cti-capec-attack-update-1.json \
   --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
-  --stix2arango_note v3.10 \
-  --ignore_embedded_relationships true
+  --stix2arango_note v3.10
 ```
 
-Then run arango_cti_processor:
+Run arango_cti_processor:
 
 ```shell
 python3 arango_cti_processor.py \
   --database arango_cti_processor_standard_tests_database \
-  --relationship", "capec-attack \
-  --stix2arango_note", "test01 \
+  --relationship capec-attack \
+  --stix2arango_note test01 \
   --ignore_embedded_relationships false 
 ```
 
@@ -102,17 +119,16 @@ python3 stix2arango.py \
   --file tests/files/arango_cti_processor/arango-cti-capec-attack-update-2.json \
   --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
-  --stix2arango_note v3.11 \
-  --ignore_embedded_relationships true
+  --stix2arango_note v3.11
 ```
 
-Then run arango_cti_processor:
+Run arango_cti_processor:
 
 ```shell
 python3 arango_cti_processor.py \
   --database arango_cti_processor_standard_tests_database \
-  --relationship", "capec-attack \
-  --stix2arango_note", "test01 \
+  --relationship capec-attack \
+  --stix2arango_note test01 \
   --ignore_embedded_relationships false 
 ```
 
@@ -126,7 +142,7 @@ python3 -m unittest tests/test_1_2_capec_to_attack.py
 
 Note, test 1.2 must have been run for this test to work.
 
-This time we remove 2 of the ATT&CK references inside the CAPEC object (`attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a`), with 2 remaining T1040 and T1111. This is now the same as the original stix-capec-v3.9.json object
+This time we remove 2 of the ATT&CK references inside the CAPEC object (`attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a`), with 2 remaining T1040 and T1111 (total 4 ATT&CK links). T1650 and T1574.010 are removed (total 2 ATT&CK links). This is now the same as the original stix-capec-v3.9.json object
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
@@ -135,17 +151,16 @@ python3 stix2arango.py \
   --file tests/files/arango_cti_processor/arango-cti-capec-attack-update-3.json \
   --database arango_cti_processor_standard_tests \
   --collection mitre_capec \
-  --stix2arango_note v3.12 \
-  --ignore_embedded_relationships true
+  --stix2arango_note v3.12
 ```
 
-Then run arango_cti_processor:
+Run arango_cti_processor:
 
 ```shell
 python3 arango_cti_processor.py \
   --database arango_cti_processor_standard_tests_database \
-  --relationship", "capec-attack \
-  --stix2arango_note", "test01 \
+  --relationship capec-attack \
+  --stix2arango_note test01 \
   --ignore_embedded_relationships false 
 ```
 
