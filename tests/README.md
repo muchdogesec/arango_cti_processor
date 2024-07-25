@@ -471,7 +471,7 @@ python3 stix2arango.py  \
   --collection sigmahq_rules
 ```
 
-Run the script:
+Run the test:
 
 ```shell
 python3 -m unittest tests/test_7_1_sigma_to_attack.py
@@ -488,7 +488,7 @@ python3 stix2arango.py  \
   --collection sigmahq_rules
 ```
 
-Run the script:
+Run the test:
 
 ```shell
 python3 -m unittest tests/test_7_2_sigma_to_attack.py
@@ -513,13 +513,15 @@ python3 stix2arango.py  \
   --collection nvd_cve
 ```
 
-Run the script:
+Run the test:
 
 ```shell
 python3 -m unittest tests/test_8_0_sigma_to_cve.py
 ```
 
 ### TEST 8.1: Update Sigma Rule Indicator with another CVE Vulnerability 
+
+Import required data:
 
 ```shell
 python3 stix2arango.py  \
@@ -530,13 +532,15 @@ python3 stix2arango.py  \
 
 Adds cve.2023.43621 to indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 2 CVEs in 8.1 (cve.2022.26134, cve.2021.26084) so now has 3.
 
-Run the script:
+Run the test:
 
 ```shell
 python3 -m unittest tests/test_8_1_sigma_to_cve.py
 ```
 
 ### TEST 8.2: Remove all CVEs from Sigma rule
+
+Import required data:
 
 ```shell
 python3 stix2arango.py  \
@@ -557,7 +561,6 @@ python3 -m unittest tests/test_8_2_sigma_to_cve.py
 
 **You need to delete all other test data**
 
-
 Import required data:
 
 ```shell
@@ -567,259 +570,32 @@ python3 stix2arango.py  \
   --collection nvd_cpe
 ```
 
-Run the script:
+Run the test:
 
 ```shell
 python3 -m unittest tests/test_9_0_cpe_groups.py
 ```
 
-
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-  FILTER doc._stix2arango_note != "automatically imported on collection creation"
-    AND doc.type == "software"
-  LET cpe_parts = SPLIT(doc.cpe, ":")
-  LET product = cpe_parts[4]
-  FILTER product == "chrome"
-  RETURN doc.id
-```
-
-Will return 9 results for IDs of software objects where product = chrome. 
-
-For the product grouping object for this software (chrome) the ID will be: `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `chrome` = `grouping--9a385c8c-608f-5abe-8e93-9af359a02397`
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-    FILTER doc._arango_cti_processor_note != "automatically imported object at script runtime"
-    AND doc._arango_cti_processor_note == "cpe-groups"
-    AND doc.id == "grouping--9a385c8c-608f-5abe-8e93-9af359a02397"
-    AND doc.object_marking_refs == [
-      "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-      "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-    ]
-    RETURN [doc]
-```
-
-Should return 1 result. The object `object_refs` should have 9 `software` objects representing the 9 software versions of chrome that exist.
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-    FILTER doc._arango_cti_processor_note != "automatically imported object at script runtime"
-    AND doc._arango_cti_processor_note == "cpe-groups"
-    AND doc.name LIKE "Vendor:%"
-    AND doc.object_marking_refs == [
-      "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-      "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-    ]
-    RETURN doc.name
-```
-
-Should return 175 results, as 175 unique vendor names in dataset.
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-  FILTER doc._arango_cti_processor_note != "automatically imported object at script runtime"
-    AND doc._arango_cti_processor_note == "cpe-groups"
-    AND doc.name LIKE "Vendor:%"
-  COLLECT name = doc.name WITH COUNT INTO count
-  SORT count DESC
-  RETURN {name, count}
-```
-
-Should return 175 results, each with a count of 1.
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-  FILTER doc._stix2arango_note != "automatically imported on collection creation"
-    AND doc.type == "software"
-  LET cpe_parts = SPLIT(doc.cpe, ":")
-  LET vendor = cpe_parts[3]
-  LET product = cpe_parts[4]
-  FILTER vendor == "google"
-  RETURN product
-```
-
-Will return 11 results for IDs of software objects where vendor = google. There are 3 unique products (chrome_os, chrome, drive) thus expecting 3 `object_refs` to these objects.
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-    FILTER doc._arango_cti_processor_note != "automatically imported object at script runtime"
-    AND doc._arango_cti_processor_note == "cpe-groups"
-    AND doc.id == "grouping--1e39385c-96f3-5511-8601-1b58c86ceb08"
-    AND doc.object_marking_refs == [
-      "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-      "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-    ]
-    RETURN [doc]
-```
-
-Should return 1 grouping object.
-
-For the grouping object the `id` should be `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `google` = `grouping--1e39385c-96f3-5511-8601-1b58c86ceb08`
-
-The `object_refs` should be:
-
-* `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `drive` = `c0f2c5c6-3c85-54c5-8f93-97c0d6c3b7c0`
-* `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `chrome_os` = `1e840f28-abb5-510a-9150-7d98a6b48413`
-* `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `chrome` = `9a385c8c-608f-5abe-8e93-9af359a02397`
-
-### TEST 9.2: Add a new product to an existing vendor
+### TEST 9.1: Add a new product to an existing vendor
 
 This adds a 2 new products (softwares) for vendor = google
 
 * `software--75a12f40-ebf2-4bfb-99e1-eb41ddbc81dc` brand new product with vendor = google
 * `software--a11b7906-7775-47ea-a97d-55c3968d2c9f` a new version of vendor = google, product = chrome
 
+Thus expect the Vendor Grouping object to be updated with new ID, and also new product Grouping object created for the new product.
+
+Import required data:
+
 ```shell
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/cpe-new-product.json \
   --database arango_cti_processor_standard_tests \
-  --collection nvd_cpe \
-  --ignore_embedded_relationships true
+  --collection nvd_cpe
 ```
+
+Run the test:
 
 ```shell
-python3 arango_cti_processor.py \
-  --relationship cpe-groups
-```
-
-Thus expect the Vendor Grouping object to be updated with new ID, and also new product Grouping object created for the new product.
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-  FILTER doc._stix2arango_note != "automatically imported on collection creation"
-    AND doc.type == "software"
-  LET cpe_parts = SPLIT(doc.cpe, ":")
-  LET vendor = cpe_parts[3]
-  LET product = cpe_parts[4]
-  FILTER vendor == "google"
-  RETURN [doc]
-```
-
-Will return 13 results (2 new objects, from 11 in test 9.1)
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-  FILTER doc._stix2arango_note != "automatically imported on collection creation"
-    AND doc.type == "software"
-    AND doc.id IN [
-      "software--75a12f40-ebf2-4bfb-99e1-eb41ddbc81dc",
-      "software--a11b7906-7775-47ea-a97d-55c3968d2c9f"
-    ]
-  RETURN [doc]
-```
-
-Here are the two new objects.
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-  FILTER doc._arango_cti_processor_note != "automatically imported object at script runtime"
-    AND doc._arango_cti_processor_note == "cpe-groups"
-    AND doc.type == "grouping"
-    AND doc.name == "Product: new"
-    RETURN [doc]
-```
-
-Lets start by looking at the brand new product (`new`). This search should return one result for the grouping object that should have been created for it.
-
-We expect it to have the ID: `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `new` = `grouping--5a242cbb-1bf3-596e-abc9-18747e6c5261`
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-    FILTER doc._arango_cti_processor_note != "automatically imported object at script runtime"
-    AND doc.type == "grouping"
-    AND doc._arango_cti_processor_note == "cpe-groups"
-    AND doc.id == "grouping--1e39385c-96f3-5511-8601-1b58c86ceb08"
-    AND doc.object_marking_refs == [
-      "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-      "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-    ]
-    RETURN [doc]
-```
-This search returns the Google product grouping (`grouping--1e39385c-96f3-5511-8601-1b58c86ceb08`).
-
-This should return 2 objects (the old Google grouping object, and the new one, with the new grouping object for product `new` added to `object_refs`)
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-    FILTER doc._arango_cti_processor_note != "automatically imported object at script runtime"
-    AND doc._is_latest == true
-    AND doc.type == "grouping"
-    AND doc._arango_cti_processor_note == "cpe-groups"
-    AND doc.id == "grouping--1e39385c-96f3-5511-8601-1b58c86ceb08"
-    AND doc.object_marking_refs == [
-      "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-      "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-    ]
-    RETURN [doc]
-```
-
-Same search, but this time only showing latest version which should have 4 object_refs including `grouping--5a242cbb-1bf3-596e-abc9-18747e6c5261` for product `new` added in update.
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-  FILTER doc._stix2arango_note != "automatically imported on collection creation"
-    AND doc.type == "software"
-  LET cpe_parts = SPLIT(doc.cpe, ":")
-  LET product = cpe_parts[4]
-  FILTER product == "chrome"
-  RETURN doc.id
-```
-
-Will now return 10 results (9 previously) for IDs of software objects where product = chrome.
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-    FILTER doc._arango_cti_processor_note != "automatically imported object at script runtime"
-    AND doc._arango_cti_processor_note == "cpe-groups"
-    AND doc.id == "grouping--9a385c8c-608f-5abe-8e93-9af359a02397"
-    AND doc.object_marking_refs == [
-      "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-      "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-    ]
-    RETURN [doc]
-```
-
-This should return 2 objects (the old Chrome grouping object, and the new one, with the new software added to `object_refs`.
-
-```sql
-FOR doc IN nvd_cpe_vertex_collection
-    FILTER doc._is_latest == true
-    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
-    AND doc._arango_cti_processor_note == "cpe-groups"
-    AND doc.id == "grouping--9a385c8c-608f-5abe-8e93-9af359a02397"
-    AND doc.object_marking_refs == [
-      "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-      "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-    ]
-    RETURN [doc]
-```
-
-Check the `object_refs` now have 10 entries (was 9 for 9.1) the new Chrome version object has ID `software--a11b7906-7775-47ea-a97d-55c3968d2c9f`.
-
-
-### Volume tests
-
-Whilst the previous tests cover the logic of the script, it's also important we test it at scale (ultimately how it will be used in real life).
-
-To do this, install [stix2arango](https://github.com/muchdogesec/stix2arango/) separately and run the following to import all data;
-
-```shell
-python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
-  --database arango_cti_processor_volume_tests && \
-python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
-  --database arango_cti_processor_volume_tests && \
-python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
-  --database arango_cti_processor_volume_tests && \
-python3 utilities/arango_cti_processor/insert_archive_capec.py \
-  --database arango_cti_processor_volume_tests && \
-python3 utilities/arango_cti_processor/insert_archive_cwe.py \
-  --database arango_cti_processor_volume_tests && \
-python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
-  --database arango_cti_processor_volume_tests && \
-python3 utilities/arango_cti_processor/insert_archive_cve.py \
-  --database arango_cti_processor_volume_tests && \
-python3 utilities/arango_cti_processor/insert_archive_cpe.py \
-  --database arango_cti_processor_volume_tests
+python3 -m unittest tests/test_9_1_cpe_groups.py
 ```
