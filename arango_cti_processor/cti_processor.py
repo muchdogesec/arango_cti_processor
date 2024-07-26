@@ -15,7 +15,7 @@ module_logger = logging.getLogger("data_ingestion_service")
 class ArangoProcessor:
 
     def __init__(self, database=None, **kwargs):
-        self.relationship = kwargs.get("relationship")
+        self.relationships = kwargs.get("relationship")
         self.ignore_embedded_relationships = kwargs.get("ignore_embedded_relationships")
         self.arango_cti_processor_note = kwargs.get("arango_cti_processor_note", "")
         self.stix2arango_note = kwargs.get("stix2arango_note", "")
@@ -41,14 +41,11 @@ class ArangoProcessor:
         vertex_collections = []
         edge_collections = []
         
-        modes = self.relationship.split(",")
-        if not modes:
-            return config.COLLECTION_VERTEX, config.COLLECTION_EDGE
-        for mode in modes:
+        for mode in self.relationships:
             if mode in config.MODE_COLLECTION_MAP:
                 vertex_collections.extend(config.MODE_COLLECTION_MAP[mode])
             else:
-                raise Exception(f"unknown mode {mode}")
+                raise Exception(f"unknown mode `{mode}` passed in relationship")
 
         edge_collections = [col.replace('_vertex_', '_edge_') for col in vertex_collections]
         return vertex_collections, edge_collections
@@ -56,14 +53,9 @@ class ArangoProcessor:
     def finalize_collections(self):
 
         relations_needs_to_run = []
-        if self.relationship:
-            for key, value in processors.get_rel_func_mapping().get(self.relationship).items():
-                relations_needs_to_run.append([key, value])
-        else:
-            for vertex in processors.get_relationship().keys():
-                for rel, func in processors.get_relationship().get(vertex).items():
-                    relations_needs_to_run.append([vertex, func])
-                break
+        for key, value in processors.get_rel_func_mapping(self.relationships):
+            logging.info(f"adding reltionships for {key}")
+            relations_needs_to_run.extend(value.items())
         return relations_needs_to_run
 
     def default_objects(self):

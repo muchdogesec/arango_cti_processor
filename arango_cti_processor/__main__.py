@@ -5,11 +5,12 @@ from arango_cti_processor.config import MODE_COLLECTION_MAP
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Import STIX JSON into ArangoDB")
-    modes = ",".join(MODE_COLLECTION_MAP.keys())
+    modes = list(MODE_COLLECTION_MAP.keys())
     parser.add_argument(
         "--relationship",
         required=False,
         help=f"you can apply updates to certain collection at run time. Default is all collections. Can select from; {modes}",
+        type=lambda x: x.split(","),
         default=modes,
     )
 

@@ -62,8 +62,8 @@ def read_file_data(filename: str):
     return data
 
 
-def get_rel_func_mapping():
-    return {
+def get_rel_func_mapping(relationships):
+    REL_TO_FUNC_MAPPING = {
         "capec-attack": {"mitre_capec_vertex_collection": relate_capec_to_attack},
         "capec-cwe": {"mitre_capec_vertex_collection": relate_capec_to_cwe},
         "cwe-capec": {"mitre_cwe_vertex_collection": relate_cwe_to_capec},
@@ -78,6 +78,7 @@ def get_rel_func_mapping():
         "sigma-cve": {"sigmahq_rules_vertex_collection": relate_sigma_to_cve},
         "cve-attack": {"nvd_cve_vertex_collection": relate_cve_to_attack},
     }
+    return [(rel, value) for rel, value in REL_TO_FUNC_MAPPING.items() if rel in relationships]
 
 
 def parse_relation_object(src, dst, collection, relationship_type: str, note=None):
