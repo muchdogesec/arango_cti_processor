@@ -57,9 +57,8 @@ class ArangoProcessor:
 
         relations_needs_to_run = []
         if self.relationship:
-            if self.relationship != "cpe-groups":
-                for key, value in processors.get_rel_func_mapping().get(self.relationship).items():
-                    relations_needs_to_run.append([key, value])
+            for key, value in processors.get_rel_func_mapping().get(self.relationship).items():
+                relations_needs_to_run.append([key, value])
         else:
             for vertex in processors.get_relationship().keys():
                 for rel, func in processors.get_relationship().get(vertex).items():
@@ -131,13 +130,9 @@ class ArangoProcessor:
                 collection_edge=vertex.replace("vertex", "edge"),
                 notes=self.arango_cti_processor_note
             )
-            if "cpe" in vertex:
-                processors.cpe_groups(self.arango)
+
             if "sigma" in vertex:
                 processors.sigma_groups(self.arango)
-
-        if self.relationship =="cpe-groups":
-            processors.cpe_groups(self.arango)
 
 
     def filter_objects_in_collection_using_custom_query(self, collection, custom_query):
