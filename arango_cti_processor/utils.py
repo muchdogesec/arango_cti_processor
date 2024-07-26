@@ -80,44 +80,21 @@ def get_rel_func_mapping():
     }
 
 
-def validate_collections(collections):
-    required_collections = config.COLLECTION_EDGE + config.COLLECTION_VERTEX
-    if len(list(set(required_collections) - set(collections))) > 0:
-        missing_collections = "\n ".join(
-            list(set(required_collections) - set(collections))
-        )
-        print(
-            f"The following collections are missing. Please add them to continue. \n {missing_collections}"
-        )
-        return True
-
-
-def verify_duplication(obj, object_list):
-    if isinstance(object_list, list) and isinstance(obj, dict):
-        match_string = f'"_key": "{obj.get("_key")}",'
-        filtered_list = [obj_ for obj_ in object_list if match_string in obj_]
-        if len(filtered_list) > 0:
-            return True
-    return False
-
-
-def parse_relation_object(data, result, collection, relationship_type: str, note=None):
+def parse_relation_object(src, dst, collection, relationship_type: str, note=None):
     generated_id = "relationship--" + str(
         uuid.uuid5(
             config.namespace,
-            "{}+{}/{}+{}".format(
-                relationship_type, collection, data.get("id"), result.get("_id")
-            ),
+            f"{relationship_type}+{src.get('_id').split('+')[0]}+{dst.get('_id').split('+')[0]}"
         )
     )
     obj = json.loads(
         Relationship(
             id=generated_id,
-            created=data.get("created"),
-            modified=data.get("modified"),
+            created=src.get("created"),
+            modified=src.get("modified"),
             relationship_type=relationship_type,
-            source_ref=data.get("id"),
-            target_ref=result.get("id"),
+            source_ref=src.get("id"),
+            target_ref=dst.get("id"),
             created_by_ref="identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
             object_marking_refs=config.OBJECT_MARKING_REFS,
             external_references=[
@@ -125,8 +102,8 @@ def parse_relation_object(data, result, collection, relationship_type: str, note
             ],
         ).serialize()
     )
-    obj["_from"] = data["_id"]
-    obj["_to"]   = result["_id"]
+    obj["_from"] = src["_id"]
+    obj["_to"]   = dst["_id"]
     obj["_is_ref"] = False
     obj["_arango_cti_processor_note"] = note
     obj["_record_md5_hash"] = generate_md5(obj)
