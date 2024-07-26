@@ -29,7 +29,7 @@ class ArangoProcessor:
         missing_collections = set()
         if len(self.vertex_collections) == 0:
             raise Exception(f"no collection selected")
-        for collection in itertools.chain(config.COLLECTION_EDGE, config.COLLECTION_VERTEX):
+        for collection in itertools.chain(self.edge_collections, self.vertex_collections):
             try:
                 self.arango.db.collection(collection).info()
             except Exception as e:
