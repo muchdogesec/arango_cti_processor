@@ -98,7 +98,7 @@ FOR doc IN mitre_capec_vertex_collection
     AND doc.type == "attack-pattern"
     LET attackReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
-            FILTER reference.source_name == 'ATTACK'
+            FILTER reference.source_name == 'mitre-attack'
             RETURN reference
     )
     FILTER LENGTH(attackReferences) > 0
@@ -106,7 +106,7 @@ FOR doc IN mitre_capec_vertex_collection
 )
 ```
 
-This should return 177 results -- the number of CAPEC objects that have at least 1 `external_references.source_name=ATTACK` reference.
+This should return 177 results -- the number of CAPEC objects that have at least 1 `external_references.source_name=mitre-attack` reference.
 
 ```sql
 LET attackReferenceCount = SUM(
@@ -116,14 +116,14 @@ LET attackReferenceCount = SUM(
         AND doc.type == "attack-pattern"
         LET attackReferences = (
             FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
-                FILTER reference.source_name == 'ATTACK'
+                FILTER reference.source_name == 'mitre-attack'
                 RETURN reference
         )
         RETURN LENGTH(attackReferences)
 )
 RETURN attackReferenceCount
 ```
-In total (because some objects can multiple ATT&CK references) there are 272 `"source_name": "ATTACK"` references
+In total (because some objects can multiple ATT&CK references) there are 272 `"source_name": "mitre-attack"` references
 
 ```sql
 FOR doc IN mitre_capec_vertex_collection
@@ -132,7 +132,7 @@ FOR doc IN mitre_capec_vertex_collection
     AND doc.type == "attack-pattern"
     LET attackReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
-            FILTER reference.source_name == 'ATTACK'
+            FILTER reference.source_name == 'mitre-attack'
             RETURN reference.external_id
     )
     FILTER LENGTH(attackReferences) > 0
@@ -148,7 +148,7 @@ FOR doc IN mitre_capec_vertex_collection
     FILTER doc.external_references != NULL AND IS_ARRAY(doc.external_references)
     LET attackReferences = (
         FOR ext_ref IN doc.external_references
-        FILTER ext_ref.source_name == "ATTACK"
+        FILTER ext_ref.source_name == "mitre-attack"
         RETURN ext_ref.external_id
     )
     LET uniqueIds = UNIQUE(attackReferences)
@@ -427,11 +427,10 @@ python3 stix2arango.py	\
 
 ```sql
 FOR doc IN sigma_rules_vertex_collection
-    FILTER LENGTH(doc.labels) > 0
-    FOR label IN doc.labels
-        FILTER LEFT(label, 7) == "attack."
-        COLLECT attackLabel = label WITH COUNT INTO count
-        RETURN { attackLabel, count }
+    FILTER HAS(doc, "external_references") AND IS_ARRAY(doc.external_references)
+    FOR ref IN doc.external_references
+        FILTER ref.source_name == "mitre-attack"
+        RETURN DISTINCT ref.external_id
 ```
 
 Returns a list of all ATT&CK labels that exist. Should return 408 unique IDs. The sum of the count field should be 7376 (labels in total)

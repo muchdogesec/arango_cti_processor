@@ -90,7 +90,7 @@ Where:
 * Source collection: `mitre_capec_vertex_collection` (`type==attack-pattern` objects only)
 * Destination collections: `mitre_attack_enterprise_vertex_collection`, `mitre_attack_mobile_vertex_collection`, `mitre_attack_ics_vertex_collection` (`type==attack-pattern` objects only)
 
-At ingest, the code searches for all ATT&CK objects referenced in CAPEC objects (where `"source_name": "ATTACK"` is present in CAPEC Object).
+At ingest, the code searches for all ATT&CK objects referenced in CAPEC objects (where `"source_name": "mitre-attack"` is present in CAPEC Object).
 
 Take CAPEC-112 as an example;
 
@@ -119,7 +119,7 @@ Take CAPEC-112 as an example;
                 {
                     "description": "Brute Force",
                     "external_id": "T1110",
-                    "source_name": "ATTACK",
+                    "source_name": "mitre-attack",
                     "url": "https://attack.mitre.org/wiki/Technique/T1110"
                 },
                 {
@@ -146,7 +146,7 @@ FOR doc IN mitre_capec_vertex_collection
     AND doc.type == "attack-pattern"
     LET attackReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
-            FILTER reference.source_name == 'ATTACK'
+            FILTER reference.source_name == 'mitre-attack'
             RETURN reference
     )
     FILTER LENGTH(attackReferences) > 0
@@ -312,7 +312,7 @@ Take CAPEC-600;
                 {
                     "description": "Brute Force:Credential Stuffing",
                     "external_id": "T1110.004",
-                    "source_name": "ATTACK",
+                    "source_name": "mitre-attack",
                     "url": "https://attack.mitre.org/wiki/Technique/T1110/004"
                 },
                 {
