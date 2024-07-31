@@ -24,8 +24,10 @@ def delete_database(db_name):
     else:
         print(f'Database {db_name} does not exist, skipping.')
 
-# Execute the deletion for each database
-for db_name in databases:
-    delete_database(db_name)
 
-print('All specified databases have been deleted.')
+if __name__ == '__main__':
+    # Execute the deletion for each database
+    for db_name in databases:
+        delete_database(db_name)
+
+    print('All specified databases have been deleted.')

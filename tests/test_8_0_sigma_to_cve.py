@@ -3,6 +3,9 @@ import subprocess
 import unittest
 from arango import ArangoClient
 from dotenv import load_dotenv
+from stix2arango.stix2arango import Stix2Arango
+
+from .upload import make_uploads
 
 # Load environment variables
 load_dotenv()
@@ -17,6 +20,10 @@ class TestArangoDB(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        make_uploads([
+            ("sigma_rules", "tests/files/sigma-rules-with-cves.json"),
+            ("nvd_cve", "tests/files/condensed_cve_bundle.json"),
+        ], database="arango_cti_processor_standard_tests", delete_db=True)
         # Run the arango_cti_processor.py script
         subprocess.run([
             "python3", "arango_cti_processor.py",
