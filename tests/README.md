@@ -352,8 +352,7 @@ Import required data using a separate install of [stix2arango](https://github.co
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/condensed_cve_bundle-updated-2.json \
   --database arango_cti_processor_standard_tests \
-  --collection nvd_cve \
-  --ignore_embedded_relationships true
+  --collection nvd_cve
 ```
 
 Run the test script;
@@ -378,13 +377,11 @@ Import required data using a separate install of [stix2arango](https://github.co
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/condensed_cve_bundle.json \
   --database arango_cti_processor_standard_tests \
-  --collection nvd_cve \
-  --ignore_embedded_relationships true && \
+  --collection nvd_cve && \
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/condensed_cpe_bundle.json \
   --database arango_cti_processor_standard_tests \
-  --collection nvd_cpe \
-  --ignore_embedded_relationships true
+  --collection nvd_cpe
 ```
 
 Run the test script;
@@ -403,8 +400,7 @@ Adds `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` to `indicator--
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/condensed_cpe_bundle-update-1.json \
   --database arango_cti_processor_standard_tests \
-  --collection nvd_cve \
-  --ignore_embedded_relationships true
+  --collection nvd_cve
 ```
 
 Run the test script;
@@ -423,8 +419,7 @@ Removes `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` (added in 6.
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/condensed_cpe_bundle-update-2.json \
   --database arango_cti_processor_standard_tests \
-  --collection nvd_cve \
-  --ignore_embedded_relationships true
+  --collection nvd_cve
 ```
 
 Run the test script;
@@ -454,7 +449,7 @@ python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
   --database arango_cti_processor_standard_tests \
   --versions 14_1 && \
 python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
-  --database arango_cti_processor_volume_tests \
+  --database arango_cti_processor_standard_tests \
   --versions 2024-05-13
 ```
 

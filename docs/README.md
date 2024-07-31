@@ -782,7 +782,7 @@ All generated objects are stored in the source edge collection.
 
 #### 7. Sigma Rule Indicator -> ATT&CK Attack Pattern relationship (`sigma-attack`)
 
-* Source collection: `sigma_rules_vertex_collection` (`type==indicator` objects only)
+* Source collection: `sigmahq_rules_vertex_collection` (`type==indicator` objects only)
 * Destination collections: `mitre_attack_enterprise_vertex_collection`, `mitre_attack_mobile_vertex_collection`, `mitre_attack_ics_vertex_collection` (`type==attack-pattern` objects only)
 
 Inside some Indicators for Sigma Rules are `labels` with [ATT&CK tags](https://github.com/SigmaHQ/sigma-specification/blob/main/Tags_specification.md#namespace-attack). e.g.
@@ -902,7 +902,7 @@ All generated objects are stored in the source edge collection.
 
 #### 8. Sigma Rule Indicator -> CVE Vulnerability (`sigma-cve`)
 
-* Source collection: `sigma_rules_vertex_collection` (`type==indicator` objects only)
+* Source collection: `sigmahq_rules_vertex_collection` (`type==indicator` objects only)
 * Destination collections: `nvd_cve_vertex_collection` (`type==vulnerability` objects only)
 
 Inside some Indicators for Sigma Rules are `labels` with [CVE tags](https://github.com/SigmaHQ/sigma-specification/blob/main/Tags_specification.md#namespace-cve). e.g.

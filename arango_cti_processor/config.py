@@ -36,7 +36,7 @@ COLLECTION_VERTEX= [
     "mitre_cwe_vertex_collection",
     "nvd_cpe_vertex_collection",
     "nvd_cve_vertex_collection",
-    "sigmahq_rules_vertex_collection"
+    "sigma_rules_vertex_collection"
 ]
 COLLECTION_EDGE = [
     "mitre_attack_enterprise_edge_collection",
@@ -46,7 +46,7 @@ COLLECTION_EDGE = [
     "mitre_cwe_edge_collection",
     "nvd_cpe_edge_collection",
     "nvd_cve_edge_collection",
-    "sigmahq_rules_edge_collection"
+    "sigma_rules_edge_collection"
 ]
 namespace = UUID("2e51a631-99d8-52a5-95a6-8314d3f4fbf3")
 

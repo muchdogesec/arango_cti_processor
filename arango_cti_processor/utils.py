@@ -36,7 +36,7 @@ def get_relationship():
             "cve-cpe": relate_cve_to_cpe,
             "cve-attack": relate_cve_to_attack,
         },
-        "sigmahq_rules_vertex_collection": {
+        "sigma_rules_vertex_collection": {
             "sigma-attack": relate_sigma_to_attack,
             "sigma-cve": relate_sigma_to_cve,
         },
@@ -74,8 +74,8 @@ def get_rel_func_mapping(relationships):
         },
         "cve-cwe": {"nvd_cve_vertex_collection": relate_cve_to_cwe},
         "cve-cpe": {"nvd_cve_vertex_collection": relate_cve_to_cpe},
-        "sigma-attack": {"sigmahq_rules_vertex_collection": relate_sigma_to_attack},
-        "sigma-cve": {"sigmahq_rules_vertex_collection": relate_sigma_to_cve},
+        "sigma-attack": {"sigma_rules_vertex_collection": relate_sigma_to_attack},
+        "sigma-cve": {"sigma_rules_vertex_collection": relate_sigma_to_cve},
         "cve-attack": {"nvd_cve_vertex_collection": relate_cve_to_attack},
     }
     return [(rel, value) for rel, value in REL_TO_FUNC_MAPPING.items() if rel in relationships]
