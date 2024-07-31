@@ -232,7 +232,7 @@ def relate_capec_to_attack(
             for rel in data.get("external_references", None):
                 if rel.get("source_name") == "capec":
                     capec_id = rel.get("external_id")
-                if rel.get("source_name") == "ATTACK":
+                if rel.get("source_name") == "mitre-attack":
                     custom_query = (
                         "FILTER "
                         "POSITION(t.external_references[*].external_id, '{}', false) and t._is_latest==True"
@@ -343,7 +343,7 @@ def relate_sigma_to_attack(
                     "t.type == 'attack-pattern' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest==True"
                     " ".format(ref["external_id"])
                 )
-            elif ref["source_name"] == "ATTACK":
+            elif ref["source_name"] == "mitre-attack":
                 custom_query = (
                     "FILTER t.name=='{}' "
                     "AND t._is_latest==True "
