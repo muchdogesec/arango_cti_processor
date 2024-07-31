@@ -461,13 +461,13 @@ python3 -m unittest tests/test_7_0_sigma_to_attack.py
 
 ## TEST 7.1: Update Sigma Rule Indicator adding a new ATT&CK pattern
 
-Adds attack.t1543.003 (1 result) to indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 2 attack.initial_access (1 entry in each matrix = 3), attack.t1190 (2 in enterprise) so now has 3 generation 6 sros total
+Adds t1543.003 (1 result) to indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf. Used to have 4 SROs gen in test 7.0, now has 5.
 
 ```shell
 python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/sigma-rules-with-NEW-cve.json \
+  --file tests/files/arango_cti_processor/sigma-rule-update-1.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigmahq_rules
+  --collection sigma_rules
 ```
 
 Run the test:
@@ -478,13 +478,13 @@ python3 -m unittest tests/test_7_1_sigma_to_attack.py
 
 ## TEST 7.2: Update Sigma Rule Indicator removing all ATT&CK pattern
 
-Removes all attack objects from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1
+Removes all attack objects from indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf
 
 ```shell
 python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/sigma-rules-with-NO-cve.json \
+  --file tests/files/arango_cti_processor/sigma-rule-update-2.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigmahq_rules
+  --collection sigma_rules
 ```
 
 Run the test:
@@ -507,7 +507,7 @@ Import required data:
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/sigma-rules-with-cves.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigmahq_rules && \
+  --collection sigma_rules && \
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/condensed_cve_bundle.json \
   --database arango_cti_processor_standard_tests \
@@ -528,7 +528,7 @@ Import required data:
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/sigma-rules-with-NEW-cve.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigmahq_rules
+  --collection sigma_rules
 ```
 
 Adds cve.2023.43621 to indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 2 CVEs in 8.1 (cve.2022.26134, cve.2021.26084) so now has 3.
@@ -547,7 +547,7 @@ Import required data:
 python3 stix2arango.py  \
   --file tests/files/arango_cti_processor/sigma-rules-with-NO-cve.json \
   --database arango_cti_processor_standard_tests \
-  --collection sigmahq_rules
+  --collection sigma_rules
 ```
 
 Removes all CVEs from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 3 CVEs in 8.2, 2 in 8.1, now 0 in 8.3.

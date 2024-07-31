@@ -32,45 +32,63 @@ class TestArangoDB(unittest.TestCase):
         cursor = self.db.aql.execute(query)
         return [count for count in cursor]
 
-    # test 1 Should return 3 results, the new and 2 old objects.
-    def test_01_updated_object(self):
+    # should still return 2 objects b/c these never update
+    def test_01_auto_imported_objects(self):
         query = """
-        RETURN LENGTH(
           FOR doc IN sigma_rules_vertex_collection
-              FILTER doc.id == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-              RETURN doc
-        )
+            FILTER doc._arango_cti_processor_note == "automatically imported object at script runtime"
+            RETURN doc.id
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [3], f"Expected 3 documents, but found {result_count}.")
+        expected_ids = [
+            "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
+            "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
+        ]
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
-    # test 2 check new relationship objects generated for indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1 . Should be 0 as new object has no attack refs
-    def test_02_check_old_objects_for_update(self):
+    # test 2 Expects 15546 results (see test-data-research.md for why)
+    def test_02_check_generated_relationships(self):
         query = """
         RETURN LENGTH(
           FOR doc IN sigma_rules_edge_collection
+            FILTER doc._is_latest == true
+            AND doc.relationship_type == "detects"
+            AND doc._arango_cti_processor_note == "sigma-attack"
+            AND doc.object_marking_refs == [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
+            ]
+            RETURN [doc]
+        )
+        """
+        result_count = self.run_query(query)
+        self.assertEqual(result_count, [15546], f"Expected 15546 documents, but found {result_count}.")
+
+# check relationships for indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf now has 0 attack refs
+
+    def test_03_check_relationship_gen_for_object1(self):
+        query = """
+          FOR doc IN sigma_rules_edge_collection
               FILTER doc._is_latest == true
               AND doc.relationship_type == "detects"
-              AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-              RETURN doc
-        )
+              AND doc.source_ref == "indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf"
+              RETURN doc.id
         """
         result_count = self.run_query(query)
         self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
 
-    # test 3 check old relationship objects generated for indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1 . Should be 10 -- 5 in 7.0 and 6 in 7.1
-    def test_03_check_new_objects_for_update(self):
+# should return 9 results (as test 7.0 has 4 sros generated, and test 7.1 has 5)
+
+    def test_04_check_relationship_gen_for_object1_old(self):
         query = """
-        RETURN LENGTH(
           FOR doc IN sigma_rules_edge_collection
               FILTER doc._is_latest == false
               AND doc.relationship_type == "detects"
-              AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
-              RETURN doc
-        )
+              AND doc.source_ref == "indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf"
+              RETURN doc.id
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [11], f"Expected 11 documents, but found {result_count}.")
+        self.assertEqual(result_count, [9], f"Expected 9 documents, but found {result_count}.")
 
 if __name__ == '__main__':
     unittest.main()

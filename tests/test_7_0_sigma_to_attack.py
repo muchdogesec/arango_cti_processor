@@ -64,7 +64,7 @@ class TestArangoDB(unittest.TestCase):
         result_count = self.run_query(query)
         self.assertEqual(result_count, [15546], f"Expected 15546 documents, but found {result_count}.")
 
-# check relationships for indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf has 3 ATT&CK references, 
+# check relationships for indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf has 3 ATT&CK references (but credential_access is in two domains, so 4 total sros expected), 
 #        {
 #          "source_name": "mitre-attack",
 #          "description": "tactic",
@@ -107,6 +107,19 @@ class TestArangoDB(unittest.TestCase):
             "relationship--96495af9-cd33-5191-95ab-d098b7ef2f5e"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
+# should return no results as no old versions of this object (this is first test)
+
+    def test_04_check_relationship_gen_for_object1_old(self):
+        query = """
+          FOR doc IN sigma_rules_edge_collection
+              FILTER doc._is_latest == false
+              AND doc.relationship_type == "detects"
+              AND doc.source_ref == "indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf"
+              RETURN doc.id
+        """
+        result_count = self.run_query(query)
+        self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
 
 if __name__ == '__main__':
     unittest.main()
