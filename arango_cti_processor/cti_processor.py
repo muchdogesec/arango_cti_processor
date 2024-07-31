@@ -21,6 +21,7 @@ class ArangoProcessor:
         self.stix2arango_note = kwargs.get("stix2arango_note", "")
         self.arango_database = database
         self.vertex_collections, self.edge_collections = self.get_collections_for_relationship()
+        self.modified = kwargs.get("modified")
 
         self.arango = ArangoDBService(self.arango_database, self.vertex_collections, self.edge_collections, host_url=config.ARANGODB_HOST_URL, username=config.ARANGODB_USERNAME, password=config.ARANGODB_PASSWORD)
         self.validate_collections()
@@ -113,8 +114,14 @@ class ArangoProcessor:
         logging.info("Processing relationships now")
         for vertex, func in self.finalize_collections():
             logging.info(f"Checking: {vertex}")
-            query = f"for doc in {vertex} FILTER doc._is_latest==true return doc"
-            data = self.arango.execute_raw_query(query=query)
+            bind_vars = {
+                '@collection': vertex
+            }
+            query = f"for doc in @@collection FILTER doc._is_latest  return doc"
+            if self.modified:
+                query = f"for doc in @@collection FILTER doc._is_latest AND doc.modified >= @earliest_modified_time return doc"
+                bind_vars.update(earliest_modified_time=self.modified)
+            data = self.arango.execute_raw_query(query=query, bind_vars=bind_vars)
             inserted_data = self.map_relationships(
                 data=data,
                 func=func,
