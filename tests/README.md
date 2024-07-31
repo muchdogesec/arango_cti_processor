@@ -92,7 +92,7 @@ Run the test script;
 python3 -m unittest tests/test_1_2_capec_to_attack.py
 ```
 
-### TEST 1.3 Perform ANOTHER update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
+## TEST 1.3 Perform ANOTHER update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
 Note, test 1.2 must have been run for this test to work.
 
@@ -114,7 +114,7 @@ Run the test script;
 python3 -m unittest tests/test_1_3_capec_to_attack.py
 ```
 
-### TEST 1.4 Perform ANOTHER update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
+## TEST 1.4 Perform ANOTHER update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
 Note, test 1.3 must have been run for this test to work.
 
@@ -234,7 +234,7 @@ Run the test script;
 python3 -m unittest tests/test_3_0_cwe_to_capec.py
 ```
 
-### TEST 3.1 Adding a new CAPEC to a CWE
+## TEST 3.1 Adding a new CAPEC to a CWE
 
 Test 3.0 should be run beforehand.
 
@@ -364,7 +364,7 @@ python3 -m unittest tests/test_5_2_cve_to_cwe.py
 
 ---
 
-### TEST 6.0: Validate CVE Indicator -> CPE Software Relationship (`cve-cpe`)
+## TEST 6.0: Validate CVE Indicator -> CPE Software Relationship (`cve-cpe`)
 
 ```shell
 python3 tests/delete_all_databases.py
@@ -435,7 +435,7 @@ python3 -m unittest tests/test_6_2_cve_to_cpe.py
 
 ---
 
-### TEST 7.0: Test Sigma Rule Indicator to ATT&CK Attack Pattern relationship (`sigma-attack`)
+## TEST 7.0: Test Sigma Rule Indicator to ATT&CK Attack Pattern relationship (`sigma-attack`)
 
 ```shell
 python3 tests/delete_all_databases.py
@@ -464,7 +464,7 @@ Run the test script;
 python3 -m unittest tests/test_7_0_sigma_to_attack.py
 ```
 
-### TEST 7.1: Update Sigma Rule Indicator adding a new ATT&CK pattern
+## TEST 7.1: Update Sigma Rule Indicator adding a new ATT&CK pattern
 
 Adds attack.t1543.003 (1 result) to indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 2 attack.initial_access (1 entry in each matrix = 3), attack.t1190 (2 in enterprise) so now has 3 generation 6 sros total
 
@@ -481,7 +481,7 @@ Run the test:
 python3 -m unittest tests/test_7_1_sigma_to_attack.py
 ```
 
-### TEST 7.2: Update Sigma Rule Indicator removing all ATT&CK pattern
+## TEST 7.2: Update Sigma Rule Indicator removing all ATT&CK pattern
 
 Removes all attack objects from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1
 
@@ -500,7 +500,7 @@ python3 -m unittest tests/test_7_2_sigma_to_attack.py
 
 ---
 
-### TEST 8.0: Test Sigma Rule Indicator to CVE Vulnerability 
+## TEST 8.0: Test Sigma Rule Indicator to CVE Vulnerability 
 
 ```shell
 python3 tests/delete_all_databases.py
@@ -525,7 +525,7 @@ Run the test:
 python3 -m unittest tests/test_8_0_sigma_to_cve.py
 ```
 
-### TEST 8.1: Update Sigma Rule Indicator with another CVE Vulnerability 
+## TEST 8.1: Update Sigma Rule Indicator with another CVE Vulnerability 
 
 Import required data:
 
@@ -544,7 +544,7 @@ Run the test:
 python3 -m unittest tests/test_8_1_sigma_to_cve.py
 ```
 
-### TEST 8.2: Remove all CVEs from Sigma rule
+## TEST 8.2: Remove all CVEs from Sigma rule
 
 Import required data:
 

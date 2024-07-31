@@ -58,6 +58,7 @@ class TestArangoDB(unittest.TestCase):
             (FOR d IN mitre_attack_mobile_edge_collection RETURN d)
         )
           FILTER doc.relationship_type == "relies-on"
+          AND doc._arango_cti_processor_note == "attack-capec"
           RETURN doc
         )
         """
