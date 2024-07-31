@@ -88,20 +88,18 @@ def parse_relation_object(src, dst, collection, relationship_type: str, note=Non
             f"{relationship_type}+{src.get('_id').split('+')[0]}+{dst.get('_id').split('+')[0]}"
         )
     )
-    obj = json.loads(
-        Relationship(
-            id=generated_id,
-            created=src.get("created"),
-            modified=src.get("modified"),
-            relationship_type=relationship_type,
-            source_ref=src.get("id"),
-            target_ref=dst.get("id"),
-            created_by_ref="identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
-            object_marking_refs=config.OBJECT_MARKING_REFS,
-            external_references=[
-                # ExternalReference(source_name="cti2stix_version", external_id=config.cti2stix_version),
-            ],
-        ).serialize()
+    obj = dict(
+        id=generated_id,
+        created=src.get("created"),
+        modified=src.get("modified"),
+        relationship_type=relationship_type,
+        source_ref=src.get("id"),
+        target_ref=dst.get("id"),
+        created_by_ref="identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
+        object_marking_refs=config.OBJECT_MARKING_REFS,
+        external_references=[
+            # ExternalReference(source_name="cti2stix_version", external_id=config.cti2stix_version),
+        ],
     )
     obj["_from"] = src["_id"]
     obj["_to"]   = dst["_id"]
