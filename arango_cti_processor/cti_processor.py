@@ -127,8 +127,8 @@ class ArangoProcessor:
                 processors.sigma_groups(self.arango)
 
 
-    def filter_objects_in_collection_using_custom_query(self, collection, custom_query):
-        return self.arango.filter_objects_in_collection_using_custom_query(collection, custom_query)
+    def filter_objects_in_collection_using_custom_query(self, collection_name, custom_query):
+        return self.arango.filter_objects_in_collection_using_custom_query(collection_name, custom_query)
     
     def filter_objects_in_list_collection_using_custom_query(self, *args, **kw):
         return self.arango.filter_objects_in_list_collection_using_custom_query(*args, **kw)
