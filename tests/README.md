@@ -6,8 +6,6 @@ Delete any old data that might exist from old tests:
 
 ```shell
 python3 tests/delete_all_databases.py
-
-python3 tests/temp_add_collections.py
 ```
 
 ## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
