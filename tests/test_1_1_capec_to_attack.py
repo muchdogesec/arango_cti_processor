@@ -106,6 +106,13 @@ class TestArangoDB(unittest.TestCase):
 
 # test 6 test the relationship ids are correct
 
+# object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a+mitre_attack_enterprise_vertex_collection/attack-pattern--3257eb21-f9a7-4430-8de1-d8b6e288f529` = c1e846eb-6463-5933-bfd0-0c2cbe655e7f
+# object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a+mitre_attack_enterprise_vertex_collection/course-of-action--46b7ef91-4e1d-43c5-a2eb-00fa9444f6f4` = d896e414-2eb0-51dc-a6f0-0fa003ef6bb5
+# object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a+mitre_attack_enterprise_vertex_collection/attack-pattern--dd43c543-bb85-4a6f-aa6e-160d90d06a49` = 1ac8370b-3815-5f6d-baf7-a39080fe3a35
+# object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a+mitre_attack_enterprise_vertex_collection/course-of-action--e8d22ec6-2236-48de-954b-974d17492782` = d39341ee-e330-507f-85f8-4087e4ad86e6
+# object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a+mitre_attack_enterprise_vertex_collection/attack-pattern--d21bb61f-08ad-4dc1-b001-81ca6cb79954` = 7f0b0170-59ff-5b3e-86e8-2fdb8650ad14
+
+
     def test_06_update_capec158_check_relationship_ids(self):
         query = """
           FOR doc IN mitre_capec_edge_collection
@@ -119,7 +126,8 @@ class TestArangoDB(unittest.TestCase):
           "relationship--c1e846eb-6463-5933-bfd0-0c2cbe655e7f",
           "relationship--d896e414-2eb0-51dc-a6f0-0fa003ef6bb5",
           "relationship--1ac8370b-3815-5f6d-baf7-a39080fe3a35",
-          "relationship--d39341ee-e330-507f-85f8-4087e4ad86e6"
+          "relationship--d39341ee-e330-507f-85f8-4087e4ad86e6",
+          "relationship--7f0b0170-59ff-5b3e-86e8-2fdb8650ad14"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 

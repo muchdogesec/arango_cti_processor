@@ -12,8 +12,7 @@ client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
 
 # Database names
 databases = [
-    "arango_cti_processor_standard_tests_database",
-    "arango_cti_processor_volume_tests_database"
+    "arango_cti_processor_standard_tests_database"
 ]
 
 # Function to delete a database

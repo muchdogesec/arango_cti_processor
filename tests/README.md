@@ -1,16 +1,10 @@
 # Tests
 
-## Utilities
-
-Delete any old data that might exist from old tests:
+## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
 ```shell
 python3 tests/delete_all_databases.py
 ```
-
-## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
-
-**You need to delete all other test data**
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
@@ -172,7 +166,9 @@ Should return 0 result, as no ATT&CK references exist in this CAPEC object now.
 
 ## TEST 2.0: Validate CAPEC Attack Pattern -> CWE Weakness relationship (`capec-cwe`)
 
-**You need to delete all other test data**
+```shell
+python3 tests/delete_all_databases.py
+```
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
@@ -217,7 +213,9 @@ python3 -m unittest tests/test_2_1_capec_to_cwe.py
 
 ## TEST 3.0: Validate CWE Weakness -> CAPEC Attack Pattern relationship (`cwe-capec`)
 
-**You need to delete all other test data**
+```shell
+python3 tests/delete_all_databases.py
+```
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
@@ -262,7 +260,9 @@ python3 -m unittest tests/test_3_1_capec_to_cwe.py
 
 ## TEST 4.0: Validate ATT&CK Attack Pattern -> CAPEC Attack Pattern relationship (`attack-capec`)
 
-**You need to delete all other test data**
+```shell
+python3 tests/delete_all_databases.py
+```
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
@@ -291,7 +291,9 @@ python3 -m unittest tests/test_4_0_attack_to_capec.py
 
 ## TEST 5.0: Validate CVE Vulnerability -> CWE Weakness Relationship (`cve-cwe`)
 
-**You need to delete all other test data**
+```shell
+python3 tests/delete_all_databases.py
+```
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
@@ -364,9 +366,11 @@ python3 -m unittest tests/test_5_2_cve_to_cwe.py
 
 ### TEST 6.0: Validate CVE Indicator -> CPE Software Relationship (`cve-cpe`)
 
-condensed_cve_bundle.json has 6 cpes
+```shell
+python3 tests/delete_all_databases.py
+```
 
-**You need to delete all other test data**
+condensed_cve_bundle.json has 6 cpes
 
 Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
 
@@ -433,7 +437,9 @@ python3 -m unittest tests/test_6_2_cve_to_cpe.py
 
 ### TEST 7.0: Test Sigma Rule Indicator to ATT&CK Attack Pattern relationship (`sigma-attack`)
 
-**You need to delete all other test data**
+```shell
+python3 tests/delete_all_databases.py
+```
 
 Import required data:
 
@@ -496,7 +502,9 @@ python3 -m unittest tests/test_7_2_sigma_to_attack.py
 
 ### TEST 8.0: Test Sigma Rule Indicator to CVE Vulnerability 
 
-**You need to delete all other test data**
+```shell
+python3 tests/delete_all_databases.py
+```
 
 Import required data:
 
@@ -551,49 +559,4 @@ Removes all CVEs from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to h
 
 ```shell
 python3 -m unittest tests/test_8_2_sigma_to_cve.py
-```
-
----
-
-### TEST 9.0: Test CPE Groups
-
-**You need to delete all other test data**
-
-Import required data:
-
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/sample-cpe-bundle.json \
-  --database arango_cti_processor_standard_tests \
-  --collection nvd_cpe
-```
-
-Run the test:
-
-```shell
-python3 -m unittest tests/test_9_0_cpe_groups.py
-```
-
-### TEST 9.1: Add a new product to an existing vendor
-
-This adds a 2 new products (softwares) for vendor = google
-
-* `software--75a12f40-ebf2-4bfb-99e1-eb41ddbc81dc` brand new product with vendor = google
-* `software--a11b7906-7775-47ea-a97d-55c3968d2c9f` a new version of vendor = google, product = chrome
-
-Thus expect the Vendor Grouping object to be updated with new ID, and also new product Grouping object created for the new product.
-
-Import required data:
-
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/cpe-new-product.json \
-  --database arango_cti_processor_standard_tests \
-  --collection nvd_cpe
-```
-
-Run the test:
-
-```shell
-python3 -m unittest tests/test_9_1_cpe_groups.py
 ```
