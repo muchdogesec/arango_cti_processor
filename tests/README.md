@@ -155,26 +155,7 @@ Removes all CWEs from vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 (now h
 
 ## TEST 6.0: Validate CVE Indicator -> CPE Software Relationship (`cve-cpe`)
 
-```shell
-python3 tests/delete_all_databases.py
-```
-
 condensed_cve_bundle.json has 6 cpes
-
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/condensed_cve_bundle.json \
-  --database arango_cti_processor_standard_tests \
-  --collection nvd_cve && \
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/condensed_cpe_bundle.json \
-  --database arango_cti_processor_standard_tests \
-  --collection nvd_cpe
-```
-
-Run the test script;
 
 ```shell
 python3 -m unittest tests/test_6_0_cve_to_cpe.py
@@ -188,7 +169,7 @@ Adds `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` to `indicator--
 
 ```shell
 python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/condensed_cpe_bundle-update-1.json \
+  --file tests/files/arango_cti_processor/ \
   --database arango_cti_processor_standard_tests \
   --collection nvd_cve
 ```
@@ -204,15 +185,6 @@ python3 -m unittest tests/test_6_1_cve_to_cpe.py
 Need to run test 6.1 beforehand
 
 Removes `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` (added in 6.2) from `indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6`
-
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/condensed_cpe_bundle-update-2.json \
-  --database arango_cti_processor_standard_tests \
-  --collection nvd_cve
-```
-
-Run the test script;
 
 ```shell
 python3 -m unittest tests/test_6_2_cve_to_cpe.py
