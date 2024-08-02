@@ -13,6 +13,10 @@ load_dotenv()
 ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME", "root")
 ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD", "")
 ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL", "http://127.0.0.1:8529")
+TESTS_DATABASE = "arango_cti_processor_standard_tests_database"
+TEST_MODE = "capec-attack"
+STIX2ARANGO_NOTE = "test01"
+IGNORE_EMBEDDED_RELATIONSHIPS = "false"
 
 client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
 
@@ -31,10 +35,10 @@ class TestArangoDB(unittest.TestCase):
         # Run the arango_cti_processor.py script
         subprocess.run([
             "python3", "arango_cti_processor.py",
-            "--database", "arango_cti_processor_standard_tests_database",
-            "--relationship", "capec-attack",
-            "--stix2arango_note", "test01",
-            "--ignore_embedded_relationships", "false"
+            "--database", TESTS_DATABASE,
+            "--relationship", TEST_MODE,
+            "--stix2arango_note", STIX2ARANGO_NOTE,
+            "--ignore_embedded_relationships", IGNORE_EMBEDDED_RELATIONSHIPS
         ], check=True)
         print(f'======arango_cti_processor run successfully======')
         
