@@ -194,28 +194,6 @@ python3 -m unittest tests/test_6_2_cve_to_cpe.py
 
 ## TEST 7.0: Test Sigma Rule Indicator to ATT&CK Attack Pattern relationship (`sigma-attack`)
 
-```shell
-python3 tests/delete_all_databases.py
-```
-
-Import required data:
-
-```shell
-python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 14_1 && \
-python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 14_1 && \
-python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 14_1 && \
-python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 2024-05-13
-```
-
-Run the test script;
 
 ```shell
 python3 -m unittest tests/test_7_0_sigma_to_attack.py
@@ -225,31 +203,9 @@ python3 -m unittest tests/test_7_0_sigma_to_attack.py
 
 Adds t1543.003 (1 result) to indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf. Used to have 4 SROs gen in test 7.0, now has 5.
 
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/sigma-rule-update-1.json \
-  --database arango_cti_processor_standard_tests \
-  --collection sigma_rules
-```
-
-Run the test:
-
-```shell
-python3 -m unittest tests/test_7_1_sigma_to_attack.py
-```
-
 ## TEST 7.2: Update Sigma Rule Indicator removing all ATT&CK pattern
 
 Removes all attack objects from indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf
-
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/sigma-rule-update-2.json \
-  --database arango_cti_processor_standard_tests \
-  --collection sigma_rules
-```
-
-Run the test:
 
 ```shell
 python3 -m unittest tests/test_7_2_sigma_to_attack.py
@@ -260,57 +216,14 @@ python3 -m unittest tests/test_7_2_sigma_to_attack.py
 ## TEST 8.0: Test Sigma Rule Indicator to CVE Vulnerability 
 
 ```shell
-python3 tests/delete_all_databases.py
-```
-
-Import required data:
-
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/sigma-rules-with-cves.json \
-  --database arango_cti_processor_standard_tests \
-  --collection sigma_rules && \
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/condensed_cve_bundle.json \
-  --database arango_cti_processor_standard_tests \
-  --collection nvd_cve
-```
-
-Run the test:
-
-```shell
 python3 -m unittest tests/test_8_0_sigma_to_cve.py
 ```
 
 ## TEST 8.1: Update Sigma Rule Indicator with another CVE Vulnerability 
 
-Import required data:
-
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/sigma-rules-with-NEW-cve.json \
-  --database arango_cti_processor_standard_tests \
-  --collection sigma_rules
-```
-
 Adds cve.2023.43621 to indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 2 CVEs in 8.1 (cve.2022.26134, cve.2021.26084) so now has 3.
 
-Run the test:
-
-```shell
-python3 -m unittest tests/test_8_1_sigma_to_cve.py
-```
-
 ## TEST 8.2: Remove all CVEs from Sigma rule
-
-Import required data:
-
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/sigma-rules-with-NO-cve.json \
-  --database arango_cti_processor_standard_tests \
-  --collection sigma_rules
-```
 
 Removes all CVEs from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 3 CVEs in 8.2, 2 in 8.1, now 0 in 8.3.
 
