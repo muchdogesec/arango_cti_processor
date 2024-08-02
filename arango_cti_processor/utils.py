@@ -90,6 +90,7 @@ def parse_relation_object(src, dst, collection, relationship_type: str, note=Non
     )
     obj = dict(
         id=generated_id,
+        type="relationship",
         created=src.get("created"),
         modified=src.get("modified"),
         relationship_type=relationship_type,

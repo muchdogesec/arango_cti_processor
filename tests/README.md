@@ -3,29 +3,6 @@
 ## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
 ```shell
-python3 tests/delete_all_databases.py
-```
-
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 14_1 && \
-python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 14_1 && \
-python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 14_1 && \
-python3 utilities/arango_cti_processor/insert_archive_capec.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 3_9
-```
-
-Run the test script;
-
-```shell
 python3 -m unittest tests/test_1_0_capec_to_attack.py
 ```
 
