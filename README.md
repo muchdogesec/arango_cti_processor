@@ -33,7 +33,7 @@ ArangoDB CTI Processor is designed to work with the following data sources:
 
 ## Prerequisites
 
-Assumes a database called `cti_database` with the following collections in it created by stix2arango;
+Assumes the database entered at the command line has the following collection names;
 
 * `mitre_attack_enterprise_vertex_collection`/`mitre_attack_enterprise_edge_collection`
 * `mitre_attack_mobile_vertex_collection`/`mitre_attack_mobile_edge_collection`
@@ -44,7 +44,7 @@ Assumes a database called `cti_database` with the following collections in it cr
 * `nvd_cve_vertex_collection`/`nvd_cve_edge_collection`
 * `sigma_rules_vertex_collection`/`sigma_rules_edge_collection`
 
-[See the stix2arango README.md for more details on this](https://github.com/muchdogesec/stix2arango/).
+[These utilities in stix2arango will do this automatically for you](https://github.com/muchdogesec/stix2arango/tree/main/utilities).
 
 ## Usage
 
