@@ -25,7 +25,7 @@ class TestArangoDB(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         make_uploads([
-                ("mitre_capec", "tests/files/arango_cti_processor/arango-cti-capec-attack-update-3.json"),
+                ("mitre_capec", "tests/files/arango-cti-capec-attack-update-3.json"),
             ], database="arango_cti_processor_standard_tests", delete_db=False, 
             host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME)
         print(f'======Test bundles uploaded successfully======')

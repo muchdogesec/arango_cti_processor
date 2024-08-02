@@ -12,10 +12,8 @@ This time we don't import any new data, but run the arango_cti_processor command
 
 This should generate 0 new objects, because the output should be identical to first run, and thus no new versions should be created.
 
-Run the test script for 1.0 (results should still be the same, as nothing should have changed);
-
 ```shell
-python3 -m unittest tests/test_1_0_capec_to_attack.py
+python3 -m unittest tests/test_1_0_5_capec_to_attack.py
 ```
 
 ## TEST 1.1: Perform update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
