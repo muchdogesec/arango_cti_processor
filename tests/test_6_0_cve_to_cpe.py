@@ -41,6 +41,7 @@ class TestArangoDB(unittest.TestCase):
         print(f'======arango_cti_processor run successfully======')
         
         cls.db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
+
     def run_query(self, query):
         cursor = self.db.aql.execute(query)
         return [count for count in cursor]
