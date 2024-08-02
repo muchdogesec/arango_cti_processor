@@ -31,3 +31,7 @@ def make_uploads(uploads: list[tuple[str, str]], delete_db=False, database="aran
         delete_database(client, database+'_database')
     for collection, file in uploads:
         Stix2Arango(database=database, collection=collection, file=file, **kwargs).run()
+    print('======Test bundles uploaded successfully======')
+    print("==============================================\n"*10)
+    print('======Test bundles uploaded successfully======')
+    
