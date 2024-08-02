@@ -27,15 +27,13 @@ class TestArangoDB(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        subprocess.run([
-            "python3", "tests/delete_all_databases.py"
-        ], check=True)
         make_uploads([
-            ("mitre_attack_enterprise", "tests/files/enterprise-attack-14_1.json"),
-            ("mitre_attack_ics", "tests/files/ics-attack-14_1.json"),
-            ("mitre_attack_mobile", "tests/files/mobile-attack-14_1.json"),
-            ("mitre_capec", "tests/files/cwe-bundle-v4_13.json"),
-        ], database="arango_cti_processor_standard_tests", delete_db=True)
+                ("mitre_attack_enterprise", "tests/files/enterprise-attack-14_1.json"),
+                ("mitre_attack_ics", "tests/files/ics-attack-14_1.json"),
+                ("mitre_attack_mobile", "tests/files/mobile-attack-14_1.json"),
+                ("mitre_capec", "tests/files/cwe-bundle-v4_13.json"),
+            ], database="arango_cti_processor_standard_tests", delete_db=True, 
+            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME)
         # Run the arango_cti_processor.py script
         subprocess.run([
             "python3", "arango_cti_processor.py",

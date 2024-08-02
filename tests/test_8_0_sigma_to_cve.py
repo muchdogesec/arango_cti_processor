@@ -23,7 +23,8 @@ class TestArangoDB(unittest.TestCase):
         make_uploads([
             ("sigma_rules", "tests/files/sigma-rules-with-cves.json"),
             ("nvd_cve", "tests/files/condensed_cve_bundle.json"),
-        ], database="arango_cti_processor_standard_tests", delete_db=True)
+        ], database="arango_cti_processor_standard_tests", delete_db=True, 
+            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME)
         # Run the arango_cti_processor.py script
         subprocess.run([
             "python3", "arango_cti_processor.py",
