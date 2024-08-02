@@ -92,7 +92,7 @@ class TestArangoDB(unittest.TestCase):
         self.assertEqual(result_count, [1212], f"Expected 1212 documents, but found {result_count}.")
 
     # test 4 To check objects are created as expected, you can pick a CAPEC object with CWE references and then check all the SROs for CWE are generated for it, as follows...
-    # e.g. [CAPEC-112](https://github.com/mitre/cti/blob/master/capec/2.1/attack-pattern/attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1.json) which has links to: CWE-330 (weakness--e72563af-bb4e-59d9-926c-95344c1ef7e0), CWE-326 (weakness--611422c2-1201-50dc-8c94-0ddf62565555), CWE-521 (weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5)
+    # e.g. [CAPEC-112](https://github.com/mitre/cti/blob/master/capec/2.1/attack-pattern/attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1.json) which has links to: CWE-330 (weakness--5c1cf10b-dc31-5536-a1b5-dc5094e7f4b2), CWE-326 (weakness--3f87bca2-8785-543e-906e-cf2adb753c31), CWE-521 (weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926)
     def test_04_correct_relationship_capec112(self):
         query = """
             FOR doc IN mitre_capec_edge_collection
@@ -103,16 +103,16 @@ class TestArangoDB(unittest.TestCase):
         """
         result_count = self.run_query(query)
         expected_ids = [
-            "weakness--e72563af-bb4e-59d9-926c-95344c1ef7e0",
-            "weakness--611422c2-1201-50dc-8c94-0ddf62565555",
-            "weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5"
+            "weakness--5c1cf10b-dc31-5536-a1b5-dc5094e7f4b2",
+            "weakness--3f87bca2-8785-543e-906e-cf2adb753c31",
+            "weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
     # test 5 is extension of test 4 to check id generation:
-    # object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1+mitre_cwe_vertex_collection/weakness--e72563af-bb4e-59d9-926c-95344c1ef7e0` = d931a94d-039a-57b7-a089-21d80bc3b1de
-    # object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1+mitre_cwe_vertex_collection/weakness--611422c2-1201-50dc-8c94-0ddf62565555` = c98b705d-747f-5b5b-870a-0fae14bcfd14
-    # object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `technique+mitre_capec_vertex_collection/attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5` = 8eaf77d7-9bd5-5ccd-9a46-b2c002d4b47b
+    # object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploits+mitre_capec_vertex_collection/attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1+mitre_cwe_vertex_collection/weakness--5c1cf10b-dc31-5536-a1b5-dc5094e7f4b2` = b7327c21-681e-509f-8dd0-9d8a18b64612
+    # object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploits+mitre_capec_vertex_collection/attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1+mitre_cwe_vertex_collection/weakness--3f87bca2-8785-543e-906e-cf2adb753c31` = aefc359a-9eb8-5675-b190-4ce8334b58df
+    # object id `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploits+mitre_capec_vertex_collection/attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1+mitre_cwe_vertex_collection/weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926` = f6282d95-2a8e-583c-9561-70a67426c751
     def test_05_correct_relationship_capec112_ids(self):
         query = """
             FOR doc IN mitre_capec_edge_collection
@@ -123,9 +123,9 @@ class TestArangoDB(unittest.TestCase):
         """
         result_count = self.run_query(query)
         expected_ids = [
-            "relationship--d931a94d-039a-57b7-a089-21d80bc3b1de",
-            "relationship--c98b705d-747f-5b5b-870a-0fae14bcfd14",
-            "relationship--8eaf77d7-9bd5-5ccd-9a46-b2c002d4b47b"
+            "relationship--b7327c21-681e-509f-8dd0-9d8a18b64612",
+            "relationship--aefc359a-9eb8-5675-b190-4ce8334b58df",
+            "relationship--f6282d95-2a8e-583c-9561-70a67426c751"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
