@@ -228,3 +228,15 @@ Removes all CVEs from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to h
 ```shell
 python3 -m unittest tests/test_8_2_sigma_to_cve.py
 ```
+
+---
+
+## TEST 9.0: Test modified time cli arg
+
+The bundle for this test contains two objects one with a modified time before 2024-01-01 (CVE-2023-22518 vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 has 2 CWEs) and one after (CVE-2021-26084 vulnerability--ff040ea3-f2d9-5d38-80ae-065a2db41e64 has 1 CWE).
+
+The CLI `modified_min` arguement is 2024-01-01 so the expectation is that only one SRO is created by arango_cti_processor.
+
+```shell
+python3 -m unittest tests/test_9_0_modified_min.py
+```
