@@ -120,28 +120,6 @@ python3 -m unittest tests/test_3_1_capec_to_cwe.py
 
 ## TEST 4.0: Validate ATT&CK Attack Pattern -> CAPEC Attack Pattern relationship (`attack-capec`)
 
-```shell
-python3 tests/delete_all_databases.py
-```
-
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 14_1 && \
-python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 14_1 && \
-python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 14_1 && \
-python3 utilities/arango_cti_processor/insert_archive_capec.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 3_9
-```
-
-Run the test script;
 
 ```shell
 python3 -m unittest tests/test_4_0_attack_to_capec.py
@@ -150,28 +128,6 @@ python3 -m unittest tests/test_4_0_attack_to_capec.py
 ---
 
 ## TEST 5.0: Validate CVE Vulnerability -> CWE Weakness Relationship (`cve-cwe`)
-
-```shell
-python3 tests/delete_all_databases.py
-```
-
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-
-```shell
-python3 utilities/arango_cti_processor/insert_archive_cwe.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 4_13
-```
-
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/condensed_cve_bundle.json \
-  --database arango_cti_processor_standard_tests \
-  --collection nvd_cve
-```
-
-Run the test script;
 
 ```shell
 python3 -m unittest tests/test_5_0_cve_to_cwe.py
@@ -185,17 +141,6 @@ Need to run test 5.0 beforehand
 
 Adds CWE-787 to vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 (now has 2 CWE refs total, used to be 1 just CWE-863)
 
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/condensed_cve_bundle-updated-1.json \
-  --database arango_cti_processor_standard_tests \
-  --collection nvd_cve
-```
-
-Run the test script;
-
 ```shell
 python3 -m unittest tests/test_5_1_cve_to_cwe.py
 ```
@@ -205,21 +150,6 @@ python3 -m unittest tests/test_5_1_cve_to_cwe.py
 Need to run test 5.1 beforehand
 
 Removes all CWEs from vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 (now has 0 CWE refs total)
-
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/condensed_cve_bundle-updated-2.json \
-  --database arango_cti_processor_standard_tests \
-  --collection nvd_cve
-```
-
-Run the test script;
-
-```shell
-python3 -m unittest tests/test_5_2_cve_to_cwe.py
-```
 
 ---
 
