@@ -103,23 +103,6 @@ python3 -m unittest tests/test_2_1_capec_to_cwe.py
 ## TEST 3.0: Validate CWE Weakness -> CAPEC Attack Pattern relationship (`cwe-capec`)
 
 ```shell
-python3 tests/delete_all_databases.py
-```
-
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 utilities/arango_cti_processor/insert_archive_capec.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 3_9 && \
-python3 utilities/arango_cti_processor/insert_archive_cwe.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 4_13
-```
-
-Run the test script;
-
-```shell
 python3 -m unittest tests/test_3_0_cwe_to_capec.py
 ```
 
@@ -127,19 +110,7 @@ python3 -m unittest tests/test_3_0_cwe_to_capec.py
 
 Test 3.0 should be run beforehand.
 
-Here we update CWE-521 (`weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5`) with one new object (CAPEC-10 `attack-pattern--4a29d66d-8617-4382-b456-578ecdb1609e`)
-
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 stix2arango.py \
-  --file tests/files/arango_cti_processor/arango-cti-cwe-capec-update-1.json \
-  --database arango_cti_processor_standard_tests \
-  --collection mitre_capec \
-  --stix2arango_note v4.14
-```
-
-Run the test script;
+Here we update CWE-521 (`weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926`) with one new object (CAPEC-10 `attack-pattern--4a29d66d-8617-4382-b456-578ecdb1609e`)
 
 ```shell
 python3 -m unittest tests/test_3_1_capec_to_cwe.py

@@ -3,13 +3,20 @@ import subprocess
 import unittest
 from arango import ArangoClient
 from dotenv import load_dotenv
+from stix2arango.stix2arango import Stix2Arango
+
+from .upload import make_uploads
 
 # Load environment variables
 load_dotenv()
 
-ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME")
-ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD")
-ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL")
+ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME", "root")
+ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD", "")
+ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL", "http://127.0.0.1:8529")
+TESTS_DATABASE = "arango_cti_processor_standard_tests_database"
+TEST_MODE = "cwe-capec"
+STIX2ARANGO_NOTE = "test03"
+IGNORE_EMBEDDED_RELATIONSHIPS = "false"
 
 client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
 
@@ -17,17 +24,23 @@ class TestArangoDB(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        make_uploads([
+                ("mitre_cwe", "tests/files/cwe-bundle-v4_13.json"),
+                ("mitre_capec", "tests/files/stix-capec-v3_9.json"),
+            ], database="arango_cti_processor_standard_tests", delete_db=True, 
+            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME)
+        print(f'======Test bundles uploaded successfully======')
         # Run the arango_cti_processor.py script
         subprocess.run([
             "python3", "arango_cti_processor.py",
-            "--database", "arango_cti_processor_standard_tests_database",
-            "--relationship", "cwe-capec",
-            "--stix2arango_note", "test03",
-            "--ignore_embedded_relationships", "false"
+            "--database", TESTS_DATABASE,
+            "--relationship", TEST_MODE,
+            "--stix2arango_note", STIX2ARANGO_NOTE,
+            "--ignore_embedded_relationships", IGNORE_EMBEDDED_RELATIONSHIPS
         ], check=True)
+        print(f'======arango_cti_processor run successfully======')
         
         cls.db = client.db('arango_cti_processor_standard_tests_database', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
-
     def run_query(self, query):
         cursor = self.db.aql.execute(query)
         return [count for count in cursor]
@@ -77,69 +90,71 @@ class TestArangoDB(unittest.TestCase):
         self.assertEqual(result_count, [1212], f"Expected 1212 documents, but found {result_count}.")
 
     # test 4 To check objects are created as expected, you can pick a CWE object with CAPEC references and then check all the SROs 
-    # e.g. CWE-521 (weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5) which has links to 9 CAPEC IDs;
+    # e.g. CWE-521 (weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926) which has links to 9 CAPEC IDs;
     # CAPEC-112 (`attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1`)
     # CAPEC-16 (`attack-pattern--a9dc4914-409a-4f71-80df-c5cc3923d112`)
     # CAPEC-49 (`attack-pattern--8d88a81c-bde9-4fb3-acbe-901c783d6427`)
     # CAPEC-55 (`attack-pattern--a390cb72-b4de-4750-ae05-be556c89f4be`)
+    # CAPEC-509 (`attack-pattern--9197c7a2-6a03-40da-b2a6-df5f1d69e8fb`)
     # CAPEC-555 (`attack-pattern--06e8782a-87af-4863-b6b1-99e09edda3be`)
     # CAPEC-561 (`attack-pattern--f2654def-b86d-4ddb-888f-de6b50a103a2`)
     # CAPEC-565 (`attack-pattern--f724f0f3-20e6-450c-be4a-f373ea08834d`)
     # CAPEC-70 (`attack-pattern--8c7bab16-5ecd-4778-9b04-c185bceed170`)
-    # CAPEC-509 (`attack-pattern--9197c7a2-6a03-40da-b2a6-df5f1d69e8fb`)
+    
     def test_04_correct_relationship_cwe521(self):
         query = """
             FOR doc IN mitre_cwe_edge_collection
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "cwe-capec"
-              AND doc.source_ref == "weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5"
+              AND doc.source_ref == "weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926"
               RETURN doc.target_ref
         """
         result_count = self.run_query(query)
         expected_ids = [
-            "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1", # CAPEC-112
-            "attack-pattern--a9dc4914-409a-4f71-80df-c5cc3923d112", # CAPEC-16
-            "attack-pattern--8d88a81c-bde9-4fb3-acbe-901c783d6427", # CAPEC-49
-            "attack-pattern--a390cb72-b4de-4750-ae05-be556c89f4be", # CAPEC-55
-            "attack-pattern--06e8782a-87af-4863-b6b1-99e09edda3be", # CAPEC-555
-            "attack-pattern--f2654def-b86d-4ddb-888f-de6b50a103a2", # CAPEC-561
-            "attack-pattern--f724f0f3-20e6-450c-be4a-f373ea08834d", # CAPEC-565
-            "attack-pattern--8c7bab16-5ecd-4778-9b04-c185bceed170", # CAPEC-70
-            "attack-pattern--9197c7a2-6a03-40da-b2a6-df5f1d69e8fb" # CAPEC-509
-        ]
+  "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1",
+  "attack-pattern--a9dc4914-409a-4f71-80df-c5cc3923d112",
+  "attack-pattern--8d88a81c-bde9-4fb3-acbe-901c783d6427",
+  "attack-pattern--9197c7a2-6a03-40da-b2a6-df5f1d69e8fb",
+  "attack-pattern--a390cb72-b4de-4750-ae05-be556c89f4be",
+  "attack-pattern--06e8782a-87af-4863-b6b1-99e09edda3be",
+  "attack-pattern--f2654def-b86d-4ddb-888f-de6b50a103a2",
+  "attack-pattern--f724f0f3-20e6-450c-be4a-f373ea08834d",
+  "attack-pattern--8c7bab16-5ecd-4778-9b04-c185bceed170"
+]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
     # test 5 is an extension of test 4 but checks relationship ids
 
-    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1` = 4dc4d3f4-b7f6-5734-8ae2-e6d9de419f9d
-    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--a9dc4914-409a-4f71-80df-c5cc3923d112` = cfbfb721-5689-5be0-928c-ef88c885320d
-    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--8d88a81c-bde9-4fb3-acbe-901c783d6427` = 93dffeb4-05f2-5bb4-a84c-cb6c7da0481b
-    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--a390cb72-b4de-4750-ae05-be556c89f4be` = 6bd7ac75-d10c-5cf3-93c1-ad6cabe01ffd
-    # `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--06e8782a-87af-4863-b6b1-99e09edda3be` = 214cc86d-9174-5899-8755-6cee2f86f1ae
-    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--f2654def-b86d-4ddb-888f-de6b50a103a2` = 51442cc4-8257-54bd-8d83-adb6efbbaccb
-    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--f724f0f3-20e6-450c-be4a-f373ea08834d` = fc86cb32-5f2a-5561-b05e-56ce9e5d3bba
-    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--8c7bab16-5ecd-4778-9b04-c185bceed170` = 6a2b5b44-9597-5563-a890-bf0be8a76d10
-    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5+mitre_capec_vertex_collection/attack-pattern--9197c7a2-6a03-40da-b2a6-df5f1d69e8fb` = 016c2ba9-4348-538b-ad28-24ac312ac69a
+    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926+mitre_capec_vertex_collection/attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1` = d170bd83-e0a6-56f6-acf2-97d55d609059
+    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926+mitre_capec_vertex_collection/attack-pattern--a9dc4914-409a-4f71-80df-c5cc3923d112` = 3efe78ee-31d5-5f4b-9732-fb18d92cdbca
+    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926+mitre_capec_vertex_collection/attack-pattern--8d88a81c-bde9-4fb3-acbe-901c783d6427` = 7cc1b36f-2875-51fd-ab29-b96385051c8e
+    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926+mitre_capec_vertex_collection/attack-pattern--a390cb72-b4de-4750-ae05-be556c89f4be` = b6aad17b-9687-5cc4-80f5-b8c3ecbb8b8e
+    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926+mitre_capec_vertex_collection/attack-pattern--9197c7a2-6a03-40da-b2a6-df5f1d69e8fb` = 16642a37-da64-5faf-9f25-dd2b24a9feb7
+    # `exploited-using+mitre_cwe_vertex_collection/weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926+mitre_capec_vertex_collection/attack-pattern--06e8782a-87af-4863-b6b1-99e09edda3be` = e61ee37a-6d4f-53dd-8564-15149f2df18c
+    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926+mitre_capec_vertex_collection/attack-pattern--f2654def-b86d-4ddb-888f-de6b50a103a2` = 9044691f-3949-5333-a7df-72ebc86e3f85
+    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926+mitre_capec_vertex_collection/attack-pattern--f724f0f3-20e6-450c-be4a-f373ea08834d` = ae8a8f1d-4867-568f-885f-0f224b10ef19
+    # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `exploited-using+mitre_cwe_vertex_collection/weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926+mitre_capec_vertex_collection/attack-pattern--8c7bab16-5ecd-4778-9b04-c185bceed170` = ea05fa8c-3112-5d2d-8b18-ff4390c1bc3f
+    
     def test_05_correct_relationship_cwe521_ids(self):
         query = """
             FOR doc IN mitre_cwe_edge_collection
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "cwe-capec"
-              AND doc.source_ref == "weakness--e7a435fe-cc39-5a78-a362-eecdc61c80e5"
+              AND doc.source_ref == "weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926"
               RETURN doc.id
         """
         result_count = self.run_query(query)
         expected_ids = [
-            "relationship--4dc4d3f4-b7f6-5734-8ae2-e6d9de419f9d", # CAPEC-112
-            "relationship--cfbfb721-5689-5be0-928c-ef88c885320d", # CAPEC-16
-            "relationship--93dffeb4-05f2-5bb4-a84c-cb6c7da0481b", # CAPEC-49
-            "relationship--6bd7ac75-d10c-5cf3-93c1-ad6cabe01ffd", # CAPEC-55
-            "relationship--214cc86d-9174-5899-8755-6cee2f86f1ae", # CAPEC-555
-            "relationship--51442cc4-8257-54bd-8d83-adb6efbbaccb", # CAPEC-561
-            "relationship--fc86cb32-5f2a-5561-b05e-56ce9e5d3bba", # CAPEC-565
-            "relationship--6a2b5b44-9597-5563-a890-bf0be8a76d10", # CAPEC-70
-            "relationship--016c2ba9-4348-538b-ad28-24ac312ac69a" # CAPEC-509
-        ]
+  "relationship--d170bd83-e0a6-56f6-acf2-97d55d609059",
+  "relationship--3efe78ee-31d5-5f4b-9732-fb18d92cdbca",
+  "relationship--7cc1b36f-2875-51fd-ab29-b96385051c8e",
+  "relationship--16642a37-da64-5faf-9f25-dd2b24a9feb7",
+  "relationship--b6aad17b-9687-5cc4-80f5-b8c3ecbb8b8e",
+  "relationship--e61ee37a-6d4f-53dd-8564-15149f2df18c",
+  "relationship--9044691f-3949-5333-a7df-72ebc86e3f85",
+  "relationship--ae8a8f1d-4867-568f-885f-0f224b10ef19",
+  "relationship--ea05fa8c-3112-5d2d-8b18-ff4390c1bc3f"
+]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
 
