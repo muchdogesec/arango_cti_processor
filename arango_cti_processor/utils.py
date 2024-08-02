@@ -236,7 +236,7 @@ def relate_capec_to_attack(
             return []
 
         for rel in data["external_references"]:
-            if rel.get("source_name") == "mitre-attack":
+            if rel.get("source_name") in ["mitre-attack", "ATTACK"]:
                 custom_query = (
                     "FILTER "
                     "POSITION(t.external_references[*].external_id, '{}', false) and t._is_latest==True"
