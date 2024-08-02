@@ -74,18 +74,6 @@ Note, test 1.4 must have been run for this test to work.
 
 This time we remove all of the ATT&CK references inside the CAPEC object (`attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a`).
 
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 stix2arango.py \
-  --file tests/files/arango_cti_processor/arango-cti-capec-attack-update-5.json \
-  --database arango_cti_processor_standard_tests \
-  --collection mitre_capec \
-  --stix2arango_note v3.14
-```
-
-Run the test script;
-
 ```shell
 python3 -m unittest tests/test_1_5_capec_to_attack.py
 ```
@@ -97,23 +85,6 @@ Should return 0 result, as no ATT&CK references exist in this CAPEC object now.
 ## TEST 2.0: Validate CAPEC Attack Pattern -> CWE Weakness relationship (`capec-cwe`)
 
 ```shell
-python3 tests/delete_all_databases.py
-```
-
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 utilities/arango_cti_processor/insert_archive_capec.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 3_9 && \
-python3 utilities/arango_cti_processor/insert_archive_cwe.py \
-  --database arango_cti_processor_standard_tests \
-  --versions 4_13
-```
-
-Run the test script;
-
-```shell
 python3 -m unittest tests/test_2_0_capec_to_cwe.py
 ```
 
@@ -122,18 +93,6 @@ python3 -m unittest tests/test_2_0_capec_to_cwe.py
 Test 2.0 should be run beforehand.
 
 In this file I update CAPEC-112 (`attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1`) with one new CWE; CWE-1004. It now has 4 CWE references.
-
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 stix2arango.py \
-  --file tests/files/arango_cti_processor/arango-cti-capec-cwe-update-1.json \
-  --database arango_cti_processor_standard_tests \
-  --collection mitre_capec \
-  --stix2arango_note v3.10
-```
-
-Run the test script;
 
 ```shell
 python3 -m unittest tests/test_2_1_capec_to_cwe.py
