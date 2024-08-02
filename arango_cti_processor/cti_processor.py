@@ -21,7 +21,7 @@ class ArangoProcessor:
         self.stix2arango_note = kwargs.get("stix2arango_note", "")
         self.arango_database = database
         self.vertex_collections, self.edge_collections = self.get_collections_for_relationship()
-        self.modified = kwargs.get("modified")
+        self.modified = kwargs.get("modified_min")
 
         self.arango = ArangoDBService(self.arango_database, self.vertex_collections, self.edge_collections, host_url=config.ARANGODB_HOST_URL, username=config.ARANGODB_USERNAME, password=config.ARANGODB_PASSWORD)
         self.validate_collections()
