@@ -31,17 +31,6 @@ Expected is that the new object is identified by the script and relationships ge
 
 For the updated objects, expected is that old SROs created by arango_cti_processor are marked as `_is_latest==false` (2 total) and 3 new objects (1 new, 2 existing recreated)
 
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 stix2arango.py \
-  --file tests/files/arango_cti_processor/arango-cti-capec-attack-update-1.json \
-  --database arango_cti_processor_standard_tests \
-  --collection mitre_capec \
-  --stix2arango_note v3.10
-```
-
-Run the test script;
 
 ```shell
 python3 -m unittest tests/test_1_1_capec_to_attack.py
@@ -53,18 +42,6 @@ Note, test 1.1 must have been run for this test to work.
 
 Here we provide an update `attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a` for a second time, where 1 new att&ck reference is added (3 previously existed T1040, T1650, T1111, so 4 now with addition of T1574.010)
 
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 stix2arango.py \
-  --file tests/files/arango_cti_processor/arango-cti-capec-attack-update-2.json \
-  --database arango_cti_processor_standard_tests \
-  --collection mitre_capec \
-  --stix2arango_note v3.11
-```
-
-Run the test script;
-
 ```shell
 python3 -m unittest tests/test_1_2_capec_to_attack.py
 ```
@@ -74,18 +51,6 @@ python3 -m unittest tests/test_1_2_capec_to_attack.py
 Note, test 1.2 must have been run for this test to work.
 
 This time we remove 2 of the ATT&CK references inside the CAPEC object (`attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a`), with 2 remaining T1040 and T1111 (total 4 ATT&CK links). T1650 and T1574.010 are removed (total 2 ATT&CK links). This is now the same as the original stix-capec-v3.9.json object
-
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 stix2arango.py \
-  --file tests/files/arango_cti_processor/arango-cti-capec-attack-update-3.json \
-  --database arango_cti_processor_standard_tests \
-  --collection mitre_capec \
-  --stix2arango_note v3.12
-```
-
-Run the test script;
 
 ```shell
 python3 -m unittest tests/test_1_3_capec_to_attack.py
@@ -98,18 +63,6 @@ Note, test 1.3 must have been run for this test to work.
 This time we are adding ATT&CK references back to `attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a`. 
 
 The doc now contains the same references as test 1.3 (4 in total): T1040, T1650, T1111, T1574.010
-
-Import required data using a separate install of [stix2arango](https://github.com/muchdogesec/stix2arango/):
-
-```shell
-python3 stix2arango.py \
-  --file tests/files/arango_cti_processor/arango-cti-capec-attack-update-4.json \
-  --database arango_cti_processor_standard_tests \
-  --collection mitre_capec \
-  --stix2arango_note v3.13
-```
-
-Run the test script;
 
 ```shell
 python3 -m unittest tests/test_1_4_capec_to_attack.py
