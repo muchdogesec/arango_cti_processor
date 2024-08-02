@@ -9,6 +9,7 @@ from . import config
 from tqdm import tqdm
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from .cti_processor import ArangoProcessor as CTIProcessor
 
@@ -16,6 +17,7 @@ from stix2 import Relationship, Grouping
 from datetime import datetime
 
 module_logger = logging.getLogger("data_ingestion_service")
+
 
 def get_relationship():
     return {
@@ -41,6 +43,7 @@ def get_relationship():
             "sigma-cve": relate_sigma_to_cve,
         },
     }
+
 
 def load_file_from_url(url):
     try:
@@ -78,14 +81,18 @@ def get_rel_func_mapping(relationships):
         "sigma-cve": {"sigma_rules_vertex_collection": relate_sigma_to_cve},
         "cve-attack": {"nvd_cve_vertex_collection": relate_cve_to_attack},
     }
-    return [(rel, value) for rel, value in REL_TO_FUNC_MAPPING.items() if rel in relationships]
+    return [
+        (rel, value)
+        for rel, value in REL_TO_FUNC_MAPPING.items()
+        if rel in relationships
+    ]
 
 
 def parse_relation_object(src, dst, collection, relationship_type: str, note=None):
     generated_id = "relationship--" + str(
         uuid.uuid5(
             config.namespace,
-            f"{relationship_type}+{src.get('_id').split('+')[0]}+{dst.get('_id').split('+')[0]}"
+            f"{relationship_type}+{src.get('_id').split('+')[0]}+{dst.get('_id').split('+')[0]}",
         )
     )
     obj = dict(
@@ -103,7 +110,7 @@ def parse_relation_object(src, dst, collection, relationship_type: str, note=Non
         ],
     )
     obj["_from"] = src["_id"]
-    obj["_to"]   = dst["_id"]
+    obj["_to"] = dst["_id"]
     obj["_is_ref"] = False
     obj["_arango_cti_processor_note"] = note
     obj["_record_md5_hash"] = generate_md5(obj)
@@ -113,27 +120,26 @@ def parse_relation_object(src, dst, collection, relationship_type: str, note=Non
 def relate_capec_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes):
     objects = []
     try:
-        capec_id = ""
-        if data.get("external_references", None):
-            for rel in data.get("external_references", None):
-                if rel.get("source_name") == "capec":
-                    capec_id = rel.get("external_id")
+        for rel in data.get("external_references", []):
+            if rel.get("source_name") == "cwe":
+                custom_query = (
+                    "FILTER "
+                    "POSITION(doc.external_references[*].external_id, '{}', false)"
+                    " ".format(rel.get("external_id"))
+                )
+                results = db.filter_objects_in_collection_using_custom_query(
+                    "mitre_cwe_vertex_collection", custom_query
+                )
+                for result in results:
 
-                if rel.get("source_name") == "cwe":
-                    custom_query = (
-                        "FILTER "
-                        "POSITION(doc.external_references[*].external_id, '{}', false)"
-                        " ".format(rel.get("external_id"))
+                    rel = parse_relation_object(
+                        data,
+                        result,
+                        collection,
+                        relationship_type="exploits",
+                        note="capec-cwe",
                     )
-                    results = db.filter_objects_in_collection_using_custom_query(
-                        "mitre_cwe_vertex_collection", custom_query
-                    )
-                    for result in results:
-
-                        rel = parse_relation_object(
-                            data, result, collection, relationship_type="exploits", note="capec-cwe"
-                        )
-                        objects.append(rel)
+                    objects.append(rel)
     except Exception as e:
         module_logger.exception(e)
     return objects
@@ -152,7 +158,11 @@ def relate_cve_to_cpe(data, db: CTIProcessor, collection, collect_edge, notes):
 
             for result in results:
                 rel = parse_relation_object(
-                    data, result, collection, relationship_type="pattern-contains", note="cve-cpe"
+                    data,
+                    result,
+                    collection,
+                    relationship_type="pattern-contains",
+                    note="cve-cpe",
                 )
                 objects.append(rel)
     except Exception as e:
@@ -164,29 +174,28 @@ def relate_cve_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes):
     logging.info("relate_cve_to_cwe")
     objects = []
     try:
-        if data.get("external_references", None):
-            for rel in data.get("external_references", None):
-                if rel.get("source_name") == "cve":
-                    cve_id = rel.get("external_id")
+        for rel in data.get("external_references", []):
+            if rel.get("source_name") == "cve":
+                cve_id = rel.get("external_id")
 
-                if rel.get("source_name") == "cwe":
-                    custom_query = (
-                        "FILTER "
-                        "POSITION(doc.external_references[*].external_id, '{}', false)"
-                        " ".format(rel.get("external_id"))
+            if rel.get("source_name") == "cwe":
+                custom_query = (
+                    "FILTER "
+                    "POSITION(doc.external_references[*].external_id, '{}', false)"
+                    " ".format(rel.get("external_id"))
+                )
+                results = db.filter_objects_in_collection_using_custom_query(
+                    "mitre_cwe_vertex_collection", custom_query
+                )
+                for result in results:
+                    rel = parse_relation_object(
+                        data,
+                        result,
+                        collection,
+                        relationship_type="exploited-using",
+                        note="cve-cwe",
                     )
-                    results = db.filter_objects_in_collection_using_custom_query(
-                        "mitre_cwe_vertex_collection", custom_query
-                    )
-                    for result in results:
-                        rel = parse_relation_object(
-                            data,
-                            result,
-                            collection,
-                            relationship_type="exploited-using",
-                            note="cve-cwe"
-                        )
-                        objects.append(rel)
+                    objects.append(rel)
     except Exception as e:
         module_logger.exception(e)
     return objects
@@ -222,33 +231,32 @@ def relate_capec_to_attack(
 ):
     objects = []
     try:
-        capec_id = ""
         # updated(4) -> final(0) False --> updated(4) True
-        if data.get("type") == "attack-pattern" and data.get(
-            "external_references", None
-        ):
-            
-            for rel in data.get("external_references", None):
-                if rel.get("source_name") == "capec":
-                    capec_id = rel.get("external_id")
-                if rel.get("source_name") == "mitre-attack":
-                    custom_query = (
-                        "FILTER "
-                        "POSITION(t.external_references[*].external_id, '{}', false) and t._is_latest==True"
-                        " ".format(rel.get("external_id"))
+        if data.get("type") != "attack-pattern" or not data.get("external_references"):
+            return []
+
+        for rel in data["external_references"]:
+            if rel.get("source_name") == "mitre-attack":
+                custom_query = (
+                    "FILTER "
+                    "POSITION(t.external_references[*].external_id, '{}', false) and t._is_latest==True"
+                    " ".format(rel.get("external_id"))
+                )
+                collections_ = [
+                    vertex for vertex in db.vertex_collections if "attack" in vertex
+                ]
+                results = db.filter_objects_in_list_collection_using_custom_query(
+                    collection_list=collections_, filters=custom_query
+                )[0]
+                for result in results:
+                    rel = parse_relation_object(
+                        data,
+                        result,
+                        collection,
+                        relationship_type="technique",
+                        note="capec-attack",
                     )
-                    collections_ = []
-                    for vertex in config.COLLECTION_VERTEX:
-                        if "attack" in vertex:
-                            collections_.append(vertex)
-                    results = db.filter_objects_in_list_collection_using_custom_query(
-                        collection_list=collections_, filters=custom_query
-                    )[0]
-                    for result in results:
-                        rel = parse_relation_object(
-                            data, result, collection, relationship_type="technique", note="capec-attack"
-                        )
-                        objects.append(rel)
+                    objects.append(rel)
     except Exception as e:
         module_logger.exception(e)
     return objects
@@ -259,30 +267,26 @@ def relate_cwe_to_capec(data, db: CTIProcessor, collection, collection_edge, not
     objects = []
     try:
         cwe_id = ""
-        if data.get("external_references", None):
-            
-            for rel in data.get("external_references", None):
-                if rel.get("source_name") == "cwe":
-                    cwe_id = rel.get("external_id")
-                if rel.get("source_name") == "capec":
-                    custom_query = (
-                        "FILTER "
-                        "POSITION(doc.external_references[*].external_id, '{}', false)"
-                        " ".format(rel.get("external_id"))
-                    )
-                    results = db.filter_objects_in_collection_using_custom_query(
-                        "mitre_capec_vertex_collection", custom_query
-                    )
+        for rel in data.get("external_references", []):
+            if rel.get("source_name") == "capec":
+                custom_query = (
+                    "FILTER "
+                    "POSITION(doc.external_references[*].external_id, '{}', false)"
+                    " ".format(rel.get("external_id"))
+                )
+                results = db.filter_objects_in_collection_using_custom_query(
+                    "mitre_capec_vertex_collection", custom_query
+                )
 
-                    for result in results:
-                        rel = parse_relation_object(
-                            data,
-                            result,
-                            collection,
-                            relationship_type="exploited-using",
-                            note="cwe-capec"
-                        )
-                        objects.append(rel)
+                for result in results:
+                    rel = parse_relation_object(
+                        data,
+                        result,
+                        collection,
+                        relationship_type="exploited-using",
+                        note="cwe-capec",
+                    )
+                    objects.append(rel)
 
     except Exception as e:
         module_logger.exception(e)
@@ -295,33 +299,27 @@ def relate_attack_to_capec(
     logging.info("relate_attack_to_capec")
     objects = []
     try:
-        attack_id = ""
-        if data.get("external_references", None):
-            for rel in data.get("external_references", None):
-                
-                if rel.get("source_name") == "mitre-attack":
-                    attack_id = rel.get("external_id")
-
-                if rel.get("source_name") == "capec":
-                    module_logger.info(rel)
-                    custom_query = (
-                        "FILTER "
-                        "POSITION(doc.external_references[*].external_id, '{}', false) and doc._is_latest==True "
-                        " ".format(rel.get("external_id"))
+        for rel in data.get("external_references", []):
+            if rel.get("source_name") == "capec":
+                module_logger.info(rel)
+                custom_query = (
+                    "FILTER "
+                    "POSITION(doc.external_references[*].external_id, '{}', false) and doc._is_latest==True "
+                    " ".format(rel.get("external_id"))
+                )
+                results = db.filter_objects_in_collection_using_custom_query(
+                    collection_name="mitre_capec_vertex_collection",
+                    custom_query=custom_query,
+                )
+                for result in results:
+                    rel = parse_relation_object(
+                        data,
+                        result,
+                        collection_vertex,
+                        relationship_type="relies-on",
+                        note="attack-capec",
                     )
-                    results = db.filter_objects_in_collection_using_custom_query(
-                        collection_name="mitre_capec_vertex_collection",
-                        custom_query=custom_query,
-                    )
-                    for result in results:
-                        rel = parse_relation_object(
-                            data,
-                            result,
-                            collection_vertex,
-                            relationship_type="relies-on",
-                            note="attack-capec"
-                        )
-                        objects.append(rel)
+                    objects.append(rel)
     except Exception as e:
         module_logger.exception(e)
     return objects
@@ -357,7 +355,7 @@ def relate_sigma_to_attack(
                 continue
 
             collections_ = []
-            for vertex in config.COLLECTION_VERTEX:
+            for vertex in db.vertex_collections:
                 if "attack" in vertex:
                     collections_.append(vertex)
             results = db.filter_objects_in_list_collection_using_custom_query(
@@ -366,7 +364,11 @@ def relate_sigma_to_attack(
 
             for result in results:
                 rel = parse_relation_object(
-                    data, result, collection_vertex, relationship_type="detects", note="sigma-attack"
+                    data,
+                    result,
+                    collection_vertex,
+                    relationship_type="detects",
+                    note="sigma-attack",
                 )
                 objects.append(rel)
     except Exception as e:
@@ -395,7 +397,11 @@ def relate_sigma_to_cve(
                 )
                 for result in results:
                     rel = parse_relation_object(
-                        data, result, collection_vertex, relationship_type="detects", note="sigma-cve"
+                        data,
+                        result,
+                        collection_vertex,
+                        relationship_type="detects",
+                        note="sigma-cve",
                     )
                     objects.append(rel)
     except Exception as e:
@@ -423,7 +429,7 @@ def relate_cve_to_attack(
 
         custom_query = f"FILTER t.name IN {verify_threshold(response)}"
         collections_ = []
-        for vertex in config.COLLECTION_VERTEX:
+        for vertex in db.vertex_collections:
             if "attack" in vertex:
                 collections_.append(vertex)
         results = db.filter_objects_in_list_collection_using_custom_query(
@@ -431,10 +437,14 @@ def relate_cve_to_attack(
         )
         for result in results[0]:
             rel = parse_relation_object(
-                data, result, collection_vertex, relationship_type="targets", note="cve-attack"
+                data,
+                result,
+                collection_vertex,
+                relationship_type="targets",
+                note="cve-attack",
             )
             objects.append(rel)
-            
+
     except Exception as e:
         module_logger.exception(e)
     return objects
