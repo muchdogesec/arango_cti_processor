@@ -15,9 +15,9 @@ def delete_database(client: ArangoClient, db_name):
     sys_db = client.db('_system', username=ARANGODB_USERNAME, password=ARANGODB_PASSWORD)
     if sys_db.has_database(db_name):
         sys_db.delete_database(db_name)
-        print(f'Deleted database {db_name}')
+        print(f'=====Deleted database {db_name}======')
     else:
-        print(f'Database {db_name} does not exist, skipping.')
+        print(f'======Database {db_name} does not exist, skipping.======')
 
 def as_arango2stix_db(db_name):
     if db_name.endswith('_database'):
