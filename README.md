@@ -1,6 +1,10 @@
-# ArangoDB CTI Processor
+# Arango CTI Processor
 
 A small script that creates relationships between common CTI knowledge-bases in STIX 2.1 format.
+
+## tl;dr
+
+[![arango_cti_processor](https://img.youtube.com/vi/2GVVC2RfIq8/0.jpg)](https://www.youtube.com/watch?v=2GVVC2RfIq8)
 
 ## Before you get started
 

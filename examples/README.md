@@ -65,6 +65,13 @@ CVEs are downloaded from 2017, as this is the earliest CVE year referenced in a 
 
 ## CVE -> CWE
 
+```shell
+python3 arango_cti_processor.py \
+	--database cti_database \
+	--relationship cve-cwe \
+	--ignore_embedded_relationships false
+```
+
 ## CVE -> CPE
 
 ## Sigma -> ATT&CK
@@ -72,7 +79,7 @@ CVEs are downloaded from 2017, as this is the earliest CVE year referenced in a 
 ```shell
 python3 arango_cti_processor.py \
 	--database cti_database \
-	--relationship sigma-attacl \
+	--relationship sigma-attack \
 	--ignore_embedded_relationships false
 ```
 
@@ -301,7 +308,6 @@ LET sigmaCvePairs = (
     LET cve = DOCUMENT(edge._to)
     RETURN {
         "Sigma Rule Name": sigmaRule.name,
-        "Sigma Rule ID": sigmaRule.id,
         "Sigma Rule STIX ID": sigmaRule.id,
         "CVE Name": cve.name,
         "CVE Description": cve.description
@@ -338,7 +344,6 @@ LET sigmaRuleDetails = (
     LET sigmaRule = DOCUMENT(edge._from)
     RETURN {
         "Sigma Rule Name": sigmaRule.name,
-        "Sigma Rule ID": sigmaRule.id,
         "Sigma Rule STIX ID": sigmaRule._id
     }
 )
@@ -357,3 +362,70 @@ FOR doc IN sigma_rules_edge_collection
     RETURN doc
 ```
 
+_assuming you've run cve-cwe you can also now see what weaknesses are exploited by cves related to a Sigma Rule..._
+
+You can see what CWEs are related to CVE-2023-22518 as follows 
+
+```sql
+FOR doc IN nvd_cve_edge_collection
+    FILTER doc._is_latest == true
+    AND doc._arango_cti_processor_note == "cve-cwe"
+    AND doc.source_ref == "vulnerability--5bcfdb23-a585-558f-beb1-d408a99b6e61"
+    RETURN doc
+```
+
+With this we can now take a Sigma Rule name, show what CVEs it detects, and finally show what weaknesses are related to the CVEs so that we can potentially improve the Sigma Rule (or add another) to detect the weaknesses
+
+So here we know the sigma rule name CVE-2023-22518 Exploitation Attempt - Vulnerable Endpoint Connection (Webserver) is related to CVE-2023-22518 and that CVE is linked CWE-863. Lets write a query to visualise this...
+
+```sql
+// Step 1: Find the Sigma Rule document
+LET sigmaRuleDoc = FIRST(
+    FOR sigma IN sigma_rules_vertex_collection
+    FILTER sigma.name == "CVE-2023-22518 Exploitation Attempt - Vulnerable Endpoint Connection (Webserver)"
+    RETURN sigma
+)
+
+// Step 2: Find all CVEs related to this Sigma Rule
+LET relatedCVEs = (
+    FOR edge IN sigma_rules_edge_collection
+    FILTER edge._from == sigmaRuleDoc._id
+    AND edge._is_latest == true
+    AND edge._arango_cti_processor_note == "sigma-cve"
+    LET cveDoc = DOCUMENT(edge._to)
+    RETURN cveDoc
+)
+
+// Step 3: For each CVE, find all related CWEs and their CWE IDs
+LET relatedCWEs = (
+    FOR cve IN relatedCVEs
+    LET cweEdges = (
+        FOR edge IN nvd_cve_edge_collection
+        FILTER edge._is_latest == true
+        AND edge._arango_cti_processor_note == "cve-cwe"
+        AND edge.source_ref == cve.id
+        LET cweDoc = DOCUMENT(edge._to)
+        RETURN {
+            "CWE ID": (
+                FOR ref IN cweDoc.external_references
+                FILTER ref.source_name == "cwe"
+                RETURN ref.external_id
+            )[0], // Select the first matching CWE ID, if available
+            "CWE Name": cweDoc.name,
+            "CWE Description": cweDoc.description
+        }
+    )
+    RETURN {
+        "CVE Name": cve.name,
+        "CVE Description": cve.description,
+        "Related CWEs": cweEdges
+    }
+)
+
+// Final result: Sigma Rule, related CVEs, and their related CWEs
+RETURN {
+    "Sigma Rule Name": sigmaRuleDoc.name,
+    "Sigma Rule ID": sigmaRuleDoc.id,
+    "Related CVEs": relatedCWEs
+}
+```
