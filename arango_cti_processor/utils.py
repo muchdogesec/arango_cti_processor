@@ -236,7 +236,7 @@ def relate_capec_to_attack(
             if rel.get("source_name") in ["ATTACK"]:
                 custom_query = (
                     "FILTER "
-                    "POSITION(t.external_references[*].external_id, '{}', false) and t._is_latest==True"
+                    "POSITION(t.external_references[*].external_id, '{}', false) and t._is_latest"
                     " ".format(rel.get("external_id"))
                 )
                 collections_ = [
@@ -301,7 +301,7 @@ def relate_attack_to_capec(
                 module_logger.info(rel)
                 custom_query = (
                     "FILTER "
-                    "POSITION(doc.external_references[*].external_id, '{}', false) and doc._is_latest==True "
+                    "POSITION(doc.external_references[*].external_id, '{}', false) and doc._is_latest "
                     " ".format(rel.get("external_id"))
                 )
                 results = db.filter_objects_in_collection_using_custom_query(
@@ -331,25 +331,37 @@ def relate_sigma_to_attack(
     objects = []
     try:
         for ref in data.get("external_references", []):
-            if ref["source_name"] == "mitre-attack":
+            if ref["source_name"] != "mitre-attack":
+                continue
+            external_id: str = ref.get('external_id', '')
+            if external_id.startswith('T'):
+                #technique
                 custom_query = (
                     "FILTER "
-                    "t.type == 'attack-pattern' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest==True"
+                    "t.type == 'attack-pattern' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest"
                     " ".format(ref["external_id"])
                 )
-            elif ref["source_name"] == "mitre-attack":
+            elif external_id.startswith('S'):
+                #software
                 custom_query = (
-                    "FILTER t.name=='{}' "
-                    "AND t._is_latest==True "
-                    "AND t.type == 'x-mitre-tactic'".format(
-                        ref["description"]
-                        .replace("_", " ")
-                        .title()
-                        .replace(" And ", " and ")
-                    )
+                    "FILTER "
+                    "t.type == 'tool' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest"
+                    " ".format(ref["external_id"])
+                )
+            elif external_id.startswith('G'):
+                #grouping
+                custom_query = (
+                    "FILTER "
+                    "t.type == 'grouping' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest"
+                    " ".format(ref["external_id"])
                 )
             else:
-                continue
+                #tactic
+                custom_query = (
+                    "FILTER t.type == 'x-mitre-tactic' "
+                    "AND t._is_latest "
+                    "AND t.x_mitre_shortname=='{}'".format(external_id.replace("_", "-"))
+                )
 
             collections_ = []
             for vertex in db.vertex_collections:
@@ -385,7 +397,7 @@ def relate_sigma_to_cve(
             if ref["source_name"].lower() == "cve":
                 custom_query = (
                     "FILTER "
-                    "doc.name=='{}' and doc._is_latest==True and doc.type=='vulnerability'"
+                    "doc.name=='{}' and doc._is_latest and doc.type=='vulnerability'"
                     " ".format(ref["external_id"].upper())
                 )
                 results = db.filter_objects_in_collection_using_custom_query(
