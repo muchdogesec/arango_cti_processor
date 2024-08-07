@@ -352,7 +352,7 @@ def relate_sigma_to_attack(
                 #grouping
                 custom_query = (
                     "FILTER "
-                    "t.type == 'grouping' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest"
+                    "t.type == 'intrusion-set' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest"
                     " ".format(ref["external_id"])
                 )
             else:
