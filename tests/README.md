@@ -221,6 +221,10 @@ python3 -m unittest tests/test_8_0_sigma_to_cve.py
 
 Adds cve.2023.43621 to indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 2 CVEs in 8.1 (cve.2022.26134, cve.2021.26084) so now has 3.
 
+```shell
+python3 -m unittest tests/test_8_1_sigma_to_cve.py
+```
+
 ## TEST 8.2: Remove all CVEs from Sigma rule
 
 Removes all CVEs from indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1. Used to have 3 CVEs in 8.2, 2 in 8.1, now 0 in 8.3.
