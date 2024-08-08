@@ -64,6 +64,7 @@ python3 stix2arango.py	\
 RETURN LENGTH(
 FOR doc IN mitre_capec_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc._is_latest == true
   RETURN [doc]
 )
@@ -74,6 +75,7 @@ Should return 1494 -- number of CAPEC objects.
 ```sql
 FOR doc IN mitre_capec_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc._is_latest == true
   COLLECT type = doc.type WITH COUNT INTO typeCount
   RETURN { type, typeCount }
@@ -92,10 +94,11 @@ Sum = 1494
 RETURN LENGTH(
 FOR doc IN mitre_capec_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "attack-pattern"
     LET attackReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
-            FILTER reference.source_name == 'ATTACK'
+            FILTER reference.source_name == 'mitre-attack'
             RETURN reference
     )
     FILTER LENGTH(attackReferences) > 0
@@ -103,31 +106,33 @@ FOR doc IN mitre_capec_vertex_collection
 )
 ```
 
-This should return 177 results -- the number of CAPEC objects that have at least 1 `external_references.source_name=ATTACK` reference.
+This should return 177 results -- the number of CAPEC objects that have at least 1 `external_references.source_name=mitre-attack` reference.
 
 ```sql
 LET attackReferenceCount = SUM(
     FOR doc IN mitre_capec_vertex_collection
         FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
         AND doc.type == "attack-pattern"
         LET attackReferences = (
             FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
-                FILTER reference.source_name == 'ATTACK'
+                FILTER reference.source_name == 'mitre-attack'
                 RETURN reference
         )
         RETURN LENGTH(attackReferences)
 )
 RETURN attackReferenceCount
 ```
-In total (because some objects can multiple ATT&CK references) there are 272 `"source_name": "ATTACK"` references
+In total (because some objects can multiple ATT&CK references) there are 272 `"source_name": "mitre-attack"` references
 
 ```sql
 FOR doc IN mitre_capec_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "attack-pattern"
     LET attackReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
-            FILTER reference.source_name == 'ATTACK'
+            FILTER reference.source_name == 'mitre-attack'
             RETURN reference.external_id
     )
     FILTER LENGTH(attackReferences) > 0
@@ -143,7 +148,7 @@ FOR doc IN mitre_capec_vertex_collection
     FILTER doc.external_references != NULL AND IS_ARRAY(doc.external_references)
     LET attackReferences = (
         FOR ext_ref IN doc.external_references
-        FILTER ext_ref.source_name == "ATTACK"
+        FILTER ext_ref.source_name == "mitre-attack"
         RETURN ext_ref.external_id
     )
     LET uniqueIds = UNIQUE(attackReferences)
@@ -161,12 +166,13 @@ RETURN LENGTH(
     (FOR d IN mitre_attack_mobile_vertex_collection RETURN d)
   )
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc._is_latest == true
     RETURN [doc]
 )
 ```
 
-Should return 2655. The number of ATT&CK objects.
+Should return 2715. The number of ATT&CK objects.
 
 ```sql
 FOR doc IN UNION(
@@ -175,6 +181,7 @@ FOR doc IN UNION(
     (FOR d IN mitre_attack_mobile_vertex_collection RETURN d)
   )
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc._is_latest == true
     COLLECT type = doc.type WITH COUNT INTO typeCount
     RETURN { type, typeCount }
@@ -184,13 +191,14 @@ Should return 13 elements, with the count of each STIX object type;
 
 * `attack-pattern`: 1043
 * `campaign`: 28
-* `course-of-action`: 333
+* `course-of-action`: 384
 * `identity`: 3
-* `intrusion-set`: 179
-* `malware`: 700
+* `intrusion-set`: 182
+* `malware`: 702
 * `marking-definition`: 3
-* `tool`: 87
+* `tool`: 88
 * `x-mitre-asset`: 14
+* `x-mitre-collection`: 3
 * `x-mitre-data-component`: 160
 * `x-mitre-data-source`: 61
 * `x-mitre-matrix`: 4
@@ -199,29 +207,7 @@ Should return 13 elements, with the count of each STIX object type;
 Sum = 2655
 
 ```sql
-LET ids = [ 
-    "T1001.002", "T1003", "T1005", "T1007", "T1012", "T1014", "T1016", "T1018", "T1021", "T1021.002", 
-    "T1027", "T1027.001", "T1027.003", "T1027.004", "T1027.006", "T1027.009", "T1033", "T1036", "T1036.001", 
-    "T1036.003", "T1036.004", "T1036.005", "T1036.006", "T1036.007", "T1037", "T1039", "T1040", "T1046", 
-    "T1049", "T1052", "T1055", "T1055.003", "T1056", "T1056.001", "T1056.004", "T1057", "T1069", "T1070", 
-    "T1072", "T1078", "T1078.001", "T1080", "T1082", "T1083", "T1087", "T1090.001", "T1090.004", "T1091", 
-    "T1092", "T1110", "T1110.001", "T1110.002", "T1110.003", "T1110.004", "T1111", "T1112", "T1113", 
-    "T1114.002", "T1115", "T1119", "T1120", "T1123", "T1124", "T1125", "T1127", "T1133", "T1134", 
-    "T1134.001", "T1134.002", "T1134.003", "T1135", "T1176", "T1185", "T1195", "T1195.001", "T1195.002", 
-    "T1195.003", "T1200", "T1211", "T1213", "T1217", "T1218.001", "T1221", "T1491", "T1495", "T1498.001", 
-    "T1498.002", "T1499", "T1499.001", "T1499.002", "T1499.003", "T1499.004", "T1505.003", "T1505.004", 
-    "T1505.005", "T1513", "T1518.001", "T1528", "T1530", "T1531", "T1534", "T1539", "T1542.001", "T1542.002", 
-    "T1542.003", "T1543", "T1543.001", "T1543.003", "T1543.004", "T1546.001", "T1546.004", "T1546.008", 
-    "T1546.016", "T1547", "T1547.001", "T1547.004", "T1547.006", "T1547.009", "T1547.014", "T1548", 
-    "T1548.004", "T1550.001", "T1550.002", "T1550.003", "T1550.004", "T1552.001", "T1552.002", "T1552.003", 
-    "T1552.004", "T1552.006", "T1553.002", "T1553.004", "T1554", "T1555", "T1555.001", "T1556", "T1556.006", 
-    "T1557", "T1557.002", "T1557.003", "T1558", "T1558.003", "T1562.001", "T1562.002", "T1562.003", 
-    "T1562.004", "T1562.006", "T1562.007", "T1562.008", "T1562.009", "T1563", "T1564.009", "T1565.002", 
-    "T1566", "T1566.001", "T1566.002", "T1566.003", "T1574.001", "T1574.002", "T1574.004", "T1574.005", 
-    "T1574.006", "T1574.007", "T1574.008", "T1574.009", "T1574.010", "T1574.011", "T1574.013", "T1584.002", 
-    "T1587.001", "T1589", "T1590", "T1592", "T1592.002", "T1595", "T1598", "T1598.001", "T1598.002", 
-    "T1598.003", "T1599", "T1600", "T1602", "T1606", "T1606.001", "T1611", "T1614", "T1615", "T1620", "T1647"
-]
+LET ids = ["T1001.002","T1003","T1005","T1007","T1012","T1014","T1016","T1018","T1021","T1021.002","T1027","T1027.001","T1027.003","T1027.004","T1027.006","T1027.009","T1033","T1036","T1036.001","T1036.003","T1036.004","T1036.005","T1036.006","T1036.007","T1037","T1039","T1040","T1046","T1049","T1052","T1055","T1055.003","T1056","T1056.001","T1056.004","T1057","T1069","T1070","T1072","T1078","T1078.001","T1080","T1082","T1083","T1087","T1090.001","T1090.004","T1091","T1092","T1110","T1110.001","T1110.002","T1110.003","T1110.004","T1111","T1112","T1113","T1114.002","T1115","T1119","T1120","T1123","T1124","T1125","T1127","T1133","T1134","T1134.001","T1134.002","T1134.003","T1135","T1176","T1185","T1195","T1195.001","T1195.002","T1195.003","T1200","T1211","T1213","T1217","T1218.001","T1221","T1491","T1495","T1498.001","T1498.002","T1499","T1499.001","T1499.002","T1499.003","T1499.004","T1505.003","T1505.004","T1505.005","T1513","T1518.001","T1528","T1530","T1531","T1534","T1539","T1542.001","T1542.002","T1542.003","T1543","T1543.001","T1543.003","T1543.004","T1546.001","T1546.004","T1546.008","T1546.016","T1547","T1547.001","T1547.004","T1547.006","T1547.009","T1547.014","T1548","T1548.004","T1550.001","T1550.002","T1550.003","T1550.004","T1552.001","T1552.002","T1552.003","T1552.004","T1552.006","T1553.002","T1553.004","T1554","T1555","T1555.001","T1556","T1556.006","T1557","T1557.002","T1557.003","T1558","T1558.003","T1562.001","T1562.002","T1562.003","T1562.004","T1562.006","T1562.007","T1562.008","T1562.009","T1563","T1564.009","T1565.002","T1566","T1566.001","T1566.002","T1566.003","T1574.001","T1574.002","T1574.004","T1574.005","T1574.006","T1574.007","T1574.008","T1574.009","T1574.010","T1574.011","T1574.013","T1584.002","T1587.001","T1589","T1590","T1592","T1592.002","T1595","T1598","T1598.001","T1598.002","T1598.003","T1599","T1600","T1602","T1606","T1606.001","T1611","T1614","T1615","T1620","T1647"]
 
 FOR doc IN UNION(
     (FOR d IN mitre_attack_enterprise_vertex_collection RETURN d),
@@ -237,11 +223,11 @@ FOR doc IN UNION(
 
 The list is from the ATT&CK IDs we know exist in CAPEC objects from previous searches.
 
-Should return 189 results, with a count for each. The sum of the count should equal 239.
+Should return 189 results, with a count for each. The sum of the count should equal 244.
 
-Using the previous two results, we can calculate the number SROs arango_cti_processor should create -- 339 - 1 so...
+Using the previous two results (count of ATT&CK refs in CAPECs, and count of ATT&CK objects), we can calculate the number SROs arango_cti_processor should create -- 347 - 1 so...
 
-338 SRO results expected on first run to be generated by arango_cti_processor
+336 SRO results expected on first run to be generated by arango_cti_processor
 
 ## 2. CAPEC Attack Pattern -> CWE Weakness
 
@@ -259,6 +245,7 @@ python3 stix2arango.py	\
 ```sql
 FOR doc IN mitre_capec_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "attack-pattern"
     LET cweReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
@@ -317,6 +304,7 @@ so 1212 SRO results expected on first run to be generated by arango_cti_processo
 ```sql
 FOR doc IN mitre_cwe_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "weakness"
     LET capecReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
@@ -425,7 +413,7 @@ Returns 32 CAPECS which means all references in ATT&CK resolve to a CAPEC so...
 
 36 SRO results expected on first run to be generated by arango_cti_processor
 
-## 5. Sigma Rule Indicator -> ATT&CK Attack Pattern
+## 5. Sigma Rule Indicator -> ATT&CK Technique/Tactic/Malware/Group
 
 Import the required data...
 
@@ -438,34 +426,46 @@ python3 stix2arango.py	\
 ```
 
 ```sql
-FOR doc IN sigma_rules_vertex_collection
-    FILTER LENGTH(doc.labels) > 0
-    FOR label IN doc.labels
-        FILTER LEFT(label, 7) == "attack."
-        COLLECT attackLabel = label WITH COUNT INTO count
-        RETURN { attackLabel, count }
+LET total_count = (
+    FOR doc IN sigma_rules_vertex_collection
+        FILTER HAS(doc, "external_references") AND IS_ARRAY(doc.external_references)
+        FOR ref IN doc.external_references
+            FILTER ref.source_name == "mitre-attack"
+            COLLECT WITH COUNT INTO count
+            RETURN count
+)
+
+LET detailed_counts = (
+    FOR doc IN sigma_rules_vertex_collection
+        FILTER HAS(doc, "external_references") AND IS_ARRAY(doc.external_references)
+        FOR ref IN doc.external_references
+            FILTER ref.source_name == "mitre-attack"
+            COLLECT ext_id = ref.external_id WITH COUNT INTO count
+            SORT count DESC
+            RETURN { external_id: ext_id, count: count }
+)
+
+RETURN APPEND(detailed_counts, [{ external_id: "Total", count: SUM(total_count) }])
 ```
 
-Returns a list of all ATT&CK labels that exist. Should return 408 unique IDs. The sum of the count field should be 7376 (labels in total)
+Returns a list of all ATT&CK labels that exist. The sum of the count field should be 7685 (labels in total). Should return 418 unique IDs.
 
 ```sql
-FOR doc IN sigma_rules_vertex_collection
-    FILTER LENGTH(doc.labels) > 0
-    LET attackLabels = (
-        FOR label IN doc.labels
-            FILTER LEFT(label, 7) == "attack."
-            COLLECT l = label WITH COUNT INTO count
-            FILTER count > 1
-            RETURN l
-    )
-    FILTER LENGTH(attackLabels) > 0
-    RETURN { doc, duplicateLabels: attackLabels }
+RETURN (
+    FOR doc IN sigma_rules_vertex_collection
+        FILTER HAS(doc, "external_references") AND IS_ARRAY(doc.external_references)
+        FOR ref IN doc.external_references
+            FILTER ref.source_name == "mitre-attack"
+            COLLECT ext_id = ref.external_id
+            RETURN ext_id
+)
 ```
 
-Identifies objects with duplicate attack labels. Should be 0.
+Same as first search returns the list ready for the next search;
+
 
 ```sql
-LET attack_ids = ["g0010","g0020","g0022","g0032","g0044","g0046","g0047","g0049","g0060","g0069","g0080","g0091","g0093","g0125","s0002","s0005","s0029","s0039","s0040","s0075","s0106","s0108","s0111","s0139","s0154","s0190","s0195","s0246","s0349","s0363","s0402","s0404","s0482","s0508","s0575","s0592","t1001.003","t1003","t1003.001","t1003.002","t1003.003","t1003.004","t1003.005","t1003.006","t1005","t1007","t1008","t1010","t1012","t1014","t1016","t1018","t1020","t1021","t1021.001","t1021.002","t1021.003","t1021.004","t1021.005","t1021.006","t1027","t1027.001","t1027.002","t1027.003","t1027.004","t1027.005","t1027.009","t1027.010","t1030","t1033","t1036","t1036.002","t1036.003","t1036.004","t1036.005","t1036.006","t1036.007","t1037.001","t1037.005","t1039","t1040","t1041","t1046","t1047","t1048","t1048.001","t1048.003","t1049","t1053","t1053.002","t1053.003","t1053.005","t1055","t1055.001","t1055.003","t1055.009","t1055.012","t1056","t1056.001","t1056.002","t1057","t1059","t1059.001","t1059.002","t1059.003","t1059.004","t1059.005","t1059.006","t1059.007","t1059.009","t1068","t1069","t1069.001","t1069.002","t1070","t1070.001","t1070.002","t1070.003","t1070.004","t1070.005","t1070.006","t1070.008","t1071","t1071.001","t1071.004","t1072","t1074","t1074.001","t1078","t1078.001","t1078.002","t1078.003","t1078.004","t1082","t1083","t1087","t1087.001","t1087.002","t1087.004","t1090","t1090.001","t1090.002","t1090.003","t1091","t1095","t1098","t1098.001","t1098.003","t1102","t1102.001","t1102.002","t1102.003","t1104","t1105","t1106","t1110","t1110.001","t1110.002","t1112","t1113","t1114","t1114.001","t1115","t1119","t1120","t1123","t1124","t1125","t1127","t1127.001","t1132.001","t1133","t1134","t1134.001","t1134.002","t1134.003","t1134.004","t1134.005","t1135","t1136","t1136.001","t1136.002","t1136.003","t1137","t1137.002","t1137.003","t1137.006","t1140","t1176","t1185","t1187","t1189","t1190","t1195","t1195.001","t1197","t1199","t1200","t1201","t1202","t1203","t1204","t1204.001","t1204.002","t1207","t1210","t1211","t1212","t1213.003","t1216","t1216.001","t1217","t1218","t1218.001","t1218.002","t1218.003","t1218.005","t1218.007","t1218.008","t1218.009","t1218.010","t1218.011","t1218.013","t1219","t1220","t1221","t1222","t1222.001","t1222.002","t1482","t1484","t1484.001","t1485","t1486","t1489","t1490","t1491.001","t1495","t1496","t1497.001","t1499.004","t1505","t1505.002","t1505.003","t1505.004","t1505.005","t1518","t1518.001","t1525","t1526","t1528","t1529","t1531","t1537","t1539","t1542.001","t1542.003","t1543","t1543.001","t1543.002","t1543.003","t1543.004","t1546","t1546.001","t1546.002","t1546.003","t1546.004","t1546.007","t1546.008","t1546.009","t1546.010","t1546.011","t1546.012","t1546.013","t1546.014","t1546.015","t1547","t1547.001","t1547.002","t1547.003","t1547.004","t1547.005","t1547.006","t1547.008","t1547.009","t1547.010","t1547.014","t1547.015","t1548","t1548.001","t1548.002","t1548.003","t1550","t1550.001","t1550.002","t1550.003","t1552","t1552.001","t1552.002","t1552.003","t1552.004","t1552.006","t1552.007","t1553","t1553.001","t1553.002","t1553.003","t1553.004","t1553.005","t1554","t1555","t1555.001","t1555.003","t1555.004","t1555.005","t1556","t1556.002","t1556.006","t1557","t1557.001","t1558","t1558.003","t1559.001","t1559.002","t1560","t1560.001","t1561.001","t1561.002","t1562","t1562.001","t1562.002","t1562.003","t1562.004","t1562.006","t1562.007","t1562.010","t1563.002","t1564","t1564.001","t1564.002","t1564.003","t1564.004","t1564.006","t1565","t1565.001","t1565.002","t1566","t1566.001","t1566.002","t1567","t1567.001","t1567.002","t1568","t1568.002","t1569","t1569.002","t1570","t1571","t1572","t1573","t1574","t1574.001","t1574.002","t1574.005","t1574.006","t1574.007","t1574.008","t1574.011","t1574.012","t1578","t1578.003","t1580","t1584","t1586.003","t1587","t1587.001","t1588","t1588.002","t1589","t1590","t1590.001","t1590.002","t1592.004","t1593.003","t1595.002","t1599.001","t1606","t1608","t1614.001","t1615","t1620","t1621","t1622","t1649"]
+LET attack_ids = ["G0010","G0020","G0022","G0032","G0044","G0046","G0047","G0049","G0060","G0069","G0080","G0091","G0093","G0125","S0002","S0005","S0029","S0039","S0040","S0075","S0106","S0108","S0111","S0139","S0154","S0190","S0195","S0246","S0349","S0363","S0402","S0404","S0482","S0508","S0575","S0592","T1001.003","T1003","T1003.001","T1003.002","T1003.003","T1003.004","T1003.005","T1003.006","T1005","T1007","T1008","T1010","T1012","T1014","T1016","T1018","T1020","T1021","T1021.001","T1021.002","T1021.003","T1021.004","T1021.005","T1021.006","T1021.007","T1027","T1027.001","T1027.002","T1027.003","T1027.004","T1027.005","T1027.009","T1027.010","T1030","T1033","T1036","T1036.002","T1036.003","T1036.004","T1036.005","T1036.006","T1036.007","T1037.001","T1037.005","T1039","T1040","T1041","T1046","T1047","T1048","T1048.001","T1048.003","T1049","T1053","T1053.002","T1053.003","T1053.005","T1055","T1055.001","T1055.003","T1055.009","T1055.012","T1056","T1056.001","T1056.002","T1057","T1059","T1059.001","T1059.002","T1059.003","T1059.004","T1059.005","T1059.006","T1059.007","T1059.009","T1068","T1069","T1069.001","T1069.002","T1069.003","T1070","T1070.001","T1070.002","T1070.003","T1070.004","T1070.005","T1070.006","T1070.008","T1071","T1071.001","T1071.004","T1072","T1074","T1074.001","T1078","T1078.001","T1078.002","T1078.003","T1078.004","T1082","T1083","T1087","T1087.001","T1087.002","T1087.004","T1090","T1090.001","T1090.002","T1090.003","T1091","T1095","T1098","T1098.001","T1098.003","T1102","T1102.001","T1102.002","T1102.003","T1104","T1105","T1106","T1110","T1110.001","T1110.002","T1112","T1113","T1114","T1114.001","T1115","T1119","T1120","T1123","T1124","T1125","T1127","T1127.001","T1132.001","T1133","T1134","T1134.001","T1134.002","T1134.003","T1134.004","T1134.005","T1135","T1136","T1136.001","T1136.002","T1136.003","T1137","T1137.002","T1137.003","T1137.006","T1140","T1176","T1185","T1187","T1189","T1190","T1195","T1195.001","T1197","T1199","T1200","T1201","T1202","T1203","T1204","T1204.001","T1204.002","T1207","T1210","T1211","T1212","T1213","T1213.003","T1216","T1216.001","T1217","T1218","T1218.001","T1218.002","T1218.003","T1218.005","T1218.007","T1218.008","T1218.009","T1218.010","T1218.011","T1218.013","T1219","T1220","T1221","T1222","T1222.001","T1222.002","T1482","T1484","T1484.001","T1485","T1486","T1489","T1490","T1491.001","T1495","T1496","T1497.001","T1498","T1499.004","T1505","T1505.002","T1505.003","T1505.004","T1505.005","T1518","T1518.001","T1525","T1526","T1528","T1529","T1531","T1537","T1539","T1542.001","T1542.003","T1543","T1543.001","T1543.002","T1543.003","T1543.004","T1546","T1546.001","T1546.002","T1546.003","T1546.004","T1546.007","T1546.008","T1546.009","T1546.010","T1546.011","T1546.012","T1546.013","T1546.014","T1546.015","T1547","T1547.001","T1547.002","T1547.003","T1547.004","T1547.005","T1547.006","T1547.008","T1547.009","T1547.010","T1547.014","T1547.015","T1548","T1548.001","T1548.002","T1548.003","T1550","T1550.001","T1550.002","T1550.003","T1552","T1552.001","T1552.002","T1552.003","T1552.004","T1552.006","T1552.007","T1553","T1553.001","T1553.002","T1553.003","T1553.004","T1553.005","T1554","T1555","T1555.001","T1555.003","T1555.004","T1555.005","T1556","T1556.002","T1556.006","T1557","T1557.001","T1558","T1558.003","T1559.001","T1559.002","T1560","T1560.001","T1561.001","T1561.002","T1562","T1562.001","T1562.002","T1562.003","T1562.004","T1562.006","T1562.007","T1562.010","T1563.002","T1564","T1564.001","T1564.002","T1564.003","T1564.004","T1564.006","T1565","T1565.001","T1565.002","T1566","T1566.001","T1566.002","T1567","T1567.001","T1567.002","T1568","T1568.002","T1569","T1569.001","T1569.002","T1570","T1571","T1572","T1573","T1574","T1574.001","T1574.002","T1574.005","T1574.006","T1574.007","T1574.008","T1574.011","T1574.012","T1578","T1578.003","T1580","T1584","T1586","T1586.003","T1587","T1587.001","T1588","T1588.002","T1589","T1590","T1590.001","T1590.002","T1591.004","T1592.004","T1593.003","T1595","T1595.002","T1599.001","T1606","T1608","T1609","T1611","T1614.001","T1615","T1620","T1621","T1622","T1649"]
 
 LET lowercased_attack_ids = (
     FOR id IN attack_ids
@@ -475,6 +475,7 @@ LET lowercased_attack_ids = (
 LET enterprise_results = (
     FOR doc IN mitre_attack_enterprise_vertex_collection
         FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
         AND doc._is_latest == true
         AND IS_ARRAY(doc.external_references)
         FOR ext_ref IN doc.external_references
@@ -485,6 +486,7 @@ LET enterprise_results = (
 LET ics_results = (
     FOR doc IN mitre_attack_ics_vertex_collection
         FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
         AND doc._is_latest == true
         AND IS_ARRAY(doc.external_references)
         FOR ext_ref IN doc.external_references
@@ -495,6 +497,7 @@ LET ics_results = (
 LET mobile_results = (
     FOR doc IN mitre_attack_mobile_vertex_collection
         FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
         AND doc._is_latest == true
         AND IS_ARRAY(doc.external_references)
         FOR ext_ref IN doc.external_references
@@ -506,10 +509,11 @@ LET all_results = UNION(enterprise_results, ics_results, mobile_results)
 
 FOR result IN all_results
     COLLECT id = result.external_id WITH COUNT INTO count
+    SORT count
     RETURN { external_id: id, count }
 ```
 
-Should return 394 results (number of items in list) and count of how many ATT&CK tactic objects have this id (sum is 474 in total). Multiplying number of labels by count gives: 4401.
+Should return 404 results (number of items in list) and count of how many ATT&CK tactic objects have this id (sum is 503 in total). Multiplying number of labels by count gives: 5070.
 
 ```sql
 LET tactic_names = [
@@ -560,11 +564,11 @@ FOR name IN all_results
     RETURN { name: nameCount, count }
 ```
 
-Should return 14 results (number of items in list) and count of how many ATT&CK tactic objects have this name (sum is 35 in total). Multiplying number of labels by count gives: 10036
+Should return 14 results (number of items in list) and count of how many ATT&CK tactic objects have this name (sum is 35 in total). Multiplying number of labels by count gives: 10476
 
-4401 + 10036
+5070 + 10476
 
-14437 SRO results expected on first run to be generated by arango_cti_processor
+15546 SRO results expected on first run to be generated by arango_cti_processor
 
 #### A quick note on dupe IDs
 
@@ -688,6 +692,7 @@ LET lowercased_cves = (
 LET cve_results = (
 	FOR doc IN nvd_cve_vertex_collection
 		FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
 		AND doc.type == "vulnerability"
         AND IS_ARRAY(doc.external_references)
         FOR ext_ref IN doc.external_references
@@ -847,6 +852,7 @@ python3 stix2arango.py	\
 ```sql
 FOR doc IN nvd_cpe_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "software"
     RETURN [doc]
 ```
@@ -856,6 +862,7 @@ Should return 223 results -- the number of software objects in the bundle.
 ```sql
 FOR doc IN nvd_cpe_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc.type == "software"
   LET cpe_parts = SPLIT(doc.cpe, ":")
   RETURN {
@@ -880,6 +887,7 @@ Will show a table of the CPE property split out by its part. Should return 223 e
 ```sql
 FOR doc IN nvd_cpe_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc.type == "software"
   LET cpe_parts = SPLIT(doc.cpe, ":")
   LET vendor = cpe_parts[3]
@@ -892,6 +900,7 @@ Should return 175 entries -- showing that some vendors have more than one CPE li
 ```sql
 FOR doc IN nvd_cpe_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc.type == "software"
   LET cpe_parts = SPLIT(doc.cpe, ":")
   LET product = cpe_parts[4]
@@ -919,6 +928,7 @@ python3 stix2arango.py  \
 RETURN LENGTH(
     FOR doc IN nvd_cpe_vertex_collection
         FILTER doc._stix2arango_note != "automatically imported on collection creation"
+        AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
         AND doc.type == "software"
         RETURN [doc]
 )
@@ -929,6 +939,7 @@ Should return 178,063 results
 ```sql
 FOR doc IN nvd_cpe_vertex_collection
   FILTER doc._stix2arango_note != "automatically imported on collection creation"
+  AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
   AND doc.type == "software"
   LET cpe_parts = SPLIT(doc.cpe, ":")
   LIMIT @offset, @count
@@ -973,6 +984,7 @@ etc.
 LET uniqueVendors = (
   FOR doc IN nvd_cpe_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "software"
     LET cpe_parts = SPLIT(doc.cpe, ":")
     LET vendor = cpe_parts[3]
@@ -989,6 +1001,7 @@ Returns 3982 unique vendors -- the number of vendor objects expected to be produ
 LET uniqueVendorProducts = (
   FOR doc IN nvd_cpe_vertex_collection
     FILTER doc._stix2arango_note != "automatically imported on collection creation"
+    AND doc._arango_cti_processor_note != "automatically imported object at script runtime"
     AND doc.type == "software"
     LET cpe_parts = SPLIT(doc.cpe, ":")
     LET vendor = cpe_parts[3]

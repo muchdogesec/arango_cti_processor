@@ -51,7 +51,6 @@ At a high-level the data in CTI Butler is joined follows:
 6. Sigma Rule (`indicator`) -> CVE (`vulnerability`) [`detects`]
 7. CVE (`vulnerability`) -> CWE (`weakness`) [`exploited-using`]
 8. CVE (`indicator`) -> CPE (`software`) [`pattern-contains`]
-9. CVE (`vulnerability`) -> ATT&CK (`attack-pattern`) [`technique-used`]
 
 The parenthesis (`()`) in the list above denote the STIX Object types in each knowledge-base that are used as the `source_ref` and `target_ref` used to create the joins. The square brackets (`[]`) define the STIX `relationship_type` used in the relationship object used to link them.
 
@@ -91,7 +90,7 @@ Where:
 * Source collection: `mitre_capec_vertex_collection` (`type==attack-pattern` objects only)
 * Destination collections: `mitre_attack_enterprise_vertex_collection`, `mitre_attack_mobile_vertex_collection`, `mitre_attack_ics_vertex_collection` (`type==attack-pattern` objects only)
 
-At ingest, the code searches for all ATT&CK objects referenced in CAPEC objects (where `"source_name": "ATTACK"` is present in CAPEC Object).
+At ingest, the code searches for all ATT&CK objects referenced in CAPEC objects (where `"source_name": "mitre-attack"` is present in CAPEC Object).
 
 Take CAPEC-112 as an example;
 
@@ -120,7 +119,7 @@ Take CAPEC-112 as an example;
                 {
                     "description": "Brute Force",
                     "external_id": "T1110",
-                    "source_name": "ATTACK",
+                    "source_name": "mitre-attack",
                     "url": "https://attack.mitre.org/wiki/Technique/T1110"
                 },
                 {
@@ -147,7 +146,7 @@ FOR doc IN mitre_capec_vertex_collection
     AND doc.type == "attack-pattern"
     LET attackReferences = (
         FOR reference IN (IS_ARRAY(doc.external_references) ? doc.external_references : [])
-            FILTER reference.source_name == 'ATTACK'
+            FILTER reference.source_name == 'mitre-attack'
             RETURN reference
     )
     FILTER LENGTH(attackReferences) > 0
@@ -313,7 +312,7 @@ Take CAPEC-600;
                 {
                     "description": "Brute Force:Credential Stuffing",
                     "external_id": "T1110.004",
-                    "source_name": "ATTACK",
+                    "source_name": "mitre-attack",
                     "url": "https://attack.mitre.org/wiki/Technique/T1110/004"
                 },
                 {
@@ -955,112 +954,6 @@ To generate the id of SRO, a UUIDv5 is generated using the namespace `2e51a631-9
 
 All generated objects are stored in the source edge collection.
 
-#### 9. CVE (`vulnerability`) -> ATT&CK (`attack-pattern`)
-
-At the time of writing, this is my favourite relationship in CTI Butler. It makes it possible to search for CVEs using MITRE ATT&CK Techniques.
-
-To do this, arango_cti_processor uses the latest OpenAI models to generate mappings.
-
-Using `description` inside each Vulnerability object inside the `nvd_cpe_vertex_collection`, the following prompt is used;
-
-```
-[CVE DESCRIPTION]
-
-What MITRE ATT&CK techniques and subtechniques are being described in this text?
-
-For each ATT&CK technique or sub-technique identified, print your response as only JSON in the following structure:
-
-{
-    attack_id: "ID",
-    attack_name: "NAME",
-    confidence_score: "SCORE"
-}
-
-Where confidence score defines how sure you are this technique or subtechnique is being described in the text (between 0 [lowest] and 1 [highest])
-```
-
-This will return response that looks as follows;
-
-```json
-[
-    {
-        "attack_id": "T1078",
-        "attack_name": "Valid Accounts",
-        "confidence_score": "0.9"
-    },
-    {
-        "attack_id": "T1110.001",
-        "attack_name": "Password Guessing",
-        "confidence_score": "0.6"
-    }
-]
-```
-
-Anything with a confidence greater than 0.4 (e.g. Active Scanning above) is considered that the CVE is referencing an ATT&CK technique in CTI Butler (this threshold can be manually set in your own install of stix2arango if you disagree).
-
-The `attack_id` returned by the AI can be searched against the STIX `attack-pattern` object `external_references.external_id` property values (where `external_references.source_name=mitre-attack`) as follows
-
-```sql
-LET attack_ids = ["<ATTACK IDS>"]
-
-LET lowercased_attack_ids = (
-    FOR id IN attack_ids
-        RETURN LOWER(id)
-)
-
-LET enterprise_results = (
-    FOR doc IN mitre_attack_enterprise_vertex_collection
-        FILTER doc._stix2arango_note != "automatically imported on collection creation"
-        AND doc._is_latest == true
-        AND IS_ARRAY(doc.external_references)
-        FOR ext_ref IN doc.external_references
-            FILTER LOWER(ext_ref.external_id) IN lowercased_attack_ids
-            RETURN doc
-)
-
-LET ics_results = (
-    FOR doc IN mitre_attack_ics_vertex_collection
-        FILTER doc._stix2arango_note != "automatically imported on collection creation"
-        AND doc._is_latest == true
-        AND IS_ARRAY(doc.external_references)
-        FOR ext_ref IN doc.external_references
-            FILTER LOWER(ext_ref.external_id) IN lowercased_attack_ids
-            RETURN doc
-)
-
-LET mobile_results = (
-    FOR doc IN mitre_attack_mobile_vertex_collection
-        FILTER doc._stix2arango_note != "automatically imported on collection creation"
-        AND doc._is_latest == true
-        AND IS_ARRAY(doc.external_references)
-        FOR ext_ref IN doc.external_references
-            FILTER LOWER(ext_ref.external_id) IN lowercased_attack_ids
-            RETURN doc
-)
-
-RETURN UNION(enterprise_results, ics_results, mobile_results)
-```
-
-When a match is found, an SRO is created as follows;
-
-```json
-{
-    "type": "relationship",
-    "spec_version": "2.1",
-    "id": "relationship--<UUID V5 LOGIC>",
-    "created_by_ref": "<IMPORTED IDENTITY OBJECT>",
-    "created": "<indicator.created>",
-    "modified": "<indicator.modified>",
-    "relationship_type": "exploited-using",
-    "source_ref": "vulnerability--<SIGMA INDICATOR STIX OBJECT>",
-    "target_ref": "attack-pattern--<CVE VULNERABILITY STIX OBJECT>",
-    "object_marking_refs": [
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "<MARKING DEFINITION IMPORTED>"
-    ]
-}
-```
-
 #### Updating SROs on subsequent runs
 
 This script is designed to run on demand. On each run, it will create new relationships or update existing relationships based on changes to imported data (using stix2arango).
@@ -1072,123 +965,3 @@ arango_cti_processor will also generate a `_record_md5_hash` property of the rel
 Each time an update is detected, arango_cti_processor will mark previously created SROs for the object as `_is_latest=false` and then recreate the SROs (but ensure the `_record_created` time matches old objects updated as is latest is false, but update the `_record_modified` time accordingly to match the update time).
 
 Similarly, when a record is removed from a source object (e.g ATT&CK reference removed from a CAPEC object), the object removed between updates is marked at `_is_latest=false`, but no new object recreated for it (because it no longer exist in latest version of source object)
-
-### Creating groupings
-
-arango_cti_processor also creates non-relationship Grouping objects.
-
-#### 1. CPE groupings (`cpe-groups`)
-
-* Source collection: `nvd_cpe_vertex_collection` (`type==software` objects only)
-
-There are millions of CPEs. As such there are often many CPEs for a single vendor / product (e.g. Microsoft has the product Word which has many versions).
-
-A unique product can be identified as follows;
-
-```sql
-LET uniqueVendorProducts = (
-  FOR doc IN nvd_cpe_vertex_collection
-    FILTER doc._stix2arango_note != "automatically imported on collection creation"
-    AND doc.type == "software"
-    LET cpe_parts = SPLIT(doc.cpe, ":")
-    LET vendor = cpe_parts[3]
-    LET product = cpe_parts[4]
-    COLLECT vendorProduct = CONCAT(vendor, ":", product) WITH COUNT INTO length
-    RETURN vendorProduct
-)
-
-RETURN LENGTH(uniqueVendorProducts)
-```
-
-To help users deal with this volume when search, for every unique product name in a CPE, ArangoDB CTI Processor creates a grouping object;
-
-```json
-{
-    "type": "grouping",
-    "spec_version": "2.1",
-    "id": "grouping--<UUID V5 LOGIC>",
-    "created_by_ref": "<IMPORTED IDENTITY OBJECT>",
-    "created": "<FIRST CREATED CPE FOR PRODUCT DATE>",
-    "modified": "<LAST MODIFIED CPE FOR PRODUCT DATE>",
-    "name": "Product: <PRODUCT NAME>",
-    "context": "unspecified",
-    "object_marking_refs": [
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "<MARKING DEFINITION IMPORTED>"
-    ],
-    "object_refs": [
-        "software--<ALL SOFTWARE SCOS IDS FOR PRODUCTS>",
-        "software--<ALL SOFTWARE SCOS IDS FOR PRODUCTS>"
-    ]
-}
-```
-
-To generate the id of the object, a UUIDv5 is generated using the namespace `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` and the `PRODUCT NAME IN CPE URI`.
-
-They are inserted into ArangoDB as follows;
-
-```sql
-LET groupings = [
-    {
-        "_key": "<THE OBJECTS STIX ID>",
-        "_arango_cti_processor_note": "<RELATIONSHIP LINK>",
-        "_record_created": "<DATETIME OBJECT WAS INSERTED IN DB>",
-        "_record_modified": "<DATETIME OBJECT WAS LAST MODIFIED IN DB>",
-        "_record_md5_hash": "<HASH OF OBJECT>",
-        "_is_latest": true,
-        "_is_ref": false,
-        "<STIX Grouping OBJECT PROPERTIES>"
-    }
-]
-FOR grouping IN groupings
-INSERT grouping INTO nvd_cpe_vertex_collection
-```
-
-Product Grouping objects are then grouped by the vendor.
-
-A unique vendor can be identified as follows;
-
-```sql
-LET uniqueVendors = (
-  FOR doc IN nvd_cpe_vertex_collection
-    FILTER doc._stix2arango_note != "automatically imported on collection creation"
-    AND doc.type == "software"
-    LET cpe_parts = SPLIT(doc.cpe, ":")
-    LET vendor = cpe_parts[3]
-    COLLECT uniqueVendor = vendor WITH COUNT INTO length
-    RETURN uniqueVendor
-)
-
-RETURN LENGTH(uniqueVendors)
-```
-
-For every unique vendor shown in software objects a grouping object is also created;
-
-```json
-{
-    "type": "grouping",
-    "spec_version": "2.1",
-    "id": "grouping--<UUID V5 LOGIC>",
-    "created_by_ref": "<IMPORTED IDENTITY OBJECT>",
-    "created": "<FIRST CREATED CPE FOR VENDOR DATE>",
-    "modified": "<LAST MODIFIED CPE FOR VENDOR DATE>",
-    "name": "Vendor: <VENDOR NAME>",
-    "context": "unspecified",
-    "object_marking_refs": [
-        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "<MARKING DEFINITION IMPORTED>"
-    ],
-    "object_refs": [
-        "grouping--<ALL GROUPING SDOS FOR VENDOR PRODUCTS>",
-        "grouping--<ALL GROUPING SDOS FOR VENDOR PRODUCTS>"
-    ]
-}
-```
-
-To generate the id of the object, a UUIDv5 is generated using the namespace `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` and the `VENDOR NAME` as the value.
-
-All objects are stored in the source vertex collection (`nvd_cpe_vertex_collection`).
-
-#### Updating groupings on subsequent runs
-
-Updates are handled in the same way they are for relationships.

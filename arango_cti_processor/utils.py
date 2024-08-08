@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging
 import uuid
 import json
@@ -6,27 +7,43 @@ import requests
 import re
 from . import config
 from tqdm import tqdm
-from stix2arango.services.arangodb_service import ArangoDBService
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .cti_processor import ArangoProcessor as CTIProcessor
 
 from stix2 import Relationship, Grouping
 from datetime import datetime
-
-
 
 module_logger = logging.getLogger("data_ingestion_service")
 
 
 def get_relationship():
     return {
-        "mitre_capec_vertex_collection":{"capec-attack": relate_capec_to_attack,"capec-cwe": relate_capec_to_cwe},
-        "mitre_cwe_vertex_collection":{"cwe-capec": relate_cwe_to_capec},
-        "mitre_attack_enterprise_vertex_collection": {"attack-capec": relate_attack_to_capec},
+        "mitre_capec_vertex_collection": {
+            "capec-attack": relate_capec_to_attack,
+            "capec-cwe": relate_capec_to_cwe,
+        },
+        "mitre_cwe_vertex_collection": {"cwe-capec": relate_cwe_to_capec},
+        "mitre_attack_enterprise_vertex_collection": {
+            "attack-capec": relate_attack_to_capec
+        },
         "mitre_attack_ics_vertex_collection": {"attack-capec": relate_attack_to_capec},
-        "mitre_attack_mobile_vertex_collection": {"attack-capec": relate_attack_to_capec},
-        "nvd_cve_vertex_collection":{"cve-cwe": relate_cve_to_cwe,"cve-cpe": relate_cve_to_cpe,"cve-attack":relate_cve_to_attack},
-        "sigma_rules_vertex_collection":{"sigma-attack": relate_sigma_to_attack,"sigma-cve": relate_sigma_to_cve}
-
+        "mitre_attack_mobile_vertex_collection": {
+            "attack-capec": relate_attack_to_capec
+        },
+        "nvd_cve_vertex_collection": {
+            "cve-cwe": relate_cve_to_cwe,
+            "cve-cpe": relate_cve_to_cpe,
+            "cve-attack": relate_cve_to_attack,
+        },
+        "sigma_rules_vertex_collection": {
+            "sigma-attack": relate_sigma_to_attack,
+            "sigma-cve": relate_sigma_to_cve,
+        },
     }
+
 
 def load_file_from_url(url):
     try:
@@ -34,11 +51,11 @@ def load_file_from_url(url):
         response.raise_for_status()  # Raise an HTTPError for bad responses
         return response.text
     except requests.exceptions.RequestException as e:
-        print(f"Error loading JSON from {url}: {e}")
+        module_logger.error(f"Error loading JSON from {url}: {e}")
         return None
 
 
-def read_file_data(filename:str):
+def read_file_data(filename: str):
     with open(filename, "r") as input_file:
         file_data = input_file.read()
         try:
@@ -48,174 +65,140 @@ def read_file_data(filename:str):
     return data
 
 
-def get_rel_func_mapping():
-    return {
-        "capec-attack": {"mitre_capec_vertex_collection":relate_capec_to_attack},
-        "capec-cwe": {"mitre_capec_vertex_collection":relate_capec_to_cwe},
-        "cwe-capec": {"mitre_cwe_vertex_collection":relate_cwe_to_capec},
+def get_rel_func_mapping(relationships):
+    REL_TO_FUNC_MAPPING = {
+        "capec-attack": {"mitre_capec_vertex_collection": relate_capec_to_attack},
+        "capec-cwe": {"mitre_capec_vertex_collection": relate_capec_to_cwe},
+        "cwe-capec": {"mitre_cwe_vertex_collection": relate_cwe_to_capec},
         "attack-capec": {
-            "mitre_attack_enterprise_vertex_collection":relate_attack_to_capec,
-            "mitre_attack_ics_vertex_collection":relate_attack_to_capec,
-            "mitre_attack_mobile_vertex_collection":relate_attack_to_capec
+            "mitre_attack_enterprise_vertex_collection": relate_attack_to_capec,
+            "mitre_attack_ics_vertex_collection": relate_attack_to_capec,
+            "mitre_attack_mobile_vertex_collection": relate_attack_to_capec,
         },
-        "cve-cwe": {"nvd_cve_vertex_collection":relate_cve_to_cwe},
-        "cve-cpe": {"nvd_cve_vertex_collection":relate_cve_to_cpe},
-        "sigma-attack": {"sigma_rules_vertex_collection":relate_sigma_to_attack},
-        "sigma-cve": {"sigma_rules_vertex_collection":relate_sigma_to_cve},
-        "cve-attack": {"nvd_cve_vertex_collection":relate_cve_to_attack}
+        "cve-cwe": {"nvd_cve_vertex_collection": relate_cve_to_cwe},
+        "cve-cpe": {"nvd_cve_vertex_collection": relate_cve_to_cpe},
+        "sigma-attack": {"sigma_rules_vertex_collection": relate_sigma_to_attack},
+        "sigma-cve": {"sigma_rules_vertex_collection": relate_sigma_to_cve},
+        "cve-attack": {"nvd_cve_vertex_collection": relate_cve_to_attack},
     }
+    return [
+        (rel, value)
+        for rel, value in REL_TO_FUNC_MAPPING.items()
+        if rel in relationships
+    ]
 
 
-def validate_collections(collections):
-    required_collections = config.COLLECTION_EDGE + config.COLLECTION_VERTEX
-    if len(list(set(required_collections) - set(collections)))>0:
-        missing_collections = "\n ".join(list(set(required_collections) - set(collections)))
-        print(f"The following collections are missing. Please add them to continue. \n {missing_collections}")
-        return True
-
-
-def verify_duplication(obj, object_list):
-    if isinstance(object_list, list) and isinstance(obj, dict):
-        match_string = f'"_key": "{obj.get("_key")}",'
-        filtered_list = [obj_ for obj_ in object_list if match_string in obj_ ]
-        if len(filtered_list)>0:
-            return True
-    return False
-
-
-def parse_relation_object(data, result,collection, relationship_type: str):
+def parse_relation_object(src, dst, collection, relationship_type: str, note=None):
     generated_id = "relationship--" + str(
         uuid.uuid5(
-            config.namespace, "{}+{}/{}+{}".format(relationship_type,collection, data.get("id"), result.get('_id')),
+            config.namespace,
+            f"{relationship_type}+{src.get('_id').split('+')[0]}+{dst.get('_id').split('+')[0]}",
         )
     )
-    return json.loads(
-        Relationship(
-            id=generated_id,
-            created=data.get("created"),
-            modified=data.get("modified"),
-            relationship_type=relationship_type,
-            source_ref=data.get("id"),
-            target_ref=result.get("id"),
-            created_by_ref="identity--af79980e-cce7-5a67-becb-82ad5a68e850",
-            object_marking_refs=config.OBJECT_MARKING_REFS,
-            custom_properties={
-                "created_by_ref": "identity--af79980e-cce7-5a67-becb-82ad5a68e850",
-            },
-            external_references=[
-                #ExternalReference(source_name="cti2stix_version", external_id=config.cti2stix_version),
-            ]
-        ).serialize()
+    obj = dict(
+        id=generated_id,
+        type="relationship",
+        created=src.get("created"),
+        modified=src.get("modified"),
+        relationship_type=relationship_type,
+        source_ref=src.get("id"),
+        target_ref=dst.get("id"),
+        created_by_ref="identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
+        object_marking_refs=config.OBJECT_MARKING_REFS,
     )
+    obj["_from"] = src["_id"]
+    obj["_to"] = dst["_id"]
+    obj["_is_ref"] = False
+    obj["_arango_cti_processor_note"] = note
+    obj["_record_md5_hash"] = generate_md5(obj)
+    return obj
 
 
-def relate_capec_to_cwe(data, db: ArangoDBService, collection, collect_edge, notes):
-    insert_data = []
+def relate_capec_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes):
+    objects = []
     try:
-        capec_id = ""
-        mark_in_active(db, data.get("id"), collect_edge)
-        if data.get("external_references", None):
-            objects = []
-            for rel in data.get("external_references", None):
-                if rel.get("source_name") == "capec":
-                    capec_id = rel.get("external_id")
+        for rel in data.get("external_references", []):
+            if rel.get("source_name") == "cwe":
+                custom_query = (
+                    "FILTER "
+                    "POSITION(doc.external_references[*].external_id, '{}', false)"
+                    " ".format(rel.get("external_id"))
+                )
+                results = db.filter_objects_in_collection_using_custom_query(
+                    "mitre_cwe_vertex_collection", custom_query
+                )
+                for result in results:
 
-                if rel.get("source_name") == "cwe":
-                    custom_query = "FILTER " \
-                                   "POSITION(doc.external_references[*].external_id, '{}', false)" \
-                                   " ".format(rel.get("external_id"))
-                    results = db.filter_objects_in_collection_using_custom_query(
-                        "mitre_cwe_vertex_collection",
-                        custom_query
+                    rel = parse_relation_object(
+                        data,
+                        result,
+                        collection,
+                        relationship_type="exploits",
+                        note="capec-cwe",
                     )
-                    for result in results:
-
-                        rel = parse_relation_object(
-                            data, result, collection, relationship_type="exploits")
-                        rel["_from"] = f"{collection}/{rel.get('source_ref')}"
-                        rel["_to"] = f"{result.get('_id')}"
-                        rel["_is_ref"] = False
-                        rel['_arango_cti_processor_note'] = "capec-cwe"
-                        rel['_record_md5_hash'] = generate_md5(rel)
-                        objects.append(rel)
-                        insert_data.append([rel.get("type"), rel.get("id"), True if "modified" in rel else False])
-                if len(objects) > 0:
-                    db.upsert_several_objects_chunked(objects, collection_name=collect_edge)
-        return insert_data
+                    objects.append(rel)
     except Exception as e:
-        print(e)
+        module_logger.exception(e)
+    return objects
 
 
-def relate_cve_to_cpe(data, db: ArangoDBService, collection, collect_edge, notes):
+def relate_cve_to_cpe(data, db: CTIProcessor, collection, collect_edge, notes):
     try:
-        insert_data = []
-        insert_statement = []
-        mark_in_active(db, data.get("id"), collect_edge)
-        if data.get("type")=="indicator":
+        objects = []
+        if data.get("type") == "indicator":
             pattern = r"software:cpe='(.*?)'"
             matches = re.findall(pattern, data.get("pattern"))
             custom_query = f"FILTER doc.cpe IN {matches}"
             results = db.filter_objects_in_collection_using_custom_query(
-                collection_name="nvd_cpe_vertex_collection",
-                custom_query=custom_query
+                collection_name="nvd_cpe_vertex_collection", custom_query=custom_query
             )
 
-            objects = []
             for result in results:
-                rel = parse_relation_object(data, result,collection, relationship_type="pattern-contains")
-                rel["_from"] = f"{collection}/{rel.get('source_ref')}"
-                rel["_to"] = f"{result.get('_id')}"
-                rel['_arango_cti_processor_note'] = "cve-cpe"
-                rel['_record_md5_hash'] = generate_md5(rel)
-                insert_data.append([rel.get("type"), rel.get("id"), True if "modified" in rel else False])
+                rel = parse_relation_object(
+                    data,
+                    result,
+                    collection,
+                    relationship_type="pattern-contains",
+                    note="cve-cpe",
+                )
                 objects.append(rel)
-            if len(objects) > 0:
-                db.upsert_several_objects_chunked(objects, collect_edge)
-        return insert_data
     except Exception as e:
-        print(e)
+        module_logger.exception(e)
+    return objects
 
-def relate_cve_to_cwe(data, db: ArangoDBService, collection, collect_edge, notes):
+
+def relate_cve_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes):
     logging.info("relate_cve_to_cwe")
-    insert_data = []
+    objects = []
     try:
-        mark_in_active(db, data.get("id"), collect_edge)
-        if data.get("external_references", None):
-            objects = []
-            for rel in data.get("external_references", None):
-                if rel.get("source_name") == "cve":
-                    cve_id = rel.get("external_id")
+        for rel in data.get("external_references", []):
+            if rel.get("source_name") == "cve":
+                cve_id = rel.get("external_id")
 
-                if rel.get("source_name") == "cwe":
-                    custom_query = "FILTER " \
-                                   "POSITION(doc.external_references[*].external_id, '{}', false)" \
-                                   " ".format(rel.get("external_id"))
-                    results = db.filter_objects_in_collection_using_custom_query(
-                        "mitre_cwe_vertex_collection",
-                        custom_query
+            if rel.get("source_name") == "cwe":
+                custom_query = (
+                    "FILTER "
+                    "POSITION(doc.external_references[*].external_id, '{}', false)"
+                    " ".format(rel.get("external_id"))
+                )
+                results = db.filter_objects_in_collection_using_custom_query(
+                    "mitre_cwe_vertex_collection", custom_query
+                )
+                for result in results:
+                    rel = parse_relation_object(
+                        data,
+                        result,
+                        collection,
+                        relationship_type="exploited-using",
+                        note="cve-cwe",
                     )
-                    for result in results:
-                        rel = parse_relation_object(data, result,collection, relationship_type="exploited-using")
-                        rel['_record_md5_hash'] = generate_md5(rel)
-                        rel["_from"] = f"{collection}/{rel.get('source_ref')}"
-                        rel["_to"] = f"{result.get('_id')}"
-                        rel["_is_ref"] = False
-                        rel['_arango_cti_processor_note'] = "cve-cwe"
-                        objects.append(rel)
-                        insert_data.append([rel.get("type"), rel.get("id"), True if "modified" in rel else False])
-            if len(objects) > 0:
-                db.upsert_several_objects_chunked(objects, collection_name=collect_edge)
-        return insert_data
+                    objects.append(rel)
     except Exception as e:
-        print(e)
+        module_logger.exception(e)
+    return objects
 
-def mark_in_active(db: ArangoDBService, id, collection):
-    query = "For doc in %s " \
-            "Filter doc.source_ref== '%s' " \
-            "UPDATE doc WITH { _is_latest: False } IN %s" % (collection, id, collection)
-    db.execute_raw_query(query=query)
 
-def set_latest_for(db: ArangoDBService, id, collection):
+def set_latest_for(db: CTIProcessor, id, collection):
     query = """
     LET records = (
         FOR doc in @@collection
@@ -231,391 +214,257 @@ def set_latest_for(db: ArangoDBService, id, collection):
     RETURN [_is_latest, record._is_latest]
 
     """
-    return db.execute_raw_query(query, bind_vars={
-        "@collection": collection,
-        "id": id,
-    })
+    return db.arango.execute_raw_query(
+        query,
+        bind_vars={
+            "@collection": collection,
+            "id": id,
+        },
+    )
 
 
-def relate_capec_to_attack(data, db: ArangoDBService, collection, collection_edge, notes:str):
-    insert_data = []
+def relate_capec_to_attack(
+    data, db: CTIProcessor, collection, collection_edge, notes: str
+):
+    objects = []
     try:
-        capec_id = ""
         # updated(4) -> final(0) False --> updated(4) True
-        mark_in_active(db, data.get("id"), collection_edge)
-        if data.get("type")=="attack-pattern" and data.get("external_references", None):
-            objects = []
-            for rel in data.get("external_references", None):
-                if rel.get("source_name") == "capec":
-                    capec_id = rel.get("external_id")
-                if rel.get("source_name") == "ATTACK":
-                    custom_query = "FILTER " \
-                                   "POSITION(t.external_references[*].external_id, '{}', false) and t._is_latest==True" \
-                                   " ".format(rel.get("external_id"))
-                    collections_ = []
-                    for vertex in config.COLLECTION_VERTEX:
-                        if "attack" in vertex:
-                            collections_.append(vertex)
-                    results = db.filter_objects_in_list_collection_using_custom_query(
-                        collection_list=collections_, filters=custom_query)[0]
-                    for result in results:
-                        rel = parse_relation_object(
-                            data, result, collection, relationship_type="technique")
-                        rel["_from"] = f"{collection}/{rel.get('source_ref')}"
-                        rel["_to"] = f"{result.get('_id')}"
-                        rel["_is_ref"] = False
-                        rel['_arango_cti_processor_note'] = "capec-attack"
-                        rel['_record_md5_hash'] = generate_md5(rel)
-                        objects.append(rel)
-                        insert_data.append([rel.get("type"), rel.get("id"), True if "modified" in rel else False])
-            if len(objects)>0:
-                db.upsert_several_objects_chunked(objects, collection_name=collection_edge)
-        return insert_data
+        if data.get("type") != "attack-pattern" or not data.get("external_references"):
+            return []
+
+        for rel in data["external_references"]:
+            if rel.get("source_name") in ["ATTACK"]:
+                custom_query = (
+                    "FILTER "
+                    "POSITION(t.external_references[*].external_id, '{}', false) and t._is_latest"
+                    " ".format(rel.get("external_id"))
+                )
+                collections_ = [
+                    vertex for vertex in db.vertex_collections if "attack" in vertex
+                ]
+                results = db.filter_objects_in_list_collection_using_custom_query(
+                    collection_list=collections_, filters=custom_query
+                )[0]
+                for result in results:
+                    rel = parse_relation_object(
+                        data,
+                        result,
+                        collection,
+                        relationship_type="technique",
+                        note="capec-attack",
+                    )
+                    objects.append(rel)
     except Exception as e:
-        print(e)
+        module_logger.exception(e)
+    return objects
 
 
-def relate_cwe_to_capec(data, db: ArangoDBService, collection, collection_edge, notes):
+def relate_cwe_to_capec(data, db: CTIProcessor, collection, collection_edge, notes):
     logging.info("relate_cwe_to_capec")
+    objects = []
     try:
         cwe_id = ""
-        insert_data = []
-        mark_in_active(db, data.get("id"), collection_edge)
-        if data.get("external_references", None):
-            objects = []
-            for rel in data.get("external_references", None):
-                if rel.get("source_name") == "cwe":
-                    cwe_id = rel.get("external_id")
-                if rel.get("source_name") == "capec":
-                    custom_query = "FILTER " \
-                                   "POSITION(doc.external_references[*].external_id, '{}', false)" \
-                                   " ".format(rel.get("external_id"))
-                    results = db.filter_objects_in_collection_using_custom_query(
-                        "mitre_capec_vertex_collection", custom_query
+        for rel in data.get("external_references", []):
+            if rel.get("source_name") == "capec":
+                custom_query = (
+                    "FILTER "
+                    "POSITION(doc.external_references[*].external_id, '{}', false)"
+                    " ".format(rel.get("external_id"))
+                )
+                results = db.filter_objects_in_collection_using_custom_query(
+                    "mitre_capec_vertex_collection", custom_query
+                )
+
+                for result in results:
+                    rel = parse_relation_object(
+                        data,
+                        result,
+                        collection,
+                        relationship_type="exploited-using",
+                        note="cwe-capec",
                     )
+                    objects.append(rel)
 
-                    for result in results:
-                        rel = parse_relation_object(data, result,collection, relationship_type="exploited-using")
-                        rel['_record_md5_hash'] = generate_md5(rel)
-                        rel["_from"] = f"{collection}/{rel.get('source_ref')}"
-                        rel["_to"] = f"{result.get('_id')}"
-                        rel["_is_ref"] = False
-                        rel['_arango_cti_processor_note'] = "cwe-capec"
-                        objects.append(rel)
-                        insert_data.append([rel.get("type"), rel.get("id"), True if "modified" in rel else False])
-            if len(objects) > 0:
-                db.upsert_several_objects_chunked(objects, collection_name=collection_edge)
-        return insert_data
     except Exception as e:
-        print(e)
+        module_logger.exception(e)
+    return objects
 
 
-def relate_attack_to_capec(data, db: ArangoDBService, collection_vertex:str, collection_edge:str, notes:str):
+def relate_attack_to_capec(
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+):
     logging.info("relate_attack_to_capec")
-    insert_data = []
+    objects = []
     try:
-        attack_id = ""
-        mark_in_active(db, data.get("id"), collection_edge)
-        if data.get("external_references", None):
-            for rel in data.get("external_references", None):
-                objects = []
-                if rel.get("source_name") == "mitre-attack":
-                    attack_id = rel.get("external_id")
-
-                if rel.get("source_name") == "capec":
-                    module_logger.info(rel)
-                    custom_query = "FILTER " \
-                                   "POSITION(doc.external_references[*].external_id, '{}', false) and doc._is_latest==True " \
-                                   " ".format(rel.get("external_id"))
-                    results = db.filter_objects_in_collection_using_custom_query(
-                        collection_name="mitre_capec_vertex_collection",
-                        custom_query=custom_query
+        for rel in data.get("external_references", []):
+            if rel.get("source_name") == "capec":
+                module_logger.info(rel)
+                custom_query = (
+                    "FILTER "
+                    "POSITION(doc.external_references[*].external_id, '{}', false) and doc._is_latest "
+                    " ".format(rel.get("external_id"))
+                )
+                results = db.filter_objects_in_collection_using_custom_query(
+                    collection_name="mitre_capec_vertex_collection",
+                    custom_query=custom_query,
+                )
+                for result in results:
+                    rel = parse_relation_object(
+                        data,
+                        result,
+                        collection_vertex,
+                        relationship_type="relies-on",
+                        note="attack-capec",
                     )
-                    for result in results:
-                        rel = parse_relation_object(data, result, collection_vertex, relationship_type="relies-on")
-                        rel["_from"] = f"{collection_vertex}/{rel.get('source_ref')}"
-                        rel["_to"] = f"{result.get('_id')}"
-                        rel["_is_ref"] = False
-                        rel['_arango_cti_processor_note'] = "attack-capec"
-                        rel['_record_md5_hash'] = generate_md5(rel)
-                        objects.append(rel)
-                        insert_data.append([rel.get("type"), rel.get("id"), True if "modified" in rel else False])
-                if len(objects) > 0:
-                    db.upsert_several_objects_chunked(objects, collection_name=collection_edge)
-        return insert_data
+                    objects.append(rel)
     except Exception as e:
-        print(e)
+        module_logger.exception(e)
+    return objects
 
 
-def relate_sigma_to_attack(data, db: ArangoDBService, collection_vertex:str, collection_edge:str, notes:str):
+def relate_sigma_to_attack(
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+):
     logging.info("relate_sigma_to_attack")
     if data.get("type") != "indicator" or data.get("pattern_type") != "sigma":
         return []
-    insert_data = []
+    objects = []
     try:
-        mark_in_active(db, data.get("id"), collection_edge)
-        insert_statement = []
         for ref in data.get("external_references", []):
-            if ref['source_name'] == 'mitre-attack':
-                custom_query = "FILTER " \
-                            "t.type == 'attack-pattern' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest==True" \
-                            " ".format(ref["external_id"])
-            elif ref['source_name'] == 'ATTACK':
-                custom_query = "FILTER t.name=='{}' " \
-                                    "AND t._is_latest==True " \
-                                    "AND t.type == 'x-mitre-tactic'".format(ref['description'].replace("_", " ").title().replace(" And ", " and "))
-            else:
+            if ref["source_name"] != "mitre-attack":
                 continue
+            external_id: str = ref.get('external_id', '')
+            if external_id.startswith('T'):
+                #technique
+                custom_query = (
+                    "FILTER "
+                    "t.type == 'attack-pattern' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest"
+                    " ".format(ref["external_id"])
+                )
+            elif external_id.startswith('S'):
+                #software
+                custom_query = (
+                    "FILTER "
+                    "t.type == 'tool' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest"
+                    " ".format(ref["external_id"])
+                )
+            elif external_id.startswith('G'):
+                #grouping
+                custom_query = (
+                    "FILTER "
+                    "t.type == 'intrusion-set' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest"
+                    " ".format(ref["external_id"])
+                )
+            else:
+                #tactic
+                custom_query = (
+                    "FILTER t.type == 'x-mitre-tactic' "
+                    "AND t._is_latest "
+                    "AND t.x_mitre_shortname=='{}'".format(external_id.replace("_", "-"))
+                )
 
             collections_ = []
-            for vertex in config.COLLECTION_VERTEX:
+            for vertex in db.vertex_collections:
                 if "attack" in vertex:
                     collections_.append(vertex)
             results = db.filter_objects_in_list_collection_using_custom_query(
-                collection_list=collections_, filters=custom_query)[0]
+                collection_list=collections_, filters=custom_query
+            )[0]
 
-            objects = []
             for result in results:
-                rel = parse_relation_object(data, result, collection_vertex, relationship_type="detects")
-                rel["_from"] = f"{collection_vertex}/{rel.get('source_ref')}"
-                rel["_to"] = f"{result.get('_id')}"
-                rel["_is_ref"] = False
-                rel['_arango_cti_processor_note'] =  "sigma-attack"
-                rel['_record_md5_hash'] = generate_md5(rel)
+                rel = parse_relation_object(
+                    data,
+                    result,
+                    collection_vertex,
+                    relationship_type="detects",
+                    note="sigma-attack",
+                )
                 objects.append(rel)
-                insert_data.append([rel.get("type"), rel.get("id"), True if "modified" in rel else False])
-            db.upsert_several_objects_chunked(objects, collection_edge)
-        return insert_data
     except Exception as e:
-        print(e)
+        module_logger.exception(e)
+    return objects
 
 
-def relate_sigma_to_cve(data, db: ArangoDBService, collection_vertex:str, collection_edge:str, notes:str):
+def relate_sigma_to_cve(
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+):
+    objects = []
     logging.info("relate_sigma_to_cve")
     if data.get("type") != "indicator" or data.get("pattern_type") != "sigma":
-        return []
+        return objects
     try:
-        mark_in_active(db, data.get("id"), collection_edge)
-        insert_data = []
-        objects = []
-        for ref in data.get("external_references") or []:
-            if ref["source_name"].lower() == 'cve':
-                custom_query = "FILTER " \
-                                "doc.name=='{}' and doc._is_latest==True and doc.type=='vulnerability'" \
-                                " ".format(ref['external_id'].upper())
+        for ref in data.get("external_references", []):
+            if ref["source_name"].lower() == "cve":
+                custom_query = (
+                    "FILTER "
+                    "doc.name=='{}' and doc._is_latest and doc.type=='vulnerability'"
+                    " ".format(ref["external_id"].upper())
+                )
                 results = db.filter_objects_in_collection_using_custom_query(
                     collection_name="nvd_cve_vertex_collection",
-                    custom_query=custom_query
+                    custom_query=custom_query,
                 )
                 for result in results:
-                    rel = parse_relation_object(data, result,collection_vertex, relationship_type="detects")
-                    rel["_from"] = f"{collection_vertex}/{rel.get('source_ref')}"
-                    rel["_to"] = f"{result.get('_id')}"
-                    rel['_arango_cti_processor_note'] = "sigma-cve"
-                    rel['_record_md5_hash'] = generate_md5(rel)
+                    rel = parse_relation_object(
+                        data,
+                        result,
+                        collection_vertex,
+                        relationship_type="detects",
+                        note="sigma-cve",
+                    )
                     objects.append(rel)
-                    insert_data.append([rel.get("type"), rel.get("id"), True if "modified" in rel else False])
-                if len(objects) > 0:
-                    db.upsert_several_objects_chunked(objects, collection_name=collection_edge)
-        return insert_data
     except Exception as e:
-        print(e)
+        module_logger.exception(e)
+    return objects
 
 
 def verify_threshold(response):
     res_array = []
     for res in response:
-        if res[1]>config.SMET_THRESHOLD:
+        if res[1] > config.SMET_THRESHOLD:
             res_array.append(res[0])
     return res_array
 
 
-def relate_cve_to_attack(data, db: ArangoDBService, collection_vertex:str, collection_edge:str, notes:str):
-    if not config.SMET_ACTIVATE or data.get("type")!="vulnerability":
+def relate_cve_to_attack(
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+):
+    if not config.SMET_ACTIVATE or data.get("type") != "vulnerability":
         return []
+    objects = []
     try:
 
-        insert_data = []
-        insert_statement = []
-        mark_in_active(db, data.get("id"), collection_edge)
         response = map_text(data.get("description"))
 
         custom_query = f"FILTER t.name IN {verify_threshold(response)}"
         collections_ = []
-        for vertex in config.COLLECTION_VERTEX:
+        for vertex in db.vertex_collections:
             if "attack" in vertex:
                 collections_.append(vertex)
         results = db.filter_objects_in_list_collection_using_custom_query(
             collection_list=collections_, filters=custom_query
         )
         for result in results[0]:
-            rel = parse_relation_object(data, result, collection_vertex, relationship_type="targets")
-            rel["_from"] = f"{collection_vertex}/{rel.get('source_ref')}"
-            rel["_to"] = f"{result.get('_id')}"
-            rel['_arango_cti_processor_note'] = "cve-attack"
-            rel['_record_md5_hash'] = generate_md5(rel)
-            insert_statement.append(rel)
-            insert_data.append([rel.get("type"), rel.get("id"), True if "modified" in rel else False])
-        if len(insert_statement) > 0:
-            db.upsert_several_objects_chunked(insert_statement, collection_name=collection_edge)
-        return insert_data
-    except Exception as e:
-        print(e)
+            rel = parse_relation_object(
+                data,
+                result,
+                collection_vertex,
+                relationship_type="targets",
+                note="cve-attack",
+            )
+            objects.append(rel)
 
-def generate_md5(obj:dict):
+    except Exception as e:
+        module_logger.exception(e)
+    return objects
+
+
+def generate_md5(obj: dict):
     obj_copy = {k: v for k, v in obj.items() if not k.startswith("_")}
     obj_copy["_arango_cti_processor_note"] = obj.get("_arango_cti_processor_note")
-    json_str = json.dumps(obj_copy, sort_keys=True, default = str).encode('utf-8')
+    json_str = json.dumps(obj_copy, sort_keys=True, default=str).encode("utf-8")
     return hashlib.md5(json_str).hexdigest()
 
 
-def prepare_vendor_group_object(db: ArangoDBService, vendor_list: object) -> list:
-    def create_new_vendor_object(db: ArangoDBService, vendor,product, collect_name, created=None):
-        insert_statement = []; inserted_data = []
-        query = "LET software_ids = (FOR doc IN nvd_cpe_vertex_collection " \
-                "FILTER doc._arango_cti_processor_note != 'automatically imported object at script runtime' " \
-                f"AND doc.type == 'software' AND doc.vendor == '{vendor}' RETURN doc._key) " \
-                "FOR doc IN nvd_cpe_vertex_collection FILTER doc._arango_cti_processor_note != 'automatically imported object at script runtime' " \
-                "AND doc.type == 'grouping' AND LENGTH(INTERSECTION(doc.object_refs, software_ids)) > 0 RETURN doc.id"
-        results = db.execute_raw_query(query=query)
-        if len(results)>0:
-            group = {
-                "id": "grouping--{}".format(str(uuid.uuid5(config.namespace, f"{vendor}"))),
-                "created_by_ref": "identity--8afa110b-fdbc-4a4e-ab47-211bb822bc6c",
-                "created": datetime.now() if created else datetime.now(),
-                "modified": datetime.now(),
-                "name": f"Vendor: {vendor}",
-                "context": "unspecified",
-                "object_marking_refs": config.OBJECT_MARKING_REFS,
-                "object_refs": list(set(results)),
-            }
-            grouping_ = json.loads(Grouping(**group).serialize())
-            grouping_['_arango_cti_processor_note'] = "cpe-groups"
-            grouping_['_record_md5_hash'] = generate_md5(group)
-            query = f"FOR doc IN nvd_cpe_vertex_collection " \
-                    f"FILTER doc.id =='{grouping_.get('id')}' " \
-                    f"AND doc.type == 'grouping' AND doc.object_refs == {results} " \
-                    f"RETURN doc.id"
-            result = db.execute_raw_query(query=query)
-            if len(result) > 0:
-                return inserted_data
-            insert_statement.append(grouping_)
-            inserted_data.append([grouping_.get("type"), grouping_.get("id"), True if "modified" in grouping_ else False])
-        db.upsert_several_objects_chunked(insert_statement, collection_name=collect_name)
-        return inserted_data
-
-    inserted_data = []
-    for vendor in tqdm(vendor_list):
-        try:
-            vendor_ = vendor[0]
-            if vendor_ == "\\":
-                vendor_ = re.escape(vendor[0])
-            vendor_ = vendor_.replace("\\", "\\\\")
-            product_ =vendor[1]
-            if product_ == "\\":
-                product_ = re.escape(product_)
-            product_ = product_.replace("\\", "\\\\")
-            product_ = re.escape(vendor[1])
-            if vendor:
-                query=f"FOR doc IN nvd_cpe_vertex_collection "\
-                    f"FILTER doc.type=='grouping' " \
-                      f"AND doc.name like 'Vendor: {vendor_}' RETURN doc"
-                results = db.execute_raw_query(
-                    query=query
-                )
-                if len(results) == 0:
-                    inserted_data += create_new_vendor_object(db, vendor_, product_, collect_name="nvd_cpe_vertex_collection")
-                else:
-                    inserted_data += create_new_vendor_object(
-                        db, vendor_, product_,
-                        collect_name="nvd_cpe_vertex_collection",
-                        created=results[0].get("created"))
-
-        except Exception as e:
-            print(e)
-    return inserted_data
-
-
-def prepare_products_grouping_object(db:ArangoDBService, product_list:list) -> list:
-    def create_new_product_group(db: ArangoDBService, product, org_product, collect_name, created=None):
-        insert_statement = []; inserted_data = []
-        query = f"FOR doc IN nvd_cpe_vertex_collection " \
-                f"FILTER doc.cpe like '%:{product}:%' AND doc.type == 'software' " \
-                "RETURN doc.id"
-        result = db.execute_raw_query(query=query)
-        if len(result)>0:
-            group = {
-                "id": "grouping--{}".format(str(uuid.uuid5(config.namespace, f"{product}"))),
-                "created_by_ref": "identity--8afa110b-fdbc-4a4e-ab47-211bb822bc6c",
-                "created": datetime.now() if created else created,
-                "modified": datetime.now(),
-                "name": f"Product: {org_product}",
-                "context": "unspecified",
-                "object_marking_refs": config.OBJECT_MARKING_REFS,
-                "object_refs": list(set(result)),
-            }
-            grouping_ = json.loads(Grouping(**group).serialize())
-            grouping_['_arango_cti_processor_note'] = "cpe-groups"
-            grouping_['_record_md5_hash'] = generate_md5(group)
-            query = f"FOR doc IN nvd_cpe_vertex_collection " \
-                    f"FILTER doc.id =='{grouping_.get('id')}' " \
-                    f"AND doc.type == 'grouping' AND doc.object_refs == {result} " \
-                    f"RETURN doc.id"
-            result = db.execute_raw_query(query=query)
-            if len(result) > 0:
-                return inserted_data
-            insert_statement.append(grouping_)
-            inserted_data.append([grouping_.get("type"), grouping_.get("id"), True if "modified" in grouping_ else False])
-        db.upsert_several_objects_chunked(insert_statement, collection_name=collect_name)
-        return inserted_data
-
-    inserted_data = []
-    for product in tqdm(product_list):
-
-        if product:
-            org_product = product
-            if "\\" in product and "\\" != product:
-                product = product.replace('\\', '%')
-            if "\\" == product:
-                product = product.replace('\\', '\\\\')
-            query = f"FOR doc in nvd_cpe_vertex_collection " \
-                    f"FILTER doc.name like '%: {product}' AND doc.type=='grouping' return doc"
-            result = db.execute_raw_query(
-                query=query
-            )
-            if not len(result)>0:
-                inserted_data += create_new_product_group(db, product, org_product, collect_name="nvd_cpe_vertex_collection")
-            else:
-                inserted_data += create_new_product_group(
-                    db, product, org_product,
-                    collect_name="nvd_cpe_vertex_collection",
-                    created=result[0].get("created")
-                )
-    return inserted_data
-
-
-def cpe_groups(db: ArangoDBService):
-    logging.info("Working on CPE - Grouping Task")
-    logging.info("Working on CPE - Grouping Products")
-    custom_query = \
-        "FOR doc IN nvd_cpe_vertex_collection " \
-        "FILTER doc._stix2arango_note !='automatically imported on collection creation' " \
-        "AND doc.type == 'software'"\
-        "LET cpe_parts = SPLIT(doc.cpe, ':') LET product = cpe_parts[4] RETURN product"
-    product_list = list(set(db.execute_raw_query(custom_query)))
-    inserted_data_products = prepare_products_grouping_object(db, product_list)
-    logging.info("Working on CPE - Grouping Vendors")
-
-    custom_query = "FOR doc IN nvd_cpe_vertex_collection " \
-                   "FILTER doc._stix2arango_note != 'automatically imported on collection creation' " \
-                   "AND doc.type == 'software' LET cpe_parts = SPLIT(doc.cpe, ':') " \
-                   "LET vendor = cpe_parts[3] LET products = cpe_parts[4] RETURN [vendor,products]"
-    vendor_list = db.execute_raw_query(custom_query)
-    inserted_data_vendor = prepare_vendor_group_object(db, vendor_list)
-    return inserted_data_products+inserted_data_vendor
-
-def sigma_groups(db: ArangoDBService):
-    pass
-
-
-
+def sigma_groups(db: CTIProcessor):
+    return []

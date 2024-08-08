@@ -10,11 +10,23 @@ logging.basicConfig(
     format="[%(asctime)s] %(levelname)s - %(message)s",  # noqa D100 E501
     datefmt="%Y-%m-%d - %H:%M:%S",
 )
-ARANGO_HOST = os.getenv("ARANGODB_HOST")
-ARANGO_PORT = os.getenv("ARANGODB_PORT")
-ARANGO_USERNAME = os.getenv("ARANGODB_USERNAME")
-ARANGO_PASSWORD = os.getenv("ARANGODB_PASSWORD")
-ARANGODB_DATABASE = os.getenv("ARANGODB_DATABASE")
+ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL")
+ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME")
+ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD")
+
+
+MODE_COLLECTION_MAP = {
+    "capec-attack": ["mitre_capec_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"],
+    "capec-cwe":    ["mitre_capec_vertex_collection","mitre_cwe_vertex_collection"],
+    "cwe-capec":    ["mitre_cwe_vertex_collection","mitre_capec_vertex_collection"],
+    "attack-capec": ["mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection","mitre_capec_vertex_collection"],
+    "cve-cwe": ["nvd_cve_vertex_collection","mitre_cwe_vertex_collection"],
+    "cve-cpe": ["nvd_cve_vertex_collection","nvd_cpe_vertex_collection"],
+    "sigma-attack": ["sigma_rules_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"],
+    "sigma-cve":    ["sigma_rules_vertex_collection","nvd_cve_vertex_collection"],
+    "cve-attack":   ["nvd_cve_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"]
+    }
+
 
 COLLECTION_VERTEX= [
     "mitre_attack_enterprise_vertex_collection",

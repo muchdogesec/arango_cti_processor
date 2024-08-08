@@ -1,6 +1,10 @@
-# ArangoDB CTI Processor
+# Arango CTI Processor
 
 A small script that creates relationships between common CTI knowledge-bases in STIX 2.1 format.
+
+## tl;dr
+
+[![arango_cti_processor](https://img.youtube.com/vi/2GVVC2RfIq8/0.jpg)](https://www.youtube.com/watch?v=2GVVC2RfIq8)
 
 ## Before you get started
 
@@ -33,7 +37,7 @@ ArangoDB CTI Processor is designed to work with the following data sources:
 
 ## Prerequisites
 
-Assumes a database called `cti_database` with the following collections in it created by stix2arango;
+Assumes the database entered at the command line has the following collection names;
 
 * `mitre_attack_enterprise_vertex_collection`/`mitre_attack_enterprise_edge_collection`
 * `mitre_attack_mobile_vertex_collection`/`mitre_attack_mobile_edge_collection`
@@ -44,7 +48,7 @@ Assumes a database called `cti_database` with the following collections in it cr
 * `nvd_cve_vertex_collection`/`nvd_cve_edge_collection`
 * `sigma_rules_vertex_collection`/`sigma_rules_edge_collection`
 
-[See the stix2arango README.md for more details on this](https://github.com/muchdogesec/stix2arango/).
+[These utilities in stix2arango will do this automatically for you](https://github.com/muchdogesec/stix2arango/tree/main/utilities).
 
 ## Usage
 
@@ -79,49 +83,64 @@ You will then need to specify details of your ArangoDB install (host, user, and 
 
 ```shell
 python3 arango_cti_processor.py \
-    --relationship ignore_embedded_relationships \
-    --ignore_embedded_relationships BOOLEAN
+    --database DATABASE \
+    --relationship RELATIONSHIP \
+    --ignore_embedded_relationships BOOLEAN \
+    --stix2arango_note STRING
 ```
 
 Where;
 
-* `--relationship` (optional, dictionary): you can apply updates to certain relationships at run time. Default is all . User can select from;
+* `--database` (required): the arangoDB database name where the objects you want to link are found. It must contain the collections required for the `--relationship` option(s) selected
+* `--relationship` (optional, dictionary): you can apply updates to certain relationships at run time. Default is all. Note, you should ensure your `database` contains all the required seeded data. User can select from;
 	* `capec-attack`
-    * `capec-cwe`
-    * `cwe-capec`
-    * `attack-capec`
-    * `cve-cwe`
-    * `cve-cpe`
-    * `sigma-attack`
-    * `sigma-cve`
-    * `cve-attack`
+  * `capec-cwe`
+  * `cwe-capec`
+  * `attack-capec`
+  * `cve-cwe`
+  * `cve-cpe`
+  * `sigma-attack`
+  * `sigma-cve`
 * `--ignore_embedded_relationships` (optional, boolean). Default is false. if `true` passed, this will stop any embedded relationships from being generated. This is a stix2arango feature where STIX SROs will also be created for `_ref` and `_refs` properties inside each object (e.g. if `_ref` property = `identity--1234` and SRO between the object with the `_ref` property and `identity--1234` will be created). See stix2arango docs for more detail if required.
+* `--stix2arango_note` (optional, string): will be used as a value for `_stix2arango_note` for all objects created by arango_cti_processor
+* `--modified_min` (optional, date). By default arango_cti_processor will consider all objects in the database specified with the property `_is_latest==true` (that is; the latest version of the object). Using this flag with a modified time value will further filter the results processed by arango_cti_processor to STIX objects with a `modified` time >= to the value specified. This is most useful in CVE modes, where a high volume of CVEs are published daily.
 
-On each run, only the `_is_latest==true` version of objects will be considered.
+On each run, only the `_is_latest==true` version of objects will be considered by the script.
+
+### Examples
+
+```shell
+python3 arango_cti_processor.py \
+  --database arango_cti_processor_standard_tests_database \
+  --relationship capec-attack \
+  --stix2arango_note test01 \
+  --ignore_embedded_relationships false 
+```
 
 ## Backfilling data
 
-This repository includes a `scripts` directory that will backfill all the data you need to run arango_cti_processor.
-
-There are two scripts one to download the latest data, the other to insert it using stix2arango
-
-### 1. download data from remote sources
-
-From this root of this code run this script;
+[stix2arango contains a set of utility scripts that can be used to backfill all the datasources required for this test](https://github.com/muchdogesec/stix2arango/tree/main/utilities). As an example you can run the following in stix2arango to get a full backfill of data:
 
 ```shell
-sh scripts/download_data.sh
+python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
+  --database cti_database && \
+python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
+  --database cti_database && \
+python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py
+  --database cti_database && \
+python3 utilities/arango_cti_processor/insert_archive_capec.py \
+  --database cti_database && \
+python3 utilities/arango_cti_processor/insert_archive_cwe.py \
+  --database cti_database && \
+python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
+  --database cti_database && \
+python3 utilities/arango_cti_processor/insert_archive_cve.py \
+  --database cti_database && \
+python3 utilities/arango_cti_processor/insert_archive_cpe.py \
+  --database cti_database
 ```
 
-Note, this script will only download the latest version of the knowledgebases.
-
-### 2. insert downloaded data
-
-Install stix2arango, modify the script to replace `PATH_TO_ARANGO_CTI_PROCESSOR`, and run it from the stix2arango root directory;
-
-```shell
-sh scripts/insert_data.sh
-```
+This is what we use to backfill [CTI Butler](https://www.ctibutler.com/).
 
 ## How it works
 
