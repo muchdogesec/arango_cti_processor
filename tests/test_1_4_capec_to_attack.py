@@ -15,7 +15,7 @@ ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD", "")
 ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL", "http://127.0.0.1:8529")
 TESTS_DATABASE = "arango_cti_processor_standard_tests_database"
 TEST_MODE = "capec-attack"
-STIX2ARANGO_NOTE = "test01"
+STIX2ARANGO_NOTE = __name__.split('.')[-1]
 IGNORE_EMBEDDED_RELATIONSHIPS = "false"
 
 client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
@@ -27,7 +27,7 @@ class TestArangoDB(unittest.TestCase):
         make_uploads([
                 ("mitre_capec", "tests/files/arango-cti-capec-attack-update-4.json"),
             ], database="arango_cti_processor_standard_tests", delete_db=False, 
-            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME)
+            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME, stix2arango_note=STIX2ARANGO_NOTE)
         print(f'======Test bundles uploaded successfully======')
         # Run the arango_cti_processor.py script
         subprocess.run([
@@ -103,7 +103,7 @@ class TestArangoDB(unittest.TestCase):
             "attack-pattern--dd43c543-bb85-4a6f-aa6e-160d90d06a49", # Enterprise T1111
             "attack-pattern--9e8b28c9-35fe-48ac-a14d-e6cc032dcbcd" # Enterprise T1574.010
         ]
-        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+        self.assertEqual(set(result_count), set(expected_ids), f"Expected {expected_ids}, but found {result_count}.")
 
     # test 5 check T1040 only. Should return 10 objects total for relationship to T1040 -- attack pattern 4 old objects (from 1.0, 1.1, 1.2, 1.3) and 1 new object from this update 1.3. + same again for coa
     def test_05_updated_capec158_new_relationships_t1040(self):

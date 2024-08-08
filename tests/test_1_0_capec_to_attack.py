@@ -15,7 +15,7 @@ ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD", "")
 ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL", "http://127.0.0.1:8529")
 TESTS_DATABASE = "arango_cti_processor_standard_tests_database"
 TEST_MODE = "capec-attack"
-STIX2ARANGO_NOTE = "test01"
+STIX2ARANGO_NOTE = __name__.split('.')[-1]
 IGNORE_EMBEDDED_RELATIONSHIPS = "false"
 
 client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
@@ -30,7 +30,7 @@ class TestArangoDB(unittest.TestCase):
                 ("mitre_attack_ics", "tests/files/ics-attack-14_1.json"),
                 ("mitre_attack_mobile", "tests/files/mobile-attack-14_1.json"),
             ], database="arango_cti_processor_standard_tests", delete_db=True, 
-            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME)
+            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME, stix2arango_note=STIX2ARANGO_NOTE)
         print(f'======Test bundles uploaded successfully======')
         # Run the arango_cti_processor.py script
         subprocess.run([
@@ -99,7 +99,7 @@ class TestArangoDB(unittest.TestCase):
         cursor = self.db.aql.execute(query)
         result_count = [count for count in cursor]
 
-        self.assertEqual(result_count, [346], f"Expected 338 documents, but found {result_count}.")
+        self.assertEqual(result_count, [346], f"Expected 346 documents, but found {result_count}.")
 
     # test 4 checks [CAPEC-695](https://github.com/mitre/cti/blob/master/capec/2.1/attack-pattern/attack-pattern--e3dd79e7-307b-42dd-9e22-d0345c0ec001.json) -> T1195.001
 
