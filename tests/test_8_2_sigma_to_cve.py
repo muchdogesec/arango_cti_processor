@@ -25,7 +25,7 @@ class TestArangoDB(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         make_uploads([
-                ("sigma_rules", "tests/files/sigma-rules-with-NO-cve.json "),
+                ("sigma_rules", "tests/files/sigma-rules-with-NO-cve.json"),
             ], database="arango_cti_processor_standard_tests", delete_db=False, 
             host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME)
         print(f'======Test bundles uploaded successfully======')

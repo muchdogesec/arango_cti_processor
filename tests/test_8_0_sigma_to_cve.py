@@ -60,6 +60,7 @@ class TestArangoDB(unittest.TestCase):
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
+# there are 4 references to cves inside the sigma rules (2 with 1 ref, and 1 with 2 refs)
     def test_02_check_generated_relationships(self):
         query = """
         RETURN LENGTH(
@@ -75,20 +76,22 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [15546], f"Expected 15546 documents, but found {result_count}.")
-
+        self.assertEqual(result_count, [4], f"Expected 4 documents, but found {result_count}.")
 
 # test 3 Expecting 4 results (see test-data-research.md for info as to why).
-# `indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1`
+
+# indicator--c6e28172-84af-594d-b09a-565a10121fe0
 # links to `cve.2022.26134` (`vulnerability--b4fd2041-12ff-5a64-9c00-51ba39b29fe4`) and `cve.2021.26084` (`vulnerability--ff040ea3-f2d9-5d38-80ae-065a2db41e64`)
-###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1+nvd_cve_vertex_collection/vulnerability--b4fd2041-12ff-5a64-9c00-51ba39b29fe4` = `relationship--71b515ec-a8bc-5b92-a732-8f2f7cfea05f`
-###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1+nvd_cve_vertex_collection/vulnerability--ff040ea3-f2d9-5d38-80ae-065a2db41e64` = `relationship--5c27d6ba-8cfc-5d1e-89a8-afc07bf27fb1`
-# indicator--4c5cfb71-e0ef-58a6-8307-302f27038700
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--c6e28172-84af-594d-b09a-565a10121fe0+nvd_cve_vertex_collection/vulnerability--b4fd2041-12ff-5a64-9c00-51ba39b29fe4` = ec3549ba-dcc4-5705-a771-65a166a12bf7
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--c6e28172-84af-594d-b09a-565a10121fe0+nvd_cve_vertex_collection/vulnerability--ff040ea3-f2d9-5d38-80ae-065a2db41e64` = 674df306-4008-5306-82cb-0545630e93df
+
+# indicator--60b9f6b7-eb2b-50c8-83e3-fd3f90b0a3b5
 # links to cve.2023.22518 (vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6)
-###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--4c5cfb71-e0ef-58a6-8307-302f27038700+nvd_cve_vertex_collection/vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6` = `relationship--4e9ae0ed-f421-5a2e-acdb-f6146ee34c95`
-# indicator--57ddd7ed-0a84-57ad-8fc0-dd892346ec32
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--60b9f6b7-eb2b-50c8-83e3-fd3f90b0a3b5+nvd_cve_vertex_collection/vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6` = 72189b73-5547-500c-85ea-f9287eac93f2
+
+# indicator--0e2e33f3-78c4-52da-8323-4fb13421fc65
 # links to cve.2023.43621 (vulnerability--570304ae-02cf-542b-ab7a-77e7ada2f48e)
-###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--57ddd7ed-0a84-57ad-8fc0-dd892346ec32+nvd_cve_vertex_collection/vulnerability--570304ae-02cf-542b-ab7a-77e7ada2f48e` = `relationship--d08f9a4d-1eed-562e-ae7c-0aecbfacf5ea`
+###`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--0e2e33f3-78c4-52da-8323-4fb13421fc65+nvd_cve_vertex_collection/vulnerability--570304ae-02cf-542b-ab7a-77e7ada2f48e` = 1f98535e-722a-5249-8535-6147bb36a048
 
 
     def test_03_check_generated_relationships(self):
@@ -99,10 +102,10 @@ class TestArangoDB(unittest.TestCase):
         """
         result_count = self.run_query(query)
         expected_ids = [
-            "relationship--71b515ec-a8bc-5b92-a732-8f2f7cfea05f",
-            "relationship--5c27d6ba-8cfc-5d1e-89a8-afc07bf27fb1",
-            "relationship--4e9ae0ed-f421-5a2e-acdb-f6146ee34c95",
-            "relationship--d08f9a4d-1eed-562e-ae7c-0aecbfacf5ea"
+          "relationship--72189b73-5547-500c-85ea-f9287eac93f2",
+          "relationship--1f98535e-722a-5249-8535-6147bb36a048",
+          "relationship--ec3549ba-dcc4-5705-a771-65a166a12bf7",
+          "relationship--674df306-4008-5306-82cb-0545630e93df"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
