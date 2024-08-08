@@ -134,7 +134,7 @@ def relate_capec_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes)
                         result,
                         collection,
                         relationship_type="exploits",
-                        note="capec-cwe",
+                        note=notes
                     )
                     objects.append(rel)
     except Exception as e:
@@ -159,7 +159,7 @@ def relate_cve_to_cpe(data, db: CTIProcessor, collection, collect_edge, notes):
                     result,
                     collection,
                     relationship_type="pattern-contains",
-                    note="cve-cpe",
+                    note=notes
                 )
                 objects.append(rel)
     except Exception as e:
@@ -190,7 +190,7 @@ def relate_cve_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes):
                         result,
                         collection,
                         relationship_type="exploited-using",
-                        note="cve-cwe",
+                        note=notes
                     )
                     objects.append(rel)
     except Exception as e:
@@ -251,7 +251,7 @@ def relate_capec_to_attack(
                         result,
                         collection,
                         relationship_type="technique",
-                        note="capec-attack",
+                        note=notes
                     )
                     objects.append(rel)
     except Exception as e:
@@ -281,7 +281,7 @@ def relate_cwe_to_capec(data, db: CTIProcessor, collection, collection_edge, not
                         result,
                         collection,
                         relationship_type="exploited-using",
-                        note="cwe-capec",
+                        note=notes
                     )
                     objects.append(rel)
 
@@ -314,7 +314,7 @@ def relate_attack_to_capec(
                         result,
                         collection_vertex,
                         relationship_type="relies-on",
-                        note="attack-capec",
+                        note=notes
                     )
                     objects.append(rel)
     except Exception as e:
@@ -377,7 +377,7 @@ def relate_sigma_to_attack(
                     result,
                     collection_vertex,
                     relationship_type="detects",
-                    note="sigma-attack",
+                    note=notes
                 )
                 objects.append(rel)
     except Exception as e:
@@ -410,7 +410,7 @@ def relate_sigma_to_cve(
                         result,
                         collection_vertex,
                         relationship_type="detects",
-                        note="sigma-cve",
+                        note=notes
                     )
                     objects.append(rel)
     except Exception as e:
@@ -450,7 +450,7 @@ def relate_cve_to_attack(
                 result,
                 collection_vertex,
                 relationship_type="targets",
-                note="cve-attack",
+                note=notes
             )
             objects.append(rel)
 

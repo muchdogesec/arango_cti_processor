@@ -56,7 +56,9 @@ class ArangoProcessor:
         relations_needs_to_run = []
         for key, value in processors.get_rel_func_mapping(self.relationships):
             logging.info(f"adding reltionships for {key}")
-            relations_needs_to_run.extend(value.items())
+            for collection, func in value.items():
+                relations_needs_to_run.append((key, collection, func))
+            # relations_needs_to_run.extend([key]+list(value.items()))
         return relations_needs_to_run
 
     def default_objects(self):
@@ -112,7 +114,7 @@ class ArangoProcessor:
             )
 
         logging.info("Processing relationships now")
-        for vertex, func in self.finalize_collections():
+        for rel_note, vertex, func in self.finalize_collections():
             logging.info(f"Checking: {vertex}")
             bind_vars = {
                 '@collection': vertex
@@ -124,10 +126,10 @@ class ArangoProcessor:
             data = self.arango.execute_raw_query(query=query, bind_vars=bind_vars)
             inserted_data = self.map_relationships(
                 data=data,
-                func=func,
+                relate_function=func,
                 collection_vertex=vertex,
                 collection_edge=vertex.replace("vertex", "edge"),
-                notes=self.arango_cti_processor_note
+                notes=rel_note,
             )
 
             if "sigma" in vertex:
@@ -140,7 +142,7 @@ class ArangoProcessor:
     def filter_objects_in_list_collection_using_custom_query(self, *args, **kw):
         return self.arango.filter_objects_in_list_collection_using_custom_query(*args, **kw)
     
-    def upsert_several_objects_chunked(self, objects, collection):
+    def upsert_several_objects_chunked(self, objects, deprecate_obj, collection, rel_note):
         logging.info("inserting %d items into %s", len(objects), collection)
         for obj in objects:
             if not obj.get('_stix2arango_note'):
@@ -148,10 +150,16 @@ class ArangoProcessor:
         inserted_ids, existing = self.arango.insert_several_objects_chunked(objects, collection, chunk_size=1000)
         logging.info("removed %d already existing object", len(existing))
         self.arango.update_is_latest_several_chunked(inserted_ids, collection_name=collection, chunk_size=2000)
+        logging.info("deprecating old relations")
+        deprecated = self.deprecate_old_relations_chunked(deprecate_obj, collection, rel_note)
+        print(deprecated)
+        print("=================================================\n"*10)
+        logging.info(f"deprecated {len(deprecated)} relationships")
         return []
 
-    def map_relationships(self, data, func, collection_vertex, collection_edge, notes):
-        objects = []
+    def map_relationships(self, data, relate_function, collection_vertex, collection_edge, notes):
+        objects_to_uploads = []
+        processed_objects = [] # used for deprecation
         for obj in tqdm(data):
             if obj.get("type") not in [
                 "relationship",
@@ -159,9 +167,45 @@ class ArangoProcessor:
                 "identity",
                 "marking-definition",
             ]:
-                objects += func(
+                processed_objects.append([obj.get('id'), obj.get('_id')])
+                objects_to_uploads += relate_function(
                     obj, self, collection_vertex, collection_edge, notes
                 )
 
-        self.upsert_several_objects_chunked(objects, collection_edge)
-        return objects
+        self.upsert_several_objects_chunked(objects_to_uploads, processed_objects, collection_edge, rel_note=notes)
+        return objects_to_uploads
+    
+    def deprecate_old_relations(self, objects, collection, note):
+        active_rels = dict(objects)
+        query = """
+        FOR doc in @@collection
+        FILTER doc.type == 'relationship' AND doc._is_latest AND doc._arango_cti_processor_note == @note
+
+        // deprecate all objects that point to a different ref._id other than source
+        FILTER @active_rels[doc.source_ref] AND doc._from != @active_rels[doc.source_ref]
+
+
+        UPDATE doc WITH {_is_latest: FALSE} in @@collection
+        RETURN doc.id
+        """
+
+        return self.arango.execute_raw_query(query, bind_vars={
+            "active_rels": active_rels,
+            "@collection": collection,
+            "note": note,
+        })
+    
+    def deprecate_old_relations_chunked(self, objects, collection, note, chunk_size=1000):
+        logging.info(f"Running deprecator for {len(objects)} items")
+        progress_bar = tqdm(chunked(objects, chunk_size), total=len(objects))
+        retval = []
+        for chunk in progress_bar:
+            retval.extend(self.deprecate_old_relations(chunk, collection, note))
+            progress_bar.update(len(chunk))
+        return retval
+
+def chunked(iterable, n):
+    if not iterable:
+        return []
+    for i in range(0, len(iterable), n):
+        yield iterable[i : i + n]
