@@ -192,7 +192,6 @@ python3 -m unittest tests/test_6_2_cve_to_cpe.py
 
 ## TEST 7.0: Test Sigma Rule Indicator to ATT&CK Attack Pattern relationship (`sigma-attack`)
 
-
 ```shell
 python3 -m unittest tests/test_7_0_sigma_to_attack.py
 ```

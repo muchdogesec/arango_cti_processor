@@ -59,41 +59,94 @@ class TestArangoDB(unittest.TestCase):
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
-    # test 2 Expects 15546 results (see test-data-research.md for why)
+    # test 2 see test-data-research.md for info
     def test_02_check_generated_relationships(self):
         query = """
-        RETURN LENGTH(
-          FOR doc IN sigma_rules_edge_collection
-            FILTER doc._is_latest == true
-            AND doc.relationship_type == "detects"
-            AND doc._arango_cti_processor_note == "sigma-attack"
-            AND doc.object_marking_refs == [
-                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-                "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-            ]
-            RETURN [doc]
-        )
+        FOR doc in sigma_rules_edge_collection
+          FILTER doc._arango_cti_processor_note == "sigma-attack"
+          AND doc._is_latest == true
+          COLLECT type = SPLIT(doc.target_ref, "--")[0] into docs
+          RETURN {[type]: COUNT(docs[*].doc)}
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [15546], f"Expected 15546 documents, but found {result_count}.")
+        expected_ids = [
+              {
+                "attack-pattern": 3544
+              },
+              {
+                "intrusion-set": 42
+              },
+              {
+                "tool": 60
+              },
+              {
+                "x-mitre-tactic": 10476
+              }
+            ]
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
-# check relationships for indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf now has 5 refs (used to be 5 in 7.0)
-
+# this is all the old objects in indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf updated in this test (4) in total
+    def test_03_check_generated_relationships_old(self):
+        query = """
+        FOR doc in sigma_rules_edge_collection
+          FILTER doc._arango_cti_processor_note == "sigma-attack"
+          AND doc._is_latest == false
+          COLLECT type = SPLIT(doc.target_ref, "--")[0] into docs
+          RETURN {[type]: COUNT(docs[*].doc)}
+        """
+        result_count = self.run_query(query)
+        expected_ids = [
+              {
+                "attack-pattern": 1
+              },
+              {
+                "tool": 1
+              },
+              {
+                "x-mitre-tactic": 2
+              }
+            ]
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+# check relationships for indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf has 3 ATT&CK references (but credential_access is in two domains, so 4 total sros expected), 
+#        {
+#          "source_name": "mitre-attack",
+#          "description": "tactic",
+#          "external_id": "credential_access"
+#        },
+#        {
+#          "source_name": "mitre-attack",
+#          "url": "https://attack.mitre.org/techniques/T1003.001",
+#          "external_id": "T1003.001"
+#        },
+#        {
+#                    "source_name": "mitre-attack",
+#                    "url": "https://attack.mitre.org/techniques/T1543.003",
+#                    "external_id": "T1543.003"
+#                },
+#        {
+#          "source_name": "mitre-attack",
+#          "url": "https://attack.mitre.org/software/S0002",
+#          "external_id": "S0002"
+#        },
 # Enterprise
-# * credential_access TA0002 x-mitre-tactic--4ca45d45-df4d-4613-8980-bac22d278fa5
-#   * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf+mitre_attack_enterprise_vertex_collection/x-mitre-tactic--4ca45d45-df4d-4613-8980-bac22d278fa5` = `86ac99cc-d4c4-56fb-ae8b-720c3772503a`
-# * T1003.001 attack-pattern--65f2d882-3f41-4d48-8a06-29af77ec9f90
-#   * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf+mitre_attack_enterprise_vertex_collection/attack-pattern--65f2d882-3f41-4d48-8a06-29af77ec9f90` = `e119b459-c4c7-5ce3-bdd5-1caedb9f6d4b`
-# * S0002 tool--afc079f3-c0ea-4096-b75d-3f05338b7f60
-#   * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf+mitre_attack_enterprise_vertex_collection/tool--afc079f3-c0ea-4096-b75d-3f05338b7f60` = `d7e0a492-db21-5021-a7fb-ec8d31acb051`
-# * T1543.003 attack-pattern--2959d63f-73fd-46a1-abd2-109d7dcede32
-#   * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf+mitre_attack_enterprise_vertex_collection/attack-pattern--2959d63f-73fd-46a1-abd2-109d7dcede32` = `c63ea028-890c-5b15-aced-4cb3dcf71b09`
+# * credential_access TA0006 x-mitre-tactic--2558fd61-8c75-4730-94c4-11926db2a263
+#   * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf+mitre_attack_enterprise_vertex_collection/x-mitre-tactic--2558fd61-8c75-4730-94c4-11926db2a263` = 7b0e4488-59ff-50bc-b4b6-9c79e09ce8c8
 
 # Mobile
-# * credential_access TA0035 x-mitre-tactic--7a0d25d3-f0c0-40bf-bf90-c743871b19ba
-#   * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf+mitre_attack_mobile_vertex_collection/x-mitre-tactic--7a0d25d3-f0c0-40bf-bf90-c743871b19ba` = `96495af9-cd33-5191-95ab-d098b7ef2f5e`
+# * credential_access TA0031 x-mitre-tactic--6fcb36b8-3776-483b-8699-42215714fb10
+#   * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf+mitre_attack_mobile_vertex_collection/x-mitre-tactic--6fcb36b8-3776-483b-8699-42215714fb10` = 0f5bef42-7b2d-55c2-8c15-36d0bceced1d
 
-    def test_03_check_relationship_gen_for_object1(self):
+# Enterprise
+# * T1003.001 LSASS Memory attack-pattern--65f2d882-3f41-4d48-8a06-29af77ec9f90
+#   * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf+mitre_attack_enterprise_vertex_collection/attack-pattern--65f2d882-3f41-4d48-8a06-29af77ec9f90` = e119b459-c4c7-5ce3-bdd5-1caedb9f6d4b
+
+# * S0002 Mimikatz tool--afc079f3-c0ea-4096-b75d-3f05338b7f60
+#   * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf+mitre_attack_enterprise_vertex_collection/tool--afc079f3-c0ea-4096-b75d-3f05338b7f60` = `d7e0a492-db21-5021-a7fb-ec8d31acb051`
+
+# * T1543.003 Windows service attack-pattern--2959d63f-73fd-46a1-abd2-109d7dcede32
+#   * `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `detects+sigma_rules_vertex_collection/indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf+mitre_attack_enterprise_vertex_collection/attack-pattern--2959d63f-73fd-46a1-abd2-109d7dcede32` = `c63ea028-890c-5b15-aced-4cb3dcf71b09`
+
+    def test_04_check_relationship_gen_for_object1(self):
         query = """
           FOR doc IN sigma_rules_edge_collection
               FILTER doc._is_latest == true
@@ -103,23 +156,25 @@ class TestArangoDB(unittest.TestCase):
         """
         result_count = self.run_query(query)
         expected_ids = [
-            "relationship--86ac99cc-d4c4-56fb-ae8b-720c3772503a",
-            "relationship--e119b459-c4c7-5ce3-bdd5-1caedb9f6d4b",
-            "relationship--d7e0a492-db21-5021-a7fb-ec8d31acb051",
-            "relationship--96495af9-cd33-5191-95ab-d098b7ef2f5e",
-            "relationship--c63ea028-890c-5b15-aced-4cb3dcf71b09"
+              "relationship--7b0e4488-59ff-50bc-b4b6-9c79e09ce8c8",
+              "relationship--0f5bef42-7b2d-55c2-8c15-36d0bceced1d",
+              "relationship--e119b459-c4c7-5ce3-bdd5-1caedb9f6d4b",
+              "relationship--c63ea028-890c-5b15-aced-4cb3dcf71b09",
+              "relationship--d7e0a492-db21-5021-a7fb-ec8d31acb051"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
 # should return 4 results (as test 7.0 has 4 sros generated)
 
-    def test_04_check_relationship_gen_for_object1_old(self):
+    def test_05_check_relationship_gen_for_object1_old(self):
         query = """
+        RETURN COUNT(
           FOR doc IN sigma_rules_edge_collection
               FILTER doc._is_latest == false
               AND doc.relationship_type == "detects"
               AND doc.source_ref == "indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf"
               RETURN doc.id
+            )
         """
         result_count = self.run_query(query)
         self.assertEqual(result_count, [4], f"Expected 4 documents, but found {result_count}.")
