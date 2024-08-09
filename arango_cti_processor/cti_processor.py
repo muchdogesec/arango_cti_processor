@@ -13,6 +13,8 @@ from . import utils as processors
 module_logger = logging.getLogger("data_ingestion_service")
 
 class ArangoProcessor:
+    AUTO_IMPORT_NOTE = "automatically imported object at script runtime"
+
 
     def __init__(self, database=None, **kwargs):
         self.relationships = kwargs.get("relationship")
@@ -76,22 +78,12 @@ class ArangoProcessor:
             return False
 
         objects = []
-        insert_data = []  # That would be the overall statement
         for obj in tqdm(data["objects"]):
-            query = f"FOR doc in {core_collection_vertex} \n" \
-                    f"FILTER doc.id =='{obj.get('id')}' AND " \
-                    f"doc._record_md5_hash == '{processors.generate_md5(obj)}' \n" \
-                    "RETURN doc"
-            result = self.arango.execute_raw_query(query)
-            if len(result) == 0:
-                if obj.get("type") not in ["relationship"]:
-                    obj['_arango_cti_processor_note'] = notes
-                    obj['_record_md5_hash'] = processors.generate_md5(obj)
-                    objects.append(obj)
-                    insert_data.append([
-                        obj.get("type"), obj.get("id"),
-                        True if "modified" in obj else False])
-
+            obj['_arango_cti_processor_note'] = notes
+            obj['_stix2arango_note'] = self.stix2arango_note
+            obj['_record_md5_hash'] = processors.generate_md5(obj)
+            objects.append(obj)
+                
         module_logger.info(f"Inserting objects into database. Total objects: {len(objects)}")
         inserted_ids, existing = self.arango.insert_several_objects_chunked(objects, core_collection_vertex)
         self.arango.update_is_latest_several_chunked(inserted_ids, core_collection_vertex)
@@ -109,7 +101,7 @@ class ArangoProcessor:
                     "type": "bundle",
                     "objects": self.default_objects()
                 },
-                notes="automatically imported object at script runtime",
+                notes=self.AUTO_IMPORT_NOTE,
                 core_collection_vertex=collect
             )
 
@@ -142,7 +134,7 @@ class ArangoProcessor:
     def filter_objects_in_list_collection_using_custom_query(self, *args, **kw):
         return self.arango.filter_objects_in_list_collection_using_custom_query(*args, **kw)
     
-    def upsert_several_objects_chunked(self, objects, deprecate_obj, collection, rel_note):
+    def upsert_several_objects_chunked(self, objects, deprecate_obj, collection, rel_note, collection_vertex=""):
         logging.info("inserting %d items into %s", len(objects), collection)
         for obj in objects:
             if not obj.get('_stix2arango_note'):
@@ -152,9 +144,8 @@ class ArangoProcessor:
         self.arango.update_is_latest_several_chunked(inserted_ids, collection_name=collection, chunk_size=2000)
         logging.info("deprecating old relations")
         deprecated = self.deprecate_old_relations_chunked(deprecate_obj, collection, rel_note)
-        print(deprecated)
-        print("=================================================\n"*10)
         logging.info(f"deprecated {len(deprecated)} relationships")
+        self.create_embedded_relationships(objects, collection, collection_vertex)
         return []
 
     def map_relationships(self, data, relate_function, collection_vertex, collection_edge, notes):
@@ -172,7 +163,7 @@ class ArangoProcessor:
                     obj, self, collection_vertex, collection_edge, notes
                 )
 
-        self.upsert_several_objects_chunked(objects_to_uploads, processed_objects, collection_edge, rel_note=notes)
+        self.upsert_several_objects_chunked(objects_to_uploads, processed_objects, collection_edge, rel_note=notes, collection_vertex=collection_vertex)
         return objects_to_uploads
     
     def deprecate_old_relations(self, objects, collection, note):
@@ -203,6 +194,41 @@ class ArangoProcessor:
             retval.extend(self.deprecate_old_relations(chunk, collection, note))
             progress_bar.update(len(chunk))
         return retval
+    
+    def create_embedded_relationships(self, objects, collection, collection_vertex):
+        inserted_ids = [obj['id'] for obj in objects]
+        if not objects or self.ignore_embedded_relationships:
+            return []
+        refs = processors.get_embedded_refs(objects[0])
+        print(refs, objects[0])
+
+        result = self.arango.execute_raw_query("""
+            FOR doc IN @@collection
+            FILTER doc._is_latest AND doc.id IN @targets
+            RETURN [doc.id, KEEP(doc, "id", "_id")]
+            """, 
+            bind_vars={"targets": inserted_ids, "@collection": collection})
+        
+        result += self.arango.execute_raw_query("""
+            FOR doc IN @@collection
+            FILTER doc._is_latest AND doc.id IN @targets
+            RETURN [doc.id, KEEP(doc, "id", "_id")]
+            """, 
+            bind_vars={"targets": list(set([target for _, target in refs])), "@collection": collection_vertex})
+        
+        id_map = dict(result)
+        embedded_relationships = []
+        print(len(id_map))
+        for obj in objects:
+            for ref, target_id in refs:
+                src, dst = id_map.get(obj['id']), id_map.get(target_id)
+                if src and dst:
+                    rel = processors.parse_relation_object(src, dst, None, relationship_type=ref, is_embedded_ref=True)
+                    embedded_relationships.append(rel)
+        module_logger.info("inserting %d embedded relationships for %d objects", len(embedded_relationships), len(objects))
+        self.arango.insert_several_objects_chunked(embedded_relationships, collection, chunk_size=1000)
+        return embedded_relationships
+
 
 def chunked(iterable, n):
     if not iterable:
