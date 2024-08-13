@@ -64,35 +64,35 @@ class TestArangoDB(unittest.TestCase):
         query = """
         RETURN LENGTH(
           FOR doc IN sigma_rules_vertex_collection
-              FILTER doc.id == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
+              FILTER doc.id == "indicator--c6e28172-84af-594d-b09a-565a10121fe0"
               RETURN [doc]
         )
         """
         result_count = self.run_query(query)
         self.assertEqual(result_count, [3], f"Expected 3 documents, but found {result_count}.")
 
-    # test 3 checking the new relationships that should be generated for indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1 which should be 0 as all cves removed
+    # test 3 checking the new relationships that should be generated for indicator--c6e28172-84af-594d-b09a-565a10121fe0 which should be 0 as all cves removed
     def test_03_check_generated_relationships_new(self):
         query = """
         RETURN LENGTH(
           FOR doc IN sigma_rules_edge_collection
               FILTER doc._is_latest == true
               AND doc.relationship_type == "detects"
-              AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
+              AND doc.source_ref == "indicator--c6e28172-84af-594d-b09a-565a10121fe0"
               RETURN [doc]
         )
         """
         result_count = self.run_query(query)
         self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
 
-    # test 4 checking the old relationships for indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1 (2 from 8.0 and 3 from 8.1, thus 5 total)
+    # test 4 checking the old relationships for indicator--c6e28172-84af-594d-b09a-565a10121fe0 (2 from 8.0 and 3 from 8.1, thus 5 total)
     def test_03_check_generated_relationships_new(self):
         query = """
         RETURN LENGTH(
           FOR doc IN sigma_rules_edge_collection
               FILTER doc._is_latest == false
               AND doc.relationship_type == "detects"
-              AND doc.source_ref == "indicator--74904ec1-cff3-5737-a1d4-408c789dc8b1"
+              AND doc.source_ref == "indicator--c6e28172-84af-594d-b09a-565a10121fe0"
               RETURN [doc]
         )
         """
