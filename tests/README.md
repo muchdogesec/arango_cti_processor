@@ -250,3 +250,19 @@ The CLI `modified_min` arguement is 2024-01-01 so the expectation is that only o
 ```shell
 python3 -m unittest tests/test_9_0_modified_min.py
 ```
+
+---
+
+## TEST 10.0: Test IGNORE_EMBEDDED_RELATIONSHIPS = false
+
+Uses cve-cpe test data (same import as test 6.0)
+
+```shell
+python3 -m unittest tests/test_10_0_ignore_embedded_relationships_f.py
+```
+
+## TEST 10.1: Test IGNORE_EMBEDDED_RELATIONSHIPS = true
+
+```shell
+python3 -m unittest tests/test_10_1_ignore_embedded_relationships_t.py
+```
