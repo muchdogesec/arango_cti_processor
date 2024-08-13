@@ -111,13 +111,12 @@ Test 3.0 should be run beforehand.
 Here we update CWE-521 (`weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926`) with one new object (CAPEC-10 `attack-pattern--4a29d66d-8617-4382-b456-578ecdb1609e`)
 
 ```shell
-python3 -m unittest tests/test_3_1_capec_to_cwe.py
+python3 -m unittest tests/test_3_1_cwe_to_capec.py
 ```
 
 ---
 
 ## TEST 4.0: Validate ATT&CK Attack Pattern -> CAPEC Attack Pattern relationship (`attack-capec`)
-
 
 ```shell
 python3 -m unittest tests/test_4_0_attack_to_capec.py
@@ -148,6 +147,10 @@ python3 -m unittest tests/test_5_1_cve_to_cwe.py
 Need to run test 5.1 beforehand
 
 Removes all CWEs from vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 (now has 0 CWE refs total)
+
+```shell
+python3 -m unittest tests/test_5_2_cve_to_cwe.py
+```
 
 ---
 
@@ -199,6 +202,10 @@ python3 -m unittest tests/test_7_0_sigma_to_attack.py
 ## TEST 7.1: Update Sigma Rule Indicator adding a new ATT&CK pattern
 
 Adds t1543.003 (1 result) to indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf. Used to have 4 SROs gen in test 7.0, now has 5.
+
+```shell
+python3 -m unittest tests/test_7_1_sigma_to_attack.py
+```
 
 ## TEST 7.2: Update Sigma Rule Indicator removing all ATT&CK pattern
 

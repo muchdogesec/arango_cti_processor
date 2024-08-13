@@ -59,7 +59,6 @@ class TestArangoDB(unittest.TestCase):
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
-    # test 2 see test-data-research.md for info
     def test_02_check_generated_relationships(self):
         query = """
         FOR doc in sigma_rules_edge_collection
@@ -107,6 +106,7 @@ class TestArangoDB(unittest.TestCase):
               }
             ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
 # check relationships for indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf has 3 ATT&CK references (but credential_access is in two domains, so 4 total sros expected), 
 #        {
 #          "source_name": "mitre-attack",
