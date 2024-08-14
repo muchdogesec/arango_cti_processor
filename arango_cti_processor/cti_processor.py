@@ -19,7 +19,6 @@ class ArangoProcessor:
     def __init__(self, database=None, **kwargs):
         self.relationships = kwargs.get("relationship")
         self.ignore_embedded_relationships = kwargs.get("ignore_embedded_relationships")
-        self.arango_cti_processor_note = kwargs.get("arango_cti_processor_note", "")
         self.stix2arango_note = kwargs.get("stix2arango_note", "")
         self.arango_database = database
         self.vertex_collections, self.edge_collections = self.get_collections_for_relationship()
@@ -79,8 +78,7 @@ class ArangoProcessor:
 
         objects = []
         for obj in tqdm(data["objects"]):
-            obj['_arango_cti_processor_note'] = notes
-            obj['_stix2arango_note'] = self.stix2arango_note
+            obj['_stix2arango_note'] = notes
             obj['_record_md5_hash'] = processors.generate_md5(obj)
             objects.append(obj)
                 
@@ -145,7 +143,7 @@ class ArangoProcessor:
         logging.info("deprecating old relations")
         deprecated = self.deprecate_old_relations_chunked(deprecate_obj, collection, rel_note)
         logging.info(f"deprecated {len(deprecated)} relationships")
-        self.create_embedded_relationships(objects, collection, collection_vertex)
+        self.create_embedded_relationships(objects, collection, collection_vertex, rel_note)
         return []
 
     def map_relationships(self, data, relate_function, collection_vertex, collection_edge, notes):
@@ -195,7 +193,7 @@ class ArangoProcessor:
             progress_bar.update(len(chunk))
         return retval
     
-    def create_embedded_relationships(self, objects, collection, collection_vertex):
+    def create_embedded_relationships(self, objects, collection, collection_vertex, rel_note):
         inserted_ids = [obj['id'] for obj in objects]
         if not objects or self.ignore_embedded_relationships:
             return []
@@ -205,7 +203,7 @@ class ArangoProcessor:
         result = self.arango.execute_raw_query("""
             FOR doc IN @@collection
             FILTER doc._is_latest AND doc.id IN @targets
-            RETURN [doc.id, KEEP(doc, "id", "_id")]
+            RETURN [doc.id, KEEP(doc, "id", "_id", "created", "modified")]
             """, 
             bind_vars={"targets": inserted_ids, "@collection": collection})
         
@@ -223,10 +221,13 @@ class ArangoProcessor:
             for ref, target_id in refs:
                 src, dst = id_map.get(obj['id']), id_map.get(target_id)
                 if src and dst:
-                    rel = processors.parse_relation_object(src, dst, None, relationship_type=ref, is_embedded_ref=True)
+                    rel = processors.parse_relation_object(src, dst, None, relationship_type=ref, is_embedded_ref=True, note=rel_note)
+                    rel['_stix2arango_note'] = self.stix2arango_note
                     embedded_relationships.append(rel)
         module_logger.info("inserting %d embedded relationships for %d objects", len(embedded_relationships), len(objects))
-        self.arango.insert_several_objects_chunked(embedded_relationships, collection, chunk_size=1000)
+        inserted_ids, _ = self.arango.insert_several_objects_chunked(embedded_relationships, collection, chunk_size=1000)
+        self.arango.update_is_latest_several_chunked(inserted_ids, collection_name=collection, chunk_size=2000)
+
         return embedded_relationships
 
 
