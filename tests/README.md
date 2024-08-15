@@ -168,13 +168,6 @@ Need to run test 6.0 beforehand
 
 Adds `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` to `indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6`. Used to have 2 patterns, so now has 3.
 
-```shell
-python3 stix2arango.py  \
-  --file tests/files/arango_cti_processor/ \
-  --database arango_cti_processor_standard_tests \
-  --collection nvd_cve
-```
-
 Run the test script;
 
 ```shell
@@ -185,7 +178,7 @@ python3 -m unittest tests/test_6_1_cve_to_cpe.py
 
 Need to run test 6.1 beforehand
 
-Removes `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` (added in 6.2) from `indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6`
+Removes `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` (added in 6.1) from `indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6`
 
 ```shell
 python3 -m unittest tests/test_6_2_cve_to_cpe.py
@@ -261,8 +254,26 @@ Uses cve-cpe test data (same import as test 6.0)
 python3 -m unittest tests/test_10_0_ignore_embedded_relationships_f.py
 ```
 
-## TEST 10.1: Test IGNORE_EMBEDDED_RELATIONSHIPS = true
+## TEST 10.1: Test update to objects where IGNORE_EMBEDDED_RELATIONSHIPS = false
+
+This time uses 6.1 test import. 
 
 ```shell
-python3 -m unittest tests/test_10_1_ignore_embedded_relationships_t.py
+python3 -m unittest tests/test_10_1_ignore_embedded_relationships_f.py
+```
+
+## TEST 10.2: Test removed objects where IGNORE_EMBEDDED_RELATIONSHIPS = false
+
+This time uses 6.2 test import.
+
+```shell
+python3 -m unittest tests/test_10_2_ignore_embedded_relationships_f.py
+```
+
+---
+
+## TEST 11.0: Test IGNORE_EMBEDDED_RELATIONSHIPS = true
+
+```shell
+python3 -m unittest tests/test_11_0_ignore_embedded_relationships_t.py
 ```
