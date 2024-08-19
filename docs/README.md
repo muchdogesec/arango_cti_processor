@@ -788,7 +788,7 @@ All generated objects are stored in the source edge collection.
 * Source collection: `nvd_cve_vertex_collection` (`type==vulnerability` objects only)
 * Destination collections: `nvd_cpe_vertex_collection` (`type==software` objects only)
 
-The `external_references` property inside the Indicator SDO contains one or more CPE URIs. 
+The custom properties inside the Indicator SDO contains one or more CPE URIs as a list, e.g.
 
 ```json
     "external_references": [
@@ -796,15 +796,21 @@ The `external_references` property inside the Indicator SDO contains one or more
             "source_name": "cve",
             "external_id": "<vulnerabilities.cve.id>",
             "url": "https://nvd.nist.gov/vuln/detail/<vulnerabilities.cve.id>"
-        },
-        {
-            "source_name": "vulnerable_cpe",
-            "external_id": "<cpe_id>",
         }
     ],
+    "extensions": {
+        "extension-definition--ad995824-2901-5f6e-890b-561130a239d4": {
+            "extension_type": "property-extension",
+            "vulnerable_cpes": [
+                "cpe:2.3:a:hm-print_project:hm-print:1.2a:*:*:*:*:*:*:*",
+                "cpe:2.3:a:hm-print_project:hm-print:2.2a:*:*:*:*:*:*:*",
+            ]
+        }
+    }
+}
 ```
 
-These should be linked to CPEs by creating the following relationships
+Each listed CPE should be linked to CPE software objects by creating the following relationships;
 
 ```json
 {
@@ -999,6 +1005,40 @@ When a CVE label is identified in a Sigma STIX Indicator object a relationship i
 To generate the id of SRO, a UUIDv5 is generated using the namespace `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` and the `relationship_type+source_collection_name/source_ref+target_collection_name/target_ref`  values.
 
 All generated objects are stored in the source edge collection.
+
+#### 9. CVE add EPSS (`EPSS`) (`cve-epss`)
+
+* Source collections: `nvd_cve_vertex_collection` (`type==vulnerability` objects only)
+
+CVE Vulnerability objects have EPSS scores, e.g.
+
+```json
+    "extensions": {
+        "extension-definition--2c5c13af-ee92-5246-9ba7-0b958f8cd34a": {
+            "cvss": {
+                "v3_1": {
+                    "baseScore": 4.8,
+                    "baseSeverity": "MEDIUM",
+                    "exploitabilityScore": 1.7,
+                    "impactScore": 2.7,
+                    "vectorString": "CVSS:3.1/AV:N/AC:L/PR:H/UI:R/S:C/C:L/I:L/A:N"
+                }
+            },
+            "epss": {
+                "date": "2024-08-18",
+                "percentile": "0.328570000",
+                "score": "0.000750000"
+            },
+            "extension_type": "property-extension"
+        }
+    }
+```
+
+EPSS scores are updated daily. As such a user should be able to update EPSS scores.
+
+Running the script will update CVEs with the latest CVSS data. The `modified` time of each CVE will be updated accordingly.
+
+Should also add specific flag for this mode only `--cve-ids`. Here a user can pass a list of CVE IDs. In this case, only the CVE IDs passed will be updated. This is useful because often a user only wants to updated recent cves, and not very old ones. Should also be able to pass regex values for this property (e.g. `2024-2\n\n\n\n`).
 
 #### Updating SROs on subsequent runs
 
