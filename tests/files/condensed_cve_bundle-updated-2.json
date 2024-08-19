@@ -11,13 +11,6 @@
             "modified": "2024-02-01T00:00:00.000Z",
             "name": "CVE-2023-22518",
             "description": "All versions of Confluence Data Center and Server are affected by this unexploited vulnerability. This Improper Authorization vulnerability allows an unauthenticated attacker to reset Confluence and create a Confluence instance administrator account. Using this account, an attacker can then perform all administrative actions that are available to\u00a0Confluence instance administrator leading to - but not limited to - full loss of confidentiality, integrity and availability.\u00a0\n\nAtlassian Cloud sites are not affected by this vulnerability. If your Confluence site is accessed via an atlassian.net domain, it is hosted by Atlassian and is not vulnerable to this issue.",
-            "labels": [
-                "cvssMetricV31-vectorString: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-                "cvssMetricV31-exploitabilityScore: 3.9",
-                "cvssMetricV31-impactScore: 5.9",
-                "epssScore: 0.965250000",
-                "epssPercentile: 0.995100000"
-            ],
             "external_references": [
                 {
                     "source_name": "cve",
@@ -38,11 +31,6 @@
                     "source_name": "security@atlassian.com",
                     "description": "Issue Tracking,Mitigation,Vendor Advisory",
                     "url": "https://jira.atlassian.com/browse/CONFSERVER-93142"
-                },
-                {
-                    "source_name": "EPSS",
-                    "description": "2024-01-21",
-                    "url": "https://api.first.org/data/v1/epss?cve=CVE-2023-22518"
                 }
             ],
             "object_marking_refs": [

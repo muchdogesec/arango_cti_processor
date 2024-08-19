@@ -51,6 +51,7 @@ At a high-level the data in CTI Butler is joined follows:
 6. Sigma Rule (`indicator`) -> CVE (`vulnerability`) [`detects`]
 7. CVE (`vulnerability`) -> CWE (`weakness`) [`exploited-using`]
 8. CVE (`indicator`) -> CPE (`software`) [`pattern-contains`]
+9. CVE add EPSS (`EPSS`)
 
 The parenthesis (`()`) in the list above denote the STIX Object types in each knowledge-base that are used as the `source_ref` and `target_ref` used to create the joins. The square brackets (`[]`) define the STIX `relationship_type` used in the relationship object used to link them.
 
@@ -719,6 +720,8 @@ All generated objects are stored in the source edge collection.
 
 #### 6. CVE Indicator -> CPE Software Relationship (`cve-cpe`)
 
+##### For pattern
+
 * Source collection: `nvd_cve_vertex_collection` (`type==vulnerability` objects only)
 * Destination collections: `nvd_cpe_vertex_collection` (`type==software` objects only)
 
@@ -779,6 +782,49 @@ For every CPE URI inside a pattern, a relationship between the Indicator and cor
 To generate the id of SRO, a UUIDv5 is generated using the namespace `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` and the `relationship_type+source_collection_name/source_ref+target_collection_name/target_ref`  values.
 
 All generated objects are stored in the source edge collection.
+
+##### For vulnerable CPEs
+
+* Source collection: `nvd_cve_vertex_collection` (`type==vulnerability` objects only)
+* Destination collections: `nvd_cpe_vertex_collection` (`type==software` objects only)
+
+The `external_references` property inside the Indicator SDO contains one or more CPE URIs. 
+
+```json
+    "external_references": [
+        {
+            "source_name": "cve",
+            "external_id": "<vulnerabilities.cve.id>",
+            "url": "https://nvd.nist.gov/vuln/detail/<vulnerabilities.cve.id>"
+        },
+        {
+            "source_name": "vulnerable_cpe",
+            "external_id": "<cpe_id>",
+        }
+    ],
+```
+
+These should be linked to CPEs by creating the following relationships
+
+```json
+{
+    "type": "relationship",
+    "spec_version": "2.1",
+    "id": "relationship--<UUID V5 LOGIC>",
+    "created_by_ref": "<IMPORTED IDENTITY OBJECT>",
+    "created": "<vulnerabilities.cve.published>",
+    "modified": "<vulnerabilities.cve.lastModifiedDate>",
+    "relationship_type": "is-vulnerable",
+    "source_ref": "indicator--<INDICATOR STIX OBJECT>",
+    "target_ref": "software--<SOFTWARE STIX OBJECT>",
+    "object_marking_refs": [
+        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+        "<MARKING DEFINITION IMPORTED>"
+    ]
+}
+```
+
+To generate the id of SRO, a UUIDv5 is generated using the namespace `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` and the `relationship_type+source_collection_name/source_ref+target_collection_name/target_ref`  values.
 
 #### 7. Sigma Rule Indicator -> ATT&CK Attack Pattern relationship (`sigma-attack`)
 
