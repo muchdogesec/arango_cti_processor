@@ -791,26 +791,18 @@ All generated objects are stored in the source edge collection.
 The custom properties inside the Indicator SDO contains one or more CPE URIs as a list, e.g.
 
 ```json
-    "external_references": [
-        {
-            "source_name": "cve",
-            "external_id": "<vulnerabilities.cve.id>",
-            "url": "https://nvd.nist.gov/vuln/detail/<vulnerabilities.cve.id>"
-        }
-    ],
     "extensions": {
         "extension-definition--ad995824-2901-5f6e-890b-561130a239d4": {
-            "extension_type": "property-extension",
-            "vulnerable_cpes": [
-                "cpe:2.3:a:hm-print_project:hm-print:1.2a:*:*:*:*:*:*:*",
-                "cpe:2.3:a:hm-print_project:hm-print:2.2a:*:*:*:*:*:*:*",
-            ]
+            "extension_type": "toplevel-property-extension"
         }
-    }
-}
+    },
+    "x_vulnerable_cpes": [
+        "cpe:2.3:a:hm-print_project:hm-print:1.2a:*:*:*:*:*:*:*",
+        "cpe:2.3:a:hm-print_project:hm-print:2.2a:*:*:*:*:*:*:*"
+    ]
 ```
 
-Each listed CPE should be linked to CPE software objects by creating the following relationships;
+Each listed `x_vulnerable_cpes` should be linked to CPE software objects by creating the following relationships;
 
 ```json
 {
@@ -1013,30 +1005,31 @@ All generated objects are stored in the source edge collection.
 CVE Vulnerability objects have EPSS scores, e.g.
 
 ```json
-    "extensions": {
-        "extension-definition--2c5c13af-ee92-5246-9ba7-0b958f8cd34a": {
-            "cvss": {
-                "v3_1": {
-                    "baseScore": 4.8,
-                    "baseSeverity": "MEDIUM",
-                    "exploitabilityScore": 1.7,
-                    "impactScore": 2.7,
-                    "vectorString": "CVSS:3.1/AV:N/AC:L/PR:H/UI:R/S:C/C:L/I:L/A:N"
-                }
-            },
-            "epss": {
-                "date": "2024-08-18",
-                "percentile": "0.328570000",
-                "score": "0.000750000"
-            },
-            "extension_type": "property-extension"
+    "x_cvss": {
+        "v3_1": {
+            "baseScore": 4.8,
+            "baseSeverity": "MEDIUM",
+            "exploitabilityScore": 1.7,
+            "impactScore": 2.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:H/UI:R/S:C/C:L/I:L/A:N"
         }
+    },
+    "x_epss": {
+        "date": "2024-08-18",
+        "percentile": "0.328570000",
+        "score": "0.000750000"
     }
 ```
 
 EPSS scores are updated daily. As such a user should be able to update EPSS scores.
 
-Running the script will update CVEs with the latest CVSS data. The `modified` time of each CVE will be updated accordingly.
+EPSS data is downloaded using the endpoint. It will return the score for the current day.
+
+```shell
+GET https://api.first.org/data/v1/epss?cve=CVE-XXXX-XXXX
+```
+
+Running the script will update CVEs with the latest available CVSS data. The `modified` time of each CVE will be updated accordingly.
 
 Should also add specific flag for this mode only `--cve-ids`. Here a user can pass a list of CVE IDs. In this case, only the CVE IDs passed will be updated. This is useful because often a user only wants to updated recent cves, and not very old ones. Should also be able to pass regex values for this property (e.g. `2024-2\n\n\n\n`).
 
