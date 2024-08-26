@@ -107,6 +107,7 @@ When an ATT&CK label is identified in a Sigma STIX Indicator object a relationsh
     "relationship_type": "detects",
     "source_ref": "indicator--<SIGMA INDICATOR STIX OBJECT>",
     "target_ref": "<ATT&CK STIX OBJECT>",
+    "description": "<SIGMA RULE NAME> <relationship_type without - char> <ATT&CK name>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
         "<MARKING DEFINITION IMPORTED>"

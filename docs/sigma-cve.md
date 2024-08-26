@@ -41,6 +41,7 @@ When a CVE label is identified in a Sigma STIX Indicator object a relationship i
     "relationship_type": "detects",
     "source_ref": "indicator--<SIGMA INDICATOR STIX OBJECT>",
     "target_ref": "vulnerability--<CVE VULNERABILITY STIX OBJECT>",
+    "description": "<SIGMA RULE NAME> <relationship_type without - char> <CVE name>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
         "<MARKING DEFINITION IMPORTED>"

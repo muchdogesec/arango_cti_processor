@@ -136,8 +136,6 @@ python3 utilities/arango_cti_processor/insert_archive_cpe.py \
   --database cti_database
 ```
 
-This is what we use to backfill [CTI Butler](https://www.ctibutler.com/).
-
 ## How it works
 
 If you would like to know how the logic of this script works in detail, please consult the `/docs` directory.

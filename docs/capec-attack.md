@@ -125,6 +125,7 @@ When a match is found, the code will create a STIX 2.1 SRO in the following form
     "relationship_type": "technique",
     "source_ref": "attack-pattern--<CAPEC STIX OBJECT ID>",
     "target_ref": "attack-pattern--<ATT&CK STIX OBJECT ID>",
+    "description": "<CAPEC name> <relationship_type without - char> <ATT&CK name>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
         "<MARKING DEFINITION IMPORTED>"
@@ -161,6 +162,7 @@ LET relationships = [
         "relationship_type": "technique",
         "source_ref": "attack-pattern--eede1d7f-028e-48ff-aa88-a18ed68c2132",
         "target_ref": "attack-pattern--613f2e26-407d-48c7-9eca-b8e91df99dc9",
+        "description": "<CAPEC name> <relationship_type without - char> <ATT&CK name>",
         "object_marking_refs": [
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"

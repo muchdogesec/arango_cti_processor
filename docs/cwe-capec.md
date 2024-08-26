@@ -125,6 +125,7 @@ When a match is found, the code will create a STIX 2.1 SRO in the following form
     "relationship_type": "exploited-using",
     "source_ref": "weakness--<CWE STIX OBJECT ID>",
     "target_ref": "attack-pattern--<CAPEC STIX OBJECT ID>",
+    "description": "<CWE name> <relationship_type without - char> <CAPEC name>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
         "<MARKING DEFINITION IMPORTED>"
