@@ -6,11 +6,7 @@ A small script that creates relationships between common CTI knowledge-bases in 
 
 [![arango_cti_processor](https://img.youtube.com/vi/2GVVC2RfIq8/0.jpg)](https://www.youtube.com/watch?v=2GVVC2RfIq8)
 
-## Before you get started
-
-If you do not want to backfill, maintain, or support your own CVE STIX objects check out CTI Butler which provides a fully manage database of these objects and more!
-
-https://www.ctibutler.com/
+[Watch the demo](https://www.youtube.com/watch?v=2GVVC2RfIq8).
 
 ## Overview
 
@@ -158,4 +154,4 @@ If you would like to know how the logic of this script works in detail, please c
 
 ## License
 
-[AGPLv3](/LICENSE).
+[Apache 2.0](/LICENSE).
