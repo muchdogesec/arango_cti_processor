@@ -1,10 +1,15 @@
 from __future__ import annotations
 import logging
+import math
+import time
+from urllib.parse import parse_qsl, urlparse
 import uuid
 import json
 import hashlib
 import requests
 import re
+
+from .cpe_match import fetch_cpe_matches
 from . import config
 from tqdm import tqdm
 
@@ -17,7 +22,6 @@ from stix2 import Relationship, Grouping
 from datetime import datetime
 
 module_logger = logging.getLogger("data_ingestion_service")
-
 
 def get_relationship():
     return {
@@ -88,7 +92,7 @@ def get_rel_func_mapping(relationships):
     ]
 
 
-def parse_relation_object(src, dst, collection, relationship_type: str, note=None, is_embedded_ref=False):
+def parse_relation_object(src, dst, collection, relationship_type: str, note=None, is_embedded_ref=False, description=None):
     generated_id = "relationship--" + str(
         uuid.uuid5(
             config.namespace,
@@ -106,6 +110,8 @@ def parse_relation_object(src, dst, collection, relationship_type: str, note=Non
         created_by_ref="identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
         object_marking_refs=config.OBJECT_MARKING_REFS,
     )
+    if description:
+        obj['description'] = description
     obj["_from"] = src["_id"]
     obj["_to"] = dst["_id"]
     obj["_is_ref"] = is_embedded_ref
@@ -147,11 +153,19 @@ def relate_cve_to_cpe(data, db: CTIProcessor, collection, collect_edge, notes):
     try:
         objects = []
         if data.get("type") == "indicator":
-            pattern = r"software:cpe='(.*?)'"
-            matches = re.findall(pattern, data.get("pattern"))
-            custom_query = f"FILTER doc.cpe IN {matches}"
+            criteria_ids = {}
+            x_cpes = data.get('x_cpes', {})
+            for vv in x_cpes.get('vulnerable', []):
+                criteria_ids[vv['matchCriteriaId']] = True
+            for vv in x_cpes.get('not_vulnerable', []):
+                criteria_ids[vv['matchCriteriaId']] = False
+            cpe_names = fetch_cpe_matches(data['name'], criteria_ids)
+            bind_vars = {
+                'cpe_names': list(cpe_names)
+            }
+            custom_query = f"FILTER doc.cpe IN @cpe_names"
             results = db.filter_objects_in_collection_using_custom_query(
-                collection_name="nvd_cpe_vertex_collection", custom_query=custom_query
+                collection_name="nvd_cpe_vertex_collection", custom_query=custom_query, bind_vars=bind_vars
             )
 
             for result in results:
@@ -160,9 +174,21 @@ def relate_cve_to_cpe(data, db: CTIProcessor, collection, collect_edge, notes):
                     result,
                     collection,
                     relationship_type="pattern-contains",
-                    note=notes
+                    note=notes,
+                    description=f"{data['name']} pattern contains {result['name']}",
                 )
                 objects.append(rel)
+                if cpe_names[result["cpe"]]:
+                    rel2 = parse_relation_object(
+                        data,
+                        result,
+                        collection,
+                        relationship_type="is-vulnerable",
+                        note=notes,
+                        description=f"{data['name']} is vulnerable {result['name']}",
+                    )
+                    objects.append(rel2)
+
     except Exception as e:
         module_logger.exception(e)
     return objects

@@ -60,3 +60,5 @@ OBJECT_MARKING_REFS=[
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
     "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
 ]
+
+CPEMATCH_API_ENDPOINT = "https://services.nvd.nist.gov/rest/json/cpematch/2.0"

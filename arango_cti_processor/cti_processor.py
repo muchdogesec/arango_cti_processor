@@ -2,6 +2,8 @@ import os
 import json
 import logging
 
+import arango.exceptions
+
 from . import config
 from tqdm import tqdm
 from stix2arango.services.arangodb_service import ArangoDBService
@@ -126,8 +128,25 @@ class ArangoProcessor:
                 processors.sigma_groups(self.arango)
 
 
-    def filter_objects_in_collection_using_custom_query(self, collection_name, custom_query):
-        return self.arango.filter_objects_in_collection_using_custom_query(collection_name, custom_query)
+    # def filter_objects_in_collection_using_custom_query(self, collection_name, custom_query):
+    #     return self.arango.filter_objects_in_collection_using_custom_query(collection_name, custom_query)
+    
+    def filter_objects_in_collection_using_custom_query(
+        self, collection_name: str = None, custom_query: str = "", **kwargs
+    ):
+        bind_vars = kwargs.pop('bind_vars', {})
+        bind_vars['@collection'] = collection_name
+        query = f"FOR doc IN @@collection\n"
+        query += custom_query
+        query += "\nRETURN doc"
+        # print(query)
+        try:
+            cursor = self.arango.db.aql.execute(query, bind_vars=bind_vars, **kwargs)
+            result = [doc for doc in cursor]
+            return result
+        except arango.exceptions.AQLQueryExecuteError:
+            module_logger.error(f"AQL exception in the query: {query}")
+            raise
     
     def filter_objects_in_list_collection_using_custom_query(self, *args, **kw):
         return self.arango.filter_objects_in_list_collection_using_custom_query(*args, **kw)
@@ -198,7 +217,7 @@ class ArangoProcessor:
         if not objects or self.ignore_embedded_relationships:
             return []
         refs = processors.get_embedded_refs(objects[0])
-        print(refs, objects[0])
+        # print(refs, objects[0])
 
         result = self.arango.execute_raw_query("""
             FOR doc IN @@collection
@@ -216,7 +235,7 @@ class ArangoProcessor:
         
         id_map = dict(result)
         embedded_relationships = []
-        print(len(id_map))
+        # print(len(id_map))
         for obj in objects:
             for ref, target_id in refs:
                 src, dst = id_map.get(obj['id']), id_map.get(target_id)
