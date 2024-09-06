@@ -118,3 +118,5 @@ When an ATT&CK label is identified in a Sigma STIX Indicator object a relationsh
 To generate the id of SRO, a UUIDv5 is generated using the namespace `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` and the `relationship_type+source_collection_name/source_ref+target_collection_name/target_ref`  values.
 
 All generated objects are stored in the source edge collection.
+
+You should also use add the arango internal property `_arango_cti_processor_note` == `sigma-attack`
