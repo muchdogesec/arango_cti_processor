@@ -10,18 +10,75 @@
             "created": "2023-10-31T15:15:08.573Z",
             "modified": "2023-12-19T16:15:07.883Z",
             "name": "CVE-2023-22518",
-            "description": "All versions of Confluence Data Center and Server are affected by this unexploited vulnerability. This Improper Authorization vulnerability allows an unauthenticated attacker to reset Confluence and create a Confluence instance administrator account. Using this account, an attacker can then perform all administrative actions that are available to\u00a0Confluence instance administrator leading to - but not limited to - full loss of confidentiality, integrity and availability.\u00a0\n\nAtlassian Cloud sites are not affected by this vulnerability. If your Confluence site is accessed via an atlassian.net domain, it is hosted by Atlassian and is not vulnerable to this issue.",
+            "description": "All versions of Confluence Data Center and Server are affected by this unexploited vulnerability. This Improper Authorization vulnerability allows an unauthenticated attacker to reset Confluence and create a Confluence instance administrator account. Using this account, an attacker can then perform all administrative actions that are available to Confluence instance administrator leading to - but not limited to - full loss of confidentiality, integrity and availability. \n\nAtlassian Cloud sites are not affected by this vulnerability. If your Confluence site is accessed via an atlassian.net domain, it is hosted by Atlassian and is not vulnerable to this issue.",
             "indicator_types": [
-                "compromised"
+              "compromised"
             ],
-            "pattern": "([(software:cpe='cpe:2.3:a:atlassian:confluence_server:7.19.9:*:*:*:*:*:*:*') OR (software:cpe='cpe:2.3:a:atlassian:confluence_server:7.19.7:*:*:*:*:*:*:*')])",
+            "pattern": "([software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:8.6.0:*:*:*:*:*:*:*']) OR ([software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:8.6.0:*:*:*:*:*:*:*'])",
             "pattern_type": "stix",
             "pattern_version": "2.1",
             "valid_from": "2023-10-31T15:15:08.573Z",
+            "external_references": [
+              {
+                "source_name": "cve",
+                "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-22518",
+                "external_id": "CVE-2023-22518"
+              }
+            ],
             "object_marking_refs": [
-                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9",
-                "marking-definition--162e1800-92bd-573c-abbd-f359594ffad9"
-            ]
+              "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+              "marking-definition--562918ee-d5da-5579-b6a1-fae50cc6bad3"
+            ],
+            "extensions": {
+              "extension-definition--ad995824-2901-5f6e-890b-561130a239d4": {
+                "extension_type": "toplevel-property-extension"
+              }
+            },
+            "x_cpes": {
+              "not_vulnerable": [],
+              "vulnerable": [
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "3B807590-F41A-4F12-87DF-698D83853191"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "65733215-581D-4F2A-B023-899386A4A59C"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "56B04148-6AE0-4FD2-BD3D-B07A9E62F229"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "3660C634-0DB0-40B2-A905-1E00360A53FB"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:8.6.0:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "05E3896A-C145-44DB-8370-9263A139765D"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "3E147060-0403-4D4C-8E87-453077B4C4CE"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "06FD0F88-133B-4421-8644-1948FDA2AA65"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "F459BB01-A089-4128-93AD-A71FE3B49E22"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "5DA741B1-9AA7-42F6-8F50-32FE732D25D5"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:8.6.0:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "E995F8F6-E9A6-4076-8AE8-38A28A5F58D3"
+                }
+              ]
+            }
         },
         {
             "type": "vulnerability",
@@ -79,16 +136,37 @@
             "name": "CVE-2023-43621",
             "description": "An issue was discovered in Croc through 9.6.5. The shared secret, located on a command line, can be read by local users who list all processes and their arguments.",
             "indicator_types": [
-                "compromised"
+              "compromised"
             ],
-            "pattern": "([(software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*')])",
+            "pattern": "([software:cpe='cpe:2.3:a:schollz:croc:*:*:*:*:*:*:*:*'])",
             "pattern_type": "stix",
             "pattern_version": "2.1",
             "valid_from": "2023-09-20T06:15:10.95Z",
+            "external_references": [
+              {
+                "source_name": "cve",
+                "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-43621",
+                "external_id": "CVE-2023-43621"
+              }
+            ],
             "object_marking_refs": [
-                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9",
-                "marking-definition--162e1800-92bd-573c-abbd-f359594ffad9"
-            ]
+              "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+              "marking-definition--562918ee-d5da-5579-b6a1-fae50cc6bad3"
+            ],
+            "extensions": {
+              "extension-definition--ad995824-2901-5f6e-890b-561130a239d4": {
+                "extension_type": "toplevel-property-extension"
+              }
+            },
+            "x_cpes": {
+              "not_vulnerable": [],
+              "vulnerable": [
+                {
+                  "criteria": "cpe:2.3:a:schollz:croc:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "5B173A01-5175-444D-9651-68AD4E2C30C2"
+                }
+              ]
+            }
         },
         {
             "type": "vulnerability",
@@ -169,16 +247,89 @@
             "name": "CVE-2022-26134",
             "description": "In affected versions of Confluence Server and Data Center, an OGNL injection vulnerability exists that would allow an unauthenticated attacker to execute arbitrary code on a Confluence Server or Data Center instance. The affected versions are from 1.3.0 before 7.4.17, from 7.13.0 before 7.13.7, from 7.14.0 before 7.14.3, from 7.15.0 before 7.15.2, from 7.16.0 before 7.16.4, from 7.17.0 before 7.17.4, and from 7.18.0 before 7.18.1.",
             "indicator_types": [
-                "compromised"
+              "compromised"
             ],
-            "pattern": "([(software:cpe='cpe:2.3:a:atlassian:confluence_server:7.17.2:*:*:*:*:*:*:*') OR (software:cpe='cpe:2.3:a:atlassian:confluence_server:7.17.3:*:*:*:*:*:*:*')])",
+            "pattern": "([software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:7.18.0:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:7.18.0:*:*:*:*:*:*:*'])",
             "pattern_type": "stix",
             "pattern_version": "2.1",
             "valid_from": "2022-06-03T22:15:07.717Z",
+            "external_references": [
+              {
+                "source_name": "cve",
+                "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-26134",
+                "external_id": "CVE-2022-26134"
+              }
+            ],
             "object_marking_refs": [
-                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9",
-                "marking-definition--162e1800-92bd-573c-abbd-f359594ffad9"
-            ]
+              "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+              "marking-definition--562918ee-d5da-5579-b6a1-fae50cc6bad3"
+            ],
+            "extensions": {
+              "extension-definition--ad995824-2901-5f6e-890b-561130a239d4": {
+                "extension_type": "toplevel-property-extension"
+              }
+            },
+            "x_cpes": {
+              "not_vulnerable": [],
+              "vulnerable": [
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "5B80A5DD-66A4-4BA9-8BE0-CD862048B497"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "C98724BE-9503-4E81-B427-79410CDBF2B9"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "12E753EB-0D31-448B-B8DE-0A95434CC97C"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "DE114494-74F0-454C-AAC4-8B8E5F1C67D0"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "90BB3572-29ED-415F-AD34-00EB76271F9C"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "30EF756A-B4E9-4E5D-BE6F-02CE95F12C9C"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:7.18.0:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "A56B6A10-E23F-49EF-8C07-1AEDFCAE2788"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "3AC4BC00-4067-4C75-AF15-A754C2713B02"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "4587786A-9864-405F-8C0F-31D930651F59"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "5DCDEC6C-4515-4CAA-9D82-7BF68A3AAE7E"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "B9948F94-DF67-4E3C-8CD4-417D57FBC60F"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "30E63ECB-85A8-4D41-A9B5-9FFF18D9CDB1"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "694171BD-FAE2-472C-8183-04BCA2F7B9A7"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:7.18.0:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "0AC5E81B-DA4B-45E7-9584-4B576E49FD8B"
+                }
+              ]
+            }
         },
         {
             "type": "vulnerability",
@@ -246,16 +397,65 @@
             "name": "CVE-2021-26084",
             "description": "In affected versions of Confluence Server and Data Center, an OGNL injection vulnerability exists that would allow an unauthenticated attacker to execute arbitrary code on a Confluence Server or Data Center instance. The affected versions are before version 6.13.23, from version 6.14.0 before 7.4.11, from version 7.5.0 before 7.11.6, and from version 7.12.0 before 7.12.5.",
             "indicator_types": [
-                "compromised"
+              "compromised"
             ],
-            "pattern": "([(software:cpe='cpe:2.3:a:atlassian:confluence_server:6.15.0:*:*:*:*:*:*:*')])",
+            "pattern": "([software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*' OR software:cpe='cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*'])",
             "pattern_type": "stix",
             "pattern_version": "2.1",
             "valid_from": "2021-08-30T07:15:06.587Z",
+            "external_references": [
+              {
+                "source_name": "cve",
+                "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-26084",
+                "external_id": "CVE-2021-26084"
+              }
+            ],
             "object_marking_refs": [
-                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9",
-                "marking-definition--162e1800-92bd-573c-abbd-f359594ffad9"
-            ]
+              "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+              "marking-definition--562918ee-d5da-5579-b6a1-fae50cc6bad3"
+            ],
+            "extensions": {
+              "extension-definition--ad995824-2901-5f6e-890b-561130a239d4": {
+                "extension_type": "toplevel-property-extension"
+              }
+            },
+            "x_cpes": {
+              "not_vulnerable": [],
+              "vulnerable": [
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "6A28735F-4827-4410-8B0B-C209ECD21DFC"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "FA5224DF-97AB-4D8E-B66D-FC65A1333531"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "E776BF66-74F1-4D8E-9099-42A4E5EEE300"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_data_center:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "E11303D6-258F-4FAC-A868-BF506E7F5A4E"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "6D1FF67F-3FB4-4C0C-8263-3D4CA00A02CD"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "F5CCD4D0-6BC7-442A-9D4D-43841FE40F3E"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "DF59072C-9911-4035-A75A-27D882988919"
+                },
+                {
+                  "criteria": "cpe:2.3:a:atlassian:confluence_server:*:*:*:*:*:*:*:*",
+                  "matchCriteriaId": "BFEE2534-EBEF-438B-B616-ED4FFBC9246E"
+                }
+              ]
+            }
         },
         {
             "type": "report",

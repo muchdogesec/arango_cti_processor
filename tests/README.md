@@ -154,19 +154,19 @@ python3 -m unittest tests/test_5_2_cve_to_cwe.py
 
 ---
 
-## TEST 6.0: Validate CVE Indicator -> CPE Software Relationship (`cve-cpe`)
-
-condensed_cve_bundle.json has 6 cpes
+## TEST 6.0: Validate CVE Indicator -> CPE Software Relationship (`cve-cpe`) 
 
 ```shell
 python3 -m unittest tests/test_6_0_cve_to_cpe.py
 ```
 
+has 1 not_vulnerable cpe, 4 vulnerables after matchcriteria -> swid lookup
+
 ## TEST 6.1: Add new CPE to CVE object
 
 Need to run test 6.0 beforehand
 
-Adds `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` to `indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6`. Used to have 2 patterns, so now has 3.
+Adds new CPE to pattern. This makes now 5 vulnerable after matchcriteria -> swid lookup
 
 Run the test script;
 
@@ -178,7 +178,7 @@ python3 -m unittest tests/test_6_1_cve_to_cpe.py
 
 Need to run test 6.1 beforehand
 
-Removes `software:cpe='cpe:2.3:a:schollz:croc:9.6.5:*:*:*:*:*:*:*'` (added in 6.1) from `indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6`
+Removes all CPEs. Expect no matches for is_latest now.
 
 ```shell
 python3 -m unittest tests/test_6_2_cve_to_cpe.py

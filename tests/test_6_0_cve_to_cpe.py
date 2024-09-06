@@ -25,8 +25,8 @@ class TestArangoDB(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         make_uploads([
-                ("nvd_cve", "tests/files/condensed_cve_bundle.json"),
-                ("nvd_cpe", "tests/files/condensed_cpe_bundle.json"),
+                ("nvd_cve", "tests/files/cve-cpe-bundle-with-cves.json"),
+                ("nvd_cpe", "tests/files/cve-cpe-bundle-with-cpes.json"),
             ], database="arango_cti_processor_standard_tests", delete_db=True, 
             host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME, stix2arango_note=STIX2ARANGO_NOTE)
         print(f'======Test bundles uploaded successfully======')
