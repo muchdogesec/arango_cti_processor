@@ -25,7 +25,7 @@ class TestArangoDB(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         make_uploads([
-                ("nvd_cve", "tests/files/condensed_cpe_bundle-update-1.json"),
+                ("nvd_cve", "tests/files/cve-cpe-bundle-with-cves-update-1.json"),
             ], database="arango_cti_processor_standard_tests", delete_db=False, 
             host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME, stix2arango_note=STIX2ARANGO_NOTE)
         print(f'======Test bundles uploaded successfully======')
@@ -59,45 +59,73 @@ class TestArangoDB(unittest.TestCase):
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
-    # Should return 2 results, the new and old version of `indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6` (CVE-2023-22518)
+    # Should return 2 results, the new and old version
     def test_02_test_update_to_indicator(self):
         query = """
         RETURN COUNT(
           FOR doc IN nvd_cve_vertex_collection
-            FILTER doc.id == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
+            FILTER doc.id == "indicator--570304ae-02cf-542b-ab7a-77e7ada2f48e"
               RETURN doc
         )
         """
         result_count = self.run_query(query)
         self.assertEqual(result_count, [2], f"Expected 2 documents, but found {result_count}.")
 
-    # test 3 Should return 3 results, as now has 3 CPEs in Pattern
+    # Should return 6 results after update
     def test_03_test_relationships_to_cpes_new(self):
         query = """
         RETURN COUNT(
           FOR doc IN nvd_cve_edge_collection
-              FILTER doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-              AND doc.relationship_type == "pattern-contains"
-              AND doc._is_latest == true
-              RETURN doc
+          FILTER doc._arango_cti_processor_note == "cve-cpe"
+          AND doc.relationship_type == "pattern-contains"
+          AND doc._is_latest == true
+            RETURN doc
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [3], f"Expected 3 documents, but found {result_count}.")
+        self.assertEqual(result_count, [6], f"Expected 6 documents, but found {result_count}.")
 
-    # Should return 2 results, as the original indicator (in 6.0) before update has 2 CPEs in pattern.
+    # should return 5 (same as 6.0)
     def test_04_test_relationships_to_cpes_old(self):
         query = """
         RETURN COUNT(
           FOR doc IN nvd_cve_edge_collection
-              FILTER doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-              AND doc.relationship_type == "pattern-contains"
-              AND doc._is_latest == false
-              RETURN doc
+          FILTER doc._arango_cti_processor_note == "cve-cpe"
+          AND doc.relationship_type == "pattern-contains"
+          AND doc._is_latest == false
+            RETURN doc
+        )
+        """
+        result_count = self.run_query(query)
+        self.assertEqual(result_count, [5], f"Expected 5 documents, but found {result_count}.")
+
+    # now 2 cpes vulnerable as 1 added in update
+    def test_05_test_relationships_to_vulnerable_cpes_new(self):
+        query = """
+        RETURN COUNT(
+          FOR doc IN nvd_cve_edge_collection
+          FILTER doc._arango_cti_processor_note == "cve-cpe"
+          AND doc.relationship_type == "is-vulnerable"
+          AND doc._is_latest == true
+            RETURN doc
         )
         """
         result_count = self.run_query(query)
         self.assertEqual(result_count, [2], f"Expected 2 documents, but found {result_count}.")
+
+    # same as 6.0 results
+    def test_06_test_relationships_to_vulnerable_cpes_old(self):
+        query = """
+        RETURN COUNT(
+          FOR doc IN nvd_cve_edge_collection
+          FILTER doc._arango_cti_processor_note == "cve-cpe"
+          AND doc.relationship_type == "is-vulnerable"
+          AND doc._is_latest == false
+            RETURN doc
+        )
+        """
+        result_count = self.run_query(query)
+        self.assertEqual(result_count, [1], f"Expected 1 documents, but found {result_count}.")
 
 if __name__ == '__main__':
     unittest.main()

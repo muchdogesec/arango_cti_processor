@@ -72,13 +72,38 @@ class TestArangoDB(unittest.TestCase):
         result_count = self.run_query(query)
         self.assertEqual(result_count, [6], f"Expected 6 documents, but found {result_count}.")
 
-    # checks the correct number of objects are generated, and that they are assigned the correct properties by the script
-    def test_03_correct_object_properties(self):
+# after lookup 5 swid returned
+    def test_03_check_vulnerable_not_vulnerable(self):
         query = """
         RETURN COUNT(
           FOR doc IN nvd_cve_edge_collection
-          FILTER doc.relationship_type == "pattern-contains"
-          AND doc._arango_cti_processor_note == "cve-cpe"
+          FILTER doc._arango_cti_processor_note == "cve-cpe"
+          AND doc.relationship_type == "pattern-contains"
+            RETURN doc
+        )
+        """
+        result_count = self.run_query(query)
+        self.assertEqual(result_count, [5], f"Expected 5 documents, but found {result_count}.")
+
+# after lookup only 1 swid returned
+    def test_04_check_vulnerable_not_vulnerable(self):
+        query = """
+        RETURN COUNT(
+          FOR doc IN nvd_cve_edge_collection
+          FILTER doc._arango_cti_processor_note == "cve-cpe"
+          AND doc.relationship_type == "is-vulnerable"
+            RETURN doc
+        )
+        """
+        result_count = self.run_query(query)
+        self.assertEqual(result_count, [1], f"Expected 1 documents, but found {result_count}.")
+
+    # checks the correct number of objects are generated, and that they are assigned the correct properties by the script
+    def test_05_correct_object_properties(self):
+        query = """
+        RETURN COUNT(
+          FOR doc IN nvd_cve_edge_collection
+          FILTER doc._arango_cti_processor_note == "cve-cpe"
           AND doc.created_by_ref == "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
           AND doc.object_marking_refs == [
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
@@ -90,41 +115,21 @@ class TestArangoDB(unittest.TestCase):
         result_count = self.run_query(query)
         self.assertEqual(result_count, [6], f"Expected 6 documents, but found {result_count}.")
 
-    # indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 has 2 cpes
-    def test_04_test_relationships_to_cpes(self):
+    def test_06_test_relationships_to_cpes(self):
         query = """
         RETURN COUNT(
           FOR doc IN nvd_cve_edge_collection
-              FILTER doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
+              FILTER doc.source_ref == "indicator--570304ae-02cf-542b-ab7a-77e7ada2f48e"
               AND doc.relationship_type == "pattern-contains"
               RETURN doc
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [2], f"Expected 2 documents, but found {result_count}.")
-
-    # same as test 4 but checks sro id generation
-    #`cpe:2.3:a:atlassian:confluence_server:7.19.9:*:*:*:*:*:*:*`
-    #`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `pattern-contains+nvd_cve_vertex_collection/indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6+nvd_cpe_vertex_collection/software--50fa0834-9c63-5b0f-bf0e-dce02183253a` = `relationship--d177fcc4-6991-5d5f-8885-7c27f374fce5`
-    #`cpe:2.3:a:atlassian:confluence_server:7.19.7:*:*:*:*:*:*:*`
-    #`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `pattern-contains+nvd_cve_vertex_collection/indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6+nvd_cpe_vertex_collection/software--23b14f0d-c539-50bc-bdc2-38d68d849732` = `relationship--f77ec4f3-f855-5dfd-9a4c-81b9124f15ac`
-    def test_05_test_relationships_to_cpes_ids(self):
-        query = """
-        FOR doc IN nvd_cve_edge_collection
-            FILTER doc.source_ref == "indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
-            AND doc.relationship_type == "pattern-contains"
-            RETURN doc.id
-        """
-        result_count = self.run_query(query)
-        expected_ids = [
-            "relationship--d177fcc4-6991-5d5f-8885-7c27f374fce5",
-            "relationship--f77ec4f3-f855-5dfd-9a4c-81b9124f15ac"
-        ]
-        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+        self.assertEqual(result_count, [5], f"Expected 5 documents, but found {result_count}.")
 
 # no updates to the objects should have happened yet
 
-    def test_06_check_no_updates(self):
+    def test_07_check_no_updates(self):
         query = """
             RETURN LENGTH(
               FOR doc IN nvd_cve_edge_collection
@@ -137,6 +142,42 @@ class TestArangoDB(unittest.TestCase):
         result_count = [count for count in cursor]
 
         self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
+
+# test 8 is broken
+    # same as test 4 but checks sro id generation
+    #`cpe:2.3:a:atlassian:confluence_server:7.19.9:*:*:*:*:*:*:*`
+    #`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `pattern-contains+nvd_cve_vertex_collection/indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6+nvd_cpe_vertex_collection/software--50fa0834-9c63-5b0f-bf0e-dce02183253a` = `relationship--d177fcc4-6991-5d5f-8885-7c27f374fce5`
+    #`cpe:2.3:a:atlassian:confluence_server:7.19.7:*:*:*:*:*:*:*`
+    #`2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `pattern-contains+nvd_cve_vertex_collection/indicator--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6+nvd_cpe_vertex_collection/software--23b14f0d-c539-50bc-bdc2-38d68d849732` = `relationship--f77ec4f3-f855-5dfd-9a4c-81b9124f15ac`
+    def test_08_test_relationships_to_cpes_ids(self):
+        query = """
+        FOR doc IN nvd_cve_edge_collection
+            FILTER doc.source_ref == "indicator--570304ae-02cf-542b-ab7a-77e7ada2f48e"
+            AND doc.relationship_type == "pattern-contains"
+            RETURN doc.id
+        """
+        result_count = self.run_query(query)
+        expected_ids = [
+            "relationship--d177fcc4-6991-5d5f-8885-7c27f374fce5",
+            "relationship--f77ec4f3-f855-5dfd-9a4c-81b9124f15ac"
+        ]
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
+# test 9 is broken
+
+    def test_09_test_vulnerable_relationships_to_cpes_ids(self):
+        query = """
+        FOR doc IN nvd_cve_edge_collection
+            FILTER doc.source_ref == "indicator--570304ae-02cf-542b-ab7a-77e7ada2f48e"
+            AND doc.relationship_type == "is-vulnerable"
+            RETURN doc.id
+        """
+        result_count = self.run_query(query)
+        expected_ids = [
+            "relationship--d177fcc4-6991-5d5f-8885-7c27f374fce5",
+            "relationship--f77ec4f3-f855-5dfd-9a4c-81b9124f15ac"
+        ]
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
 if __name__ == '__main__':
     unittest.main()
