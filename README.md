@@ -1,5 +1,7 @@
 # Arango CTI Processor
 
+![](docs/arango_cti_processor.png)
+
 A small script that creates relationships between common CTI knowledge-bases in STIX 2.1 format.
 
 ## tl;dr
@@ -95,6 +97,7 @@ Where;
   * `attack-capec`
   * `cve-cwe`
   * `cve-cpe`
+  * `cve-epss`
   * `sigma-attack`
   * `sigma-cve`
 * `--ignore_embedded_relationships` (optional, boolean). Default is false. if `true` passed, this will stop any embedded relationships from being generated. This is a stix2arango feature where STIX SROs will also be created for `_ref` and `_refs` properties inside each object (e.g. if `_ref` property = `identity--1234` and SRO between the object with the `_ref` property and `identity--1234` will be created). See stix2arango docs for more detail if required, essentially this a wrapper for the same `--ignore_embedded_relationships` setting implemented by stix2arango
