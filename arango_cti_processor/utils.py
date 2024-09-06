@@ -194,7 +194,7 @@ def relate_cve_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes):
                         collection,
                         relationship_type="exploited-using",
                         note=notes,
-                        description=f"{cve_name} exploited using {cwe_name}",
+                        description=f"{cve_name} is exploited using {cwe_name}",
                     )
                     objects.append(rel)
     except Exception as e:
@@ -271,7 +271,7 @@ def relate_capec_to_attack(
                         collection,
                         relationship_type="technique",
                         note=notes,
-                        description=f"{capec_name} technique {attack_name}",
+                        description=f"{capec_name} uses technique {attack_name}",
                     )
                     objects.append(rel)
     except Exception as e:
@@ -303,7 +303,7 @@ def relate_cwe_to_capec(data, db: CTIProcessor, collection, collection_edge, not
                         collection,
                         relationship_type="exploited-using",
                         note=notes,
-                        description=f"{cwe_id} exploited using {capec_id}",
+                        description=f"{cwe_id} is exploited using {capec_id}",
                     )
                     objects.append(rel)
 

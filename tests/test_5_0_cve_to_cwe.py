@@ -135,5 +135,22 @@ class TestArangoDB(unittest.TestCase):
 
         self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
 
+    def test_07_check_object_description_properties(self):
+        query = """
+            FOR doc IN nvd_cve_edge_collection
+                FILTER doc._arango_cti_processor_note == "cve-cwe"
+                AND doc.id == "relationship--92d43d17-2c7f-5498-9836-593dbb14afe9"
+                RETURN doc.description
+        """
+        cursor = self.db.aql.execute(query)
+        result_count = [doc for doc in cursor]
+
+        expected_ids = [
+          "CVE-2023-22518 is exploited using CWE-863"
+        ]
+
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
+
 if __name__ == '__main__':
     unittest.main()

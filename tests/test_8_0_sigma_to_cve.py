@@ -109,5 +109,22 @@ class TestArangoDB(unittest.TestCase):
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
+    def test_04_check_object_description_properties(self):
+        query = """
+            FOR doc IN sigma_rules_edge_collection
+                FILTER doc._arango_cti_processor_note == "sigma-cve"
+                AND doc.id == "relationship--72189b73-5547-500c-85ea-f9287eac93f2"
+                RETURN doc.description
+        """
+        cursor = self.db.aql.execute(query)
+        result_count = [doc for doc in cursor]
+
+        expected_ids = [
+          "CVE-2023-22518 Exploitation Attempt - Suspicious Confluence Child Process (Windows) detects CVE-2023-22518"
+        ]
+
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
+
 if __name__ == '__main__':
     unittest.main()

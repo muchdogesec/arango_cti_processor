@@ -175,5 +175,21 @@ class TestArangoDB(unittest.TestCase):
 
         self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
 
+    def test_07_check_object_description_properties(self):
+        query = """
+            FOR doc IN mitre_cwe_edge_collection
+                FILTER doc._arango_cti_processor_note == "cwe-capec"
+                AND doc.id == "relationship--e6ea5f7f-f6ea-503a-a529-657be1a00eef"
+                RETURN doc.description
+        """
+        cursor = self.db.aql.execute(query)
+        result_count = [doc for doc in cursor]
+
+        expected_ids = [
+          "CWE-1007 is exploited using CAPEC-632"
+        ]
+
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
 if __name__ == '__main__':
     unittest.main()

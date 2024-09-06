@@ -211,5 +211,37 @@ class TestArangoDB(unittest.TestCase):
         result_count = self.run_query(query)
         self.assertEqual(result_count, [15], f"Expected 0 documents, but found {result_count}.")
 
+    def test_06_check_object_description_properties_tactic(self):
+        query = """
+            FOR doc IN sigma_rules_edge_collection
+                FILTER doc._arango_cti_processor_note == "sigma-attack"
+                AND doc.id == "relationship--d68a67d1-18bc-50b0-9361-f5cc8c1a3164"
+                RETURN doc.description
+        """
+        cursor = self.db.aql.execute(query)
+        result_count = [doc for doc in cursor]
+
+        expected_ids = [
+          "Microsoft IIS Service Account Password Dumped detects credential_access"
+        ]
+
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
+    def test_07_check_object_description_properties_technique(self):
+        query = """
+            FOR doc IN sigma_rules_edge_collection
+                FILTER doc._arango_cti_processor_note == "sigma-attack"
+                AND doc.id == "relationship--0f024506-f414-50ed-b5d7-633d6c4f59ab"
+                RETURN doc.description
+        """
+        cursor = self.db.aql.execute(query)
+        result_count = [doc for doc in cursor]
+
+        expected_ids = [
+          "Powershell Base64 Encoded MpPreference Cmdlet detects T1562.001"
+        ]
+
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
 if __name__ == '__main__':
     unittest.main()

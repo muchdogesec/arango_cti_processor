@@ -158,5 +158,25 @@ class TestArangoDB(unittest.TestCase):
 
         self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
 
+    def test_07_check_object_description_properties(self):
+        query = """
+            FOR doc IN UNION(
+                (FOR d IN mitre_attack_enterprise_edge_collection RETURN d),
+                (FOR d IN mitre_attack_ics_edge_collection RETURN d),
+                (FOR d IN mitre_attack_mobile_edge_collection RETURN d)
+                )
+                FILTER doc._arango_cti_processor_note == "attack-capec"
+                AND doc.id == "relationship--443510b1-b5e1-5dd0-b36c-c98cb32235f8"
+                RETURN doc.description
+        """
+        cursor = self.db.aql.execute(query)
+        result_count = [doc for doc in cursor]
+
+        expected_ids = [
+          "T1148 relies on CAPEC-13"
+        ]
+
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
 if __name__ == '__main__':
     unittest.main()
