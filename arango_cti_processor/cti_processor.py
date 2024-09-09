@@ -24,7 +24,8 @@ class ArangoProcessor:
         self.stix2arango_note = kwargs.get("stix2arango_note", "")
         self.arango_database = database
         self.vertex_collections, self.edge_collections = self.get_collections_for_relationship()
-        self.modified = kwargs.get("modified_min")
+        self.modified_min = kwargs.get("modified_min")
+        self.created_min = kwargs.get("created_min")
 
         self.arango = ArangoDBService(self.arango_database, self.vertex_collections, self.edge_collections, host_url=config.ARANGODB_HOST_URL, username=config.ARANGODB_USERNAME, password=config.ARANGODB_PASSWORD)
         self.validate_collections()
@@ -109,12 +110,15 @@ class ArangoProcessor:
         for rel_note, vertex, func in self.finalize_collections():
             logging.info(f"Checking: {vertex}")
             bind_vars = {
-                '@collection': vertex
+                '@collection': vertex,
+                'created_min': self.created_min,
+                'modified_min': self.modified_min,
             }
-            query = f"for doc in @@collection FILTER doc._is_latest  return doc"
-            if self.modified:
-                query = f"for doc in @@collection FILTER doc._is_latest AND doc.modified >= @earliest_modified_time return doc"
-                bind_vars.update(earliest_modified_time=self.modified)
+            query = """
+                FOR doc IN @@collection
+                    FILTER doc._is_latest AND (NOT @created_min OR doc.created >= @created_min) AND (NOT @modified_min OR doc.modified >= @modified_min)
+                    RETURN doc
+            """
             data = self.arango.execute_raw_query(query=query, bind_vars=bind_vars)
             inserted_data = self.map_relationships(
                 data=data,
