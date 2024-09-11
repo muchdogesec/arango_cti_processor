@@ -26,6 +26,7 @@ class ArangoProcessor:
         self.vertex_collections, self.edge_collections = self.get_collections_for_relationship()
         self.modified_min = kwargs.get("modified_min")
         self.created_min = kwargs.get("created_min")
+        self.kwargs = kwargs
 
         self.arango = ArangoDBService(self.arango_database, self.vertex_collections, self.edge_collections, host_url=config.ARANGODB_HOST_URL, username=config.ARANGODB_USERNAME, password=config.ARANGODB_PASSWORD)
         self.validate_collections()
@@ -82,6 +83,7 @@ class ArangoProcessor:
         objects = []
         for obj in tqdm(data["objects"]):
             obj['_stix2arango_note'] = notes
+            obj['_arango_cti_processor_note'] = notes
             obj['_record_md5_hash'] = processors.generate_md5(obj)
             objects.append(obj)
                 
@@ -181,7 +183,7 @@ class ArangoProcessor:
             ]:
                 processed_objects.append([obj.get('id'), obj.get('_id')])
                 objects_to_uploads += relate_function(
-                    obj, self, collection_vertex, collection_edge, notes
+                    obj, self, collection_vertex, collection_edge, notes, **self.kwargs
                 )
 
         self.upsert_several_objects_chunked(objects_to_uploads, processed_objects, collection_edge, rel_note=notes, collection_vertex=collection_vertex)
