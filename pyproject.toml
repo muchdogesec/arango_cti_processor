@@ -22,7 +22,7 @@ dependencies = [
     "tqdm==4.66.4; python_version >= '3.7'",
     "jsonschema==4.22.0; python_version >= '3.8'",
     "requests==2.31.0; python_version >= '3.7'",
-    "https://github.com/muchdogesec/stix2arango/archive/cti_processor_merge.zip"
+    "stix2arango"
   ]
 [project.urls]
 Homepage = "https://github.com/muchdogesec/arango_cti_processor"
