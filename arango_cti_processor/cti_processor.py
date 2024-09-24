@@ -26,7 +26,7 @@ class ArangoProcessor:
         self.vertex_collections, self.edge_collections = self.get_collections_for_relationship()
         self.modified_min = kwargs.get("modified_min")
         self.created_min = kwargs.get("created_min")
-        self.kwargs = kwargs
+        self.kwargs = {}
 
         self.arango = ArangoDBService(self.arango_database, self.vertex_collections, self.edge_collections, host_url=config.ARANGODB_HOST_URL, username=config.ARANGODB_USERNAME, password=config.ARANGODB_PASSWORD)
         self.validate_collections()
