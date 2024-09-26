@@ -246,7 +246,7 @@ class ArangoProcessor:
             for ref, target_id in refs:
                 src, dst = id_map.get(obj['id']), id_map.get(target_id)
                 if src and dst:
-                    rel = processors.parse_relation_object(src, dst, None, relationship_type=ref, is_embedded_ref=True, note=rel_note)
+                    rel = processors.parse_relation_object(src, dst, None, relationship_type=ref, is_embedded_ref=True, note=f'embedded-ref+{rel_note}')
                     rel['_stix2arango_note'] = self.stix2arango_note
                     embedded_relationships.append(rel)
         module_logger.info("inserting %d embedded relationships for %d objects", len(embedded_relationships), len(objects))
