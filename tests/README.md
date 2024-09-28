@@ -1,5 +1,11 @@
 # Tests
 
+To run all tests described here;
+
+```shell
+python3 tests/test_0_run_all_tests.py
+```
+
 ## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
 ```shell
