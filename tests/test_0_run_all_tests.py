@@ -2,6 +2,19 @@ import unittest
 import sys
 import os
 
+class CustomTestResult(unittest.TextTestResult):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.successes = []
+
+    def addSuccess(self, test):
+        super().addSuccess(test)
+        self.successes.append(test)
+
+class CustomTestRunner(unittest.TextTestRunner):
+    def _makeResult(self):
+        return CustomTestResult(self.stream, self.descriptions, self.verbosity)
+
 if __name__ == '__main__':
     # Add the parent directory of the "tests" folder to the system path
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -49,6 +62,27 @@ if __name__ == '__main__':
     # Combine all the suites into a single test suite
     combined_suite = unittest.TestSuite(suites)
 
-    # Run the test suite
-    runner = unittest.TextTestRunner()
-    runner.run(combined_suite)
+    # Run the test suite with the custom runner
+    runner = CustomTestRunner(verbosity=2)
+    result = runner.run(combined_suite)
+
+    # Print summary of results
+    print("\nSummary:")
+    print(f"Total tests run: {result.testsRun}")
+    print(f"Successes: {len(result.successes)}")
+    print(f"Failures: {len(result.failures)}")
+    print(f"Errors: {len(result.errors)}")
+
+    # Print details of failed tests
+    if result.failures:
+        print("\nFailed Tests:")
+        for failed_test, traceback in result.failures:
+            print(f"Test: {failed_test}")
+            print(f"Traceback:\n{traceback}")
+
+    # Print details of tests that raised errors
+    if result.errors:
+        print("\nErrored Tests:")
+        for errored_test, traceback in result.errors:
+            print(f"Test: {errored_test}")
+            print(f"Traceback:\n{traceback}")
