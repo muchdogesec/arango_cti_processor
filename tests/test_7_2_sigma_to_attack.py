@@ -131,19 +131,20 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == false
               AND doc.relationship_type == "detects"
               AND doc.source_ref == "indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf"
+              SORT doc.id ASC
               RETURN doc.id
         """
         result_count = self.run_query(query)
         expected_ids = [
-          "relationship--7b0e4488-59ff-50bc-b4b6-9c79e09ce8c8",
           "relationship--0f5bef42-7b2d-55c2-8c15-36d0bceced1d",
-          "relationship--e119b459-c4c7-5ce3-bdd5-1caedb9f6d4b",
-          "relationship--d7e0a492-db21-5021-a7fb-ec8d31acb051",
-          "relationship--7b0e4488-59ff-50bc-b4b6-9c79e09ce8c8",
           "relationship--0f5bef42-7b2d-55c2-8c15-36d0bceced1d",
-          "relationship--e119b459-c4c7-5ce3-bdd5-1caedb9f6d4b",
+          "relationship--7b0e4488-59ff-50bc-b4b6-9c79e09ce8c8",
+          "relationship--7b0e4488-59ff-50bc-b4b6-9c79e09ce8c8",
           "relationship--c63ea028-890c-5b15-aced-4cb3dcf71b09",
-          "relationship--d7e0a492-db21-5021-a7fb-ec8d31acb051"
+          "relationship--d7e0a492-db21-5021-a7fb-ec8d31acb051",
+          "relationship--d7e0a492-db21-5021-a7fb-ec8d31acb051",
+          "relationship--e119b459-c4c7-5ce3-bdd5-1caedb9f6d4b",
+          "relationship--e119b459-c4c7-5ce3-bdd5-1caedb9f6d4b"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
