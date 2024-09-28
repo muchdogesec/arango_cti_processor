@@ -108,19 +108,20 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "cwe-capec"
               AND doc.source_ref == "weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926"
+              SORT doc.target_ref ASC
               RETURN doc.target_ref
         """
         result_count = self.run_query(query)
         expected_ids = [
+          "attack-pattern--06e8782a-87af-4863-b6b1-99e09edda3be",
           "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1",
-          "attack-pattern--a9dc4914-409a-4f71-80df-c5cc3923d112",
+          "attack-pattern--8c7bab16-5ecd-4778-9b04-c185bceed170",
           "attack-pattern--8d88a81c-bde9-4fb3-acbe-901c783d6427",
           "attack-pattern--9197c7a2-6a03-40da-b2a6-df5f1d69e8fb",
           "attack-pattern--a390cb72-b4de-4750-ae05-be556c89f4be",
-          "attack-pattern--06e8782a-87af-4863-b6b1-99e09edda3be",
+          "attack-pattern--a9dc4914-409a-4f71-80df-c5cc3923d112",
           "attack-pattern--f2654def-b86d-4ddb-888f-de6b50a103a2",
-          "attack-pattern--f724f0f3-20e6-450c-be4a-f373ea08834d",
-          "attack-pattern--8c7bab16-5ecd-4778-9b04-c185bceed170"
+          "attack-pattern--f724f0f3-20e6-450c-be4a-f373ea08834d"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
@@ -142,19 +143,20 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "cwe-capec"
               AND doc.source_ref == "weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926"
+              SORT doc.id ASC
               RETURN doc.id
         """
         result_count = self.run_query(query)
         expected_ids = [
-          "relationship--d170bd83-e0a6-56f6-acf2-97d55d609059",
-          "relationship--3efe78ee-31d5-5f4b-9732-fb18d92cdbca",
-          "relationship--7cc1b36f-2875-51fd-ab29-b96385051c8e",
-          "relationship--16642a37-da64-5faf-9f25-dd2b24a9feb7",
-          "relationship--b6aad17b-9687-5cc4-80f5-b8c3ecbb8b8e",
-          "relationship--e61ee37a-6d4f-53dd-8564-15149f2df18c",
-          "relationship--9044691f-3949-5333-a7df-72ebc86e3f85",
-          "relationship--ae8a8f1d-4867-568f-885f-0f224b10ef19",
-          "relationship--ea05fa8c-3112-5d2d-8b18-ff4390c1bc3f"
+            "relationship--16642a37-da64-5faf-9f25-dd2b24a9feb7",
+            "relationship--3efe78ee-31d5-5f4b-9732-fb18d92cdbca",
+            "relationship--7cc1b36f-2875-51fd-ab29-b96385051c8e",
+            "relationship--9044691f-3949-5333-a7df-72ebc86e3f85",
+            "relationship--ae8a8f1d-4867-568f-885f-0f224b10ef19",
+            "relationship--b6aad17b-9687-5cc4-80f5-b8c3ecbb8b8e",
+            "relationship--d170bd83-e0a6-56f6-acf2-97d55d609059",
+            "relationship--e61ee37a-6d4f-53dd-8564-15149f2df18c",
+            "relationship--ea05fa8c-3112-5d2d-8b18-ff4390c1bc3f"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
