@@ -99,12 +99,13 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-cwe"
               AND doc.source_ref == "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1"
+              SORT doc.target_ref ASC
               RETURN doc.target_ref
         """
         result_count = self.run_query(query)
         expected_ids = [
-            "weakness--5c1cf10b-dc31-5536-a1b5-dc5094e7f4b2",
             "weakness--3f87bca2-8785-543e-906e-cf2adb753c31",
+            "weakness--5c1cf10b-dc31-5536-a1b5-dc5094e7f4b2",
             "weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
@@ -119,12 +120,13 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-cwe"
               AND doc.source_ref == "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1"
+              SORT doc.id ASC
               RETURN doc.id
         """
         result_count = self.run_query(query)
         expected_ids = [
-            "relationship--b7327c21-681e-509f-8dd0-9d8a18b64612",
             "relationship--aefc359a-9eb8-5675-b190-4ce8334b58df",
+            "relationship--b7327c21-681e-509f-8dd0-9d8a18b64612",
             "relationship--f6282d95-2a8e-583c-9561-70a67426c751"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
