@@ -98,14 +98,15 @@ class TestArangoDB(unittest.TestCase):
         query = """
           FOR doc IN sigma_rules_edge_collection
               FILTER doc.relationship_type == "detects"
+              SORT doc.id ASC
               RETURN doc.id
         """
         result_count = self.run_query(query)
         expected_ids = [
-          "relationship--72189b73-5547-500c-85ea-f9287eac93f2",
           "relationship--1f98535e-722a-5249-8535-6147bb36a048",
-          "relationship--ec3549ba-dcc4-5705-a771-65a166a12bf7",
-          "relationship--674df306-4008-5306-82cb-0545630e93df"
+          "relationship--674df306-4008-5306-82cb-0545630e93df",
+          "relationship--72189b73-5547-500c-85ea-f9287eac93f2",
+          "relationship--ec3549ba-dcc4-5705-a771-65a166a12bf7"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
