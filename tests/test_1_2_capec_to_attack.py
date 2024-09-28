@@ -96,16 +96,17 @@ class TestArangoDB(unittest.TestCase):
             FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
             AND doc._is_latest == true
             AND doc._arango_cti_processor_note == "capec-attack"
+            SORT doc.target_ref ASC
             RETURN doc.target_ref
         """
         result_count = self.run_query(query)
         expected_ids = [
           "attack-pattern--3257eb21-f9a7-4430-8de1-d8b6e288f529",# Enterprise T1040
-          "course-of-action--46b7ef91-4e1d-43c5-a2eb-00fa9444f6f4",# Enterprise T1040
-          "attack-pattern--dd43c543-bb85-4a6f-aa6e-160d90d06a49",# Enterprise T1111
-          "course-of-action--e8d22ec6-2236-48de-954b-974d17492782",# Enterprise T1111
+          "attack-pattern--9e8b28c9-35fe-48ac-a14d-e6cc032dcbcd",# Enterprise T1574.010
           "attack-pattern--d21bb61f-08ad-4dc1-b001-81ca6cb79954",# Enterprise T1650
-          "attack-pattern--9e8b28c9-35fe-48ac-a14d-e6cc032dcbcd"# Enterprise T1574.010
+          "attack-pattern--dd43c543-bb85-4a6f-aa6e-160d90d06a49",# Enterprise T1111
+          "course-of-action--46b7ef91-4e1d-43c5-a2eb-00fa9444f6f4",# Enterprise T1040
+          "course-of-action--e8d22ec6-2236-48de-954b-974d17492782"# Enterprise T1111
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 

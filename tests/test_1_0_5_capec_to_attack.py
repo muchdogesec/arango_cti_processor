@@ -176,15 +176,16 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-attack"
               AND doc.source_ref == "attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed"
+              SORT doc.target_ref ASC
               RETURN doc.target_ref
         """
         cursor = self.db.aql.execute(query)
         result_count = [doc for doc in cursor]
 
         expected_ids = [
-            "attack-pattern--8f504411-cb96-4dac-a537-8d2bb7679c59", # T1562.003
+            "attack-pattern--0c2d00da-7742-49e7-9928-4514e5075d32", # T1574.007
             "attack-pattern--633a100c-b2c9-41bf-9be5-905c1b16c825", # T1574.006
-            "attack-pattern--0c2d00da-7742-49e7-9928-4514e5075d32" # T1574.007
+            "attack-pattern--8f504411-cb96-4dac-a537-8d2bb7679c59" # T1562.003
         ]
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
@@ -200,15 +201,16 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-attack"
               AND doc.source_ref == "attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed"
+              SORT doc.target_ref ASC
               RETURN doc.id
         """
         cursor = self.db.aql.execute(query)
         result_count = [doc for doc in cursor]
 
         expected_ids = [
-            "relationship--c1100173-c259-52a1-926d-48919b067224", # T1562.003
+            "relationship--23bd53cf-0f53-53e3-8ba1-92b4077bd460", # T1574.007
             "relationship--d66bcc7d-19c0-5c2c-a7f7-44b13d6af09c", # T1574.006
-            "relationship--23bd53cf-0f53-53e3-8ba1-92b4077bd460" # T1574.007
+            "relationship--c1100173-c259-52a1-926d-48919b067224" # T1562.003
         ]
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")

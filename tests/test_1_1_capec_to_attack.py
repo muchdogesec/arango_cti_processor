@@ -132,15 +132,16 @@ class TestArangoDB(unittest.TestCase):
             FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
             AND doc._is_latest == true
             AND doc._arango_cti_processor_note == "capec-attack"
-                RETURN doc.id
+            SORT doc.id ASC
+            RETURN doc.id
         """
         result_count = self.run_query(query)
         expected_ids = [
-          "relationship--c1e846eb-6463-5933-bfd0-0c2cbe655e7f",
-          "relationship--d896e414-2eb0-51dc-a6f0-0fa003ef6bb5",
-          "relationship--1ac8370b-3815-5f6d-baf7-a39080fe3a35",
-          "relationship--d39341ee-e330-507f-85f8-4087e4ad86e6",
-          "relationship--7f0b0170-59ff-5b3e-86e8-2fdb8650ad14"
+            "relationship--1ac8370b-3815-5f6d-baf7-a39080fe3a35",
+            "relationship--7f0b0170-59ff-5b3e-86e8-2fdb8650ad14",
+            "relationship--c1e846eb-6463-5933-bfd0-0c2cbe655e7f",
+            "relationship--d39341ee-e330-507f-85f8-4087e4ad86e6",
+            "relationship--d896e414-2eb0-51dc-a6f0-0fa003ef6bb5"
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
