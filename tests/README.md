@@ -265,7 +265,9 @@ python3 -m unittest tests/test_9_1_created_min.py
 
 ## TEST 10.0: Test IGNORE_EMBEDDED_RELATIONSHIPS = false
 
-Uses cve-cpe test data (same import as test 6.0)
+Uses single cwe -> capec relationships
+
+This generates 2 SROs between CWE -> CAPEC
 
 ```shell
 python3 -m unittest tests/test_10_0_ignore_embedded_relationships_f.py

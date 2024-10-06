@@ -14,7 +14,7 @@ ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME", "root")
 ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD", "")
 ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL", "http://127.0.0.1:8529")
 TESTS_DATABASE = "arango_cti_processor_standard_tests_database"
-TEST_MODE = "cve-cpe"
+TEST_MODE = "cwe-capec"
 STIX2ARANGO_NOTE = __name__.split('.')[-1]
 IGNORE_EMBEDDED_RELATIONSHIPS = "true"
 
@@ -25,8 +25,8 @@ class TestArangoDB(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         make_uploads([
-                ("nvd_cve", "tests/files/condensed_cve_bundle.json"),
-                ("nvd_cpe", "tests/files/condensed_cpe_bundle.json"),
+                ("mitre_capec", "tests/files/capec-condensed.json"),
+                ("mitre_cwe", "tests/files/cwe-condensed.json"),
             ], database="arango_cti_processor_standard_tests", delete_db=True, 
             host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME, stix2arango_note=STIX2ARANGO_NOTE)
         print(f'======Test bundles uploaded successfully======')
@@ -51,8 +51,8 @@ class TestArangoDB(unittest.TestCase):
     def test_01_count_is_ref(self):
         query = """
         RETURN COUNT(
-          FOR doc IN nvd_cve_edge_collection
-            FILTER doc._arango_cti_processor_note == "cve-cpe"
+          FOR doc IN mitre_cwe_edge_collection
+            FILTER doc._arango_cti_processor_note == "cwe-capec"
             AND doc._is_ref == true
             RETURN doc
         )

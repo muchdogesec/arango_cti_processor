@@ -14,7 +14,7 @@ ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME", "root")
 ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD", "")
 ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL", "http://127.0.0.1:8529")
 TESTS_DATABASE = "arango_cti_processor_standard_tests_database"
-TEST_MODE = "cve-cpe"
+TEST_MODE = "cwe-capec"
 STIX2ARANGO_NOTE = __name__.split('.')[-1]
 IGNORE_EMBEDDED_RELATIONSHIPS = "false"
 
@@ -25,8 +25,8 @@ class TestArangoDB(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         make_uploads([
-                ("nvd_cve", "tests/files/condensed_cve_bundle.json"),
-                ("nvd_cpe", "tests/files/condensed_cpe_bundle.json"),
+                ("mitre_capec", "tests/files/capec-condensed.json"),
+                ("mitre_cwe", "tests/files/cwe-condensed.json"),
             ], database="arango_cti_processor_standard_tests", delete_db=True, 
             host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME, stix2arango_note=STIX2ARANGO_NOTE)
         print(f'======Test bundles uploaded successfully======')
@@ -46,13 +46,13 @@ class TestArangoDB(unittest.TestCase):
         cursor = self.db.aql.execute(query)
         return [count for count in cursor]
 
-# condensed_cve_bundle.json generates 6 SROs, inside these SROs are a total of 18 embedded relationships (each has 1 created_by_ref and 2 object_marking_refs)
+# arango cti processed makes 2 cwe-capec SROs, inside these SROs are a total of 3 embedded relationships (each has 1 created_by_ref and 2 object_marking_refs) so expect 6 total
 
     def test_01_count_is_ref(self):
         query = """
         RETURN COUNT(
-          FOR doc IN nvd_cve_edge_collection
-            FILTER doc._arango_cti_processor_note == "cve-cpe"
+          FOR doc IN mitre_cwe_edge_collection
+            FILTER doc._arango_cti_processor_note == "cwe-capec"
             AND doc._is_ref == true
             RETURN doc
         )
@@ -60,16 +60,16 @@ class TestArangoDB(unittest.TestCase):
         cursor = self.db.aql.execute(query)
         result_count = [count for count in cursor]
 
-        self.assertEqual(result_count, [18], f"Expected 18 documents, but found {result_count}.")
+        self.assertEqual(result_count, [6], f"Expected 6 documents, but found {result_count}.")
 
 # check id of one of the generate objects
-# `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` created-by+nvd_cve_edge_collection/relationship--d177fcc4-6991-5d5f-8885-7c27f374fce5+nvd_cve_vertex_collection/identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3 = 761f7bbf-9403-5d52-a676-20721f1f5b48
+# `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` created-by+mitre_cwe_edge_collection/relationship--3e117c5b-65ea-5364-9447-905646aad09d+mitre_cwe_vertex_collection/identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3 = 47570226-cefc-5d1d-be1d-eac102751c7f
 
     def test_01_count_is_ref_object1(self):
         query = """
-          FOR doc IN nvd_cve_edge_collection
-            FILTER doc._arango_cti_processor_note == "cve-cpe"
-            AND doc.id == "relationship--761f7bbf-9403-5d52-a676-20721f1f5b48"
+          FOR doc IN mitre_cwe_edge_collection
+            FILTER doc._arango_cti_processor_note == "cwe-capec"
+            AND doc.id == "relationship--47570226-cefc-5d1d-be1d-eac102751c7f"
             RETURN [{
                 "created_by_ref": doc.created_by_ref,
                 "object_marking_refs": doc.object_marking_refs,
@@ -88,7 +88,7 @@ class TestArangoDB(unittest.TestCase):
                     "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
                   ],
                   "_stix2arango_note": "test_10_0_ignore_embedded_relationships_f",
-                  "_arango_cti_processor_note": "cve-cpe",
+                  "_arango_cti_processor_note": "cwe-capec",
                   "_is_latest": True
                 }
               ]
