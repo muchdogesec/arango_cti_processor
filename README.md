@@ -94,7 +94,7 @@ Where;
 	* `capec-attack`
   * `capec-cwe`
   * `cwe-capec`
-  * `attack-capec`
+  * `attack-capec` (archived -- ATT&CK objects no longer contain references to CAPEC)
   * `cve-cwe`
   * `cve-cpe`
   * `cve-epss`

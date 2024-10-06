@@ -6,6 +6,8 @@ To run all tests described here;
 python3 tests/test_0_run_all_tests.py
 ```
 
+We run this over `pytest` because pytest does not always run the tests in the defined numerical order.
+
 ## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
 ```shell
@@ -127,6 +129,8 @@ python3 -m unittest tests/test_3_1_cwe_to_capec.py
 ```shell
 python3 -m unittest tests/test_4_0_attack_to_capec.py
 ```
+
+Archived -- ATT&CK objects no longer contain references to CAPEC. Tests updated to reflect this.
 
 ---
 

@@ -79,7 +79,7 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [36], f"Expected 36 documents, but found {result_count}.")
+        self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
 
     def test_03_correct_object_properties(self):
         query = """
@@ -99,7 +99,7 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [36], f"Expected 36 documents, but found {result_count}.")
+        self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
 
     # To check objects are created as expected, you can pick a ATT&CK object with CAPEC references and then check all the SROs for CAPECs are generated for it, as follows...
     # T1162: `attack-pattern--36675cd3-fe00-454c-8516-aebecacbe9d9` (Enterprise Vertex) has a link to CAPEC-564 (`attack-pattern--b63b2869-11e6-4849-8ddf-ae2557bf554b`)
@@ -117,7 +117,7 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [1], f"Expected 1 documents, but found {result_count}.")
+        self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
 
     # test 5 is an extension of test 4 but checks relationship ids
     # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` `relies-on+mitre_attack_enterprise_vertex_collection/attack-pattern--36675cd3-fe00-454c-8516-aebecacbe9d9+mitre_capec_vertex_collection/attack-pattern--b63b2869-11e6-4849-8ddf-ae2557bf554b` = 3916b361-59b6-5697-ba1a-020ddef6cf3b
@@ -133,9 +133,7 @@ class TestArangoDB(unittest.TestCase):
               RETURN doc.id
         """
         result_count = self.run_query(query)
-        expected_ids = [
-            "relationship--3916b361-59b6-5697-ba1a-020ddef6cf3b"
-        ]
+        expected_ids = []
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
 # no updates to the objects should have happened yet
@@ -172,9 +170,7 @@ class TestArangoDB(unittest.TestCase):
         cursor = self.db.aql.execute(query)
         result_count = [doc for doc in cursor]
 
-        expected_ids = [
-          "T1148 relies on CAPEC-13"
-        ]
+        expected_ids = []
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
