@@ -118,7 +118,11 @@ class ArangoProcessor:
             }
             query = """
                 FOR doc IN @@collection
-                    FILTER doc._is_latest AND (NOT @created_min OR doc.created >= @created_min) AND (NOT @modified_min OR doc.modified >= @modified_min)
+                    FILTER doc._is_latest 
+                        AND (NOT @created_min OR doc.created >= @created_min)
+                        AND (NOT @modified_min OR doc.modified >= @modified_min) 
+                        AND doc.x_mitre_deprecated != true
+                        AND doc.revoked != true
                     RETURN doc
             """
             data = self.arango.execute_raw_query(query=query, bind_vars=bind_vars)
