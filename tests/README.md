@@ -275,7 +275,7 @@ python3 -m unittest tests/test_10_0_ignore_embedded_relationships_f.py
 
 ## TEST 10.1: Test update to objects where IGNORE_EMBEDDED_RELATIONSHIPS = false
 
-This time uses 6.1 test import. 
+This time adds a new capec. now 3 sros create by ACTIP so 9 embedded SROs to exist.
 
 ```shell
 python3 -m unittest tests/test_10_1_ignore_embedded_relationships_f.py
@@ -283,7 +283,7 @@ python3 -m unittest tests/test_10_1_ignore_embedded_relationships_f.py
 
 ## TEST 10.2: Test removed objects where IGNORE_EMBEDDED_RELATIONSHIPS = false
 
-This time uses 6.2 test import.
+Removes the added capec in 10.1.
 
 ```shell
 python3 -m unittest tests/test_10_2_ignore_embedded_relationships_f.py
