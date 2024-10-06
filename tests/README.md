@@ -170,8 +170,7 @@ python3 -m unittest tests/test_5_2_cve_to_cwe.py
 python3 -m unittest tests/test_6_0_cve_to_cpe.py
 ```
 
-
-## TEST 6.1: Add new CPE to CVE Indicator object
+## TEST 6.1: Add new CPE to CVE Indicator object (archived -- [we now use live CVE data in the script, so impossible to mock](https://github.com/muchdogesec/arango_cti_processor/issues/29))
 
 Need to run test 6.0 beforehand
 
@@ -183,7 +182,8 @@ Run the test script;
 python3 -m unittest tests/test_6_1_cve_to_cpe.py
 ```
 
-## TEST 6.2: Remove CPE from CVE object
+## TEST 6.2: Remove CPE from CVE object (archived -- [we now use live CVE data in the script, so impossible to mock](https://github.com/muchdogesec/arango_cti_processor/issues/29))
+
 
 Need to run test 6.1 beforehand
 
