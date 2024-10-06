@@ -170,13 +170,12 @@ python3 -m unittest tests/test_5_2_cve_to_cwe.py
 python3 -m unittest tests/test_6_0_cve_to_cpe.py
 ```
 
-has 1 not_vulnerable cpe, 4 vulnerables after matchcriteria -> swid lookup (so 5 in pattern and 1 vulnerable)
 
-## TEST 6.1: Add new CPE to CVE object
+## TEST 6.1: Add new CPE to CVE Indicator object
 
 Need to run test 6.0 beforehand
 
-Adds new CPE to pattern. This makes now 5 vulnerable after matchcriteria -> swid lookup
+Adds new CPE to pattern (is vulnerable)
 
 Run the test script;
 

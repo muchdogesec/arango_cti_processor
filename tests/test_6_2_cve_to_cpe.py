@@ -64,14 +64,13 @@ class TestArangoDB(unittest.TestCase):
         query = """
         RETURN COUNT(
           FOR doc IN nvd_cve_vertex_collection
-            FILTER doc.id == "indicator--570304ae-02cf-542b-ab7a-77e7ada2f48e"
+            FILTER doc.id == "indicator--b16b3dec-492f-5738-8514-238b5316188f"
               RETURN doc
         )
         """
         result_count = self.run_query(query)
         self.assertEqual(result_count, [3], f"Expected 3 documents, but found {result_count}.")
 
-    # Should return 0 results after update  (note even though pattern is populated in test, we use the vulnerable / not_vulnerable property to gen this data)
     def test_03_test_relationships_to_cpes_new(self):
         query = """
         RETURN COUNT(
@@ -83,9 +82,9 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
+        self.assertEqual(result_count, [17], f"Expected 17 documents, but found {result_count}.")
 
-    # should return 11 (same as 6.0 + 6.1 results)  (note even though pattern is populated in test, we use the vulnerable / not_vulnerable property to gen this data)
+    # (same as 6.0 + 6.1 results) 17+18
     def test_04_test_relationships_to_cpes_old(self):
         query = """
         RETURN COUNT(
@@ -97,7 +96,7 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [11], f"Expected 11 documents, but found {result_count}.")
+        self.assertEqual(result_count, [35], f"Expected 35 documents, but found {result_count}.")
 
     # now 0 cpes vulnerable
     def test_05_test_relationships_to_vulnerable_cpes_new(self):
@@ -111,9 +110,9 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [0], f"Expected 0 documents, but found {result_count}.")
+        self.assertEqual(result_count, [12], f"Expected 12 documents, but found {result_count}.")
 
-    # 6.0 + 6.1
+    # 6.0 + 6.1 = 12+13
     def test_06_test_relationships_to_vulnerable_cpes_old(self):
         query = """
         RETURN COUNT(
@@ -125,7 +124,7 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [3], f"Expected 3 documents, but found {result_count}.")
+        self.assertEqual(result_count, [25], f"Expected 25 documents, but found {result_count}.")
 
 if __name__ == '__main__':
     unittest.main()

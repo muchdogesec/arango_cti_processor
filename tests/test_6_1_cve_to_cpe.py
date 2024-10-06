@@ -64,14 +64,14 @@ class TestArangoDB(unittest.TestCase):
         query = """
         RETURN COUNT(
           FOR doc IN nvd_cve_vertex_collection
-            FILTER doc.id == "indicator--570304ae-02cf-542b-ab7a-77e7ada2f48e"
+            FILTER doc.id == "indicator--b16b3dec-492f-5738-8514-238b5316188f"
               RETURN doc
         )
         """
         result_count = self.run_query(query)
         self.assertEqual(result_count, [2], f"Expected 2 documents, but found {result_count}.")
 
-    # Should return 6 results after update
+    # Should return 18 results after update
     def test_03_test_relationships_to_cpes_new(self):
         query = """
         RETURN COUNT(
@@ -83,9 +83,9 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [6], f"Expected 6 documents, but found {result_count}.")
+        self.assertEqual(result_count, [18], f"Expected 18 documents, but found {result_count}.")
 
-    # should return 5 (same as 6.0)
+    # should same as 6.0
     def test_04_test_relationships_to_cpes_old(self):
         query = """
         RETURN COUNT(
@@ -97,9 +97,9 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [5], f"Expected 5 documents, but found {result_count}.")
+        self.assertEqual(result_count, [17], f"Expected 17 documents, but found {result_count}.")
 
-    # now 2 cpes vulnerable as 1 added in update
+    # now 13 cpes vuln after update
     def test_05_test_relationships_to_vulnerable_cpes_new(self):
         query = """
         RETURN COUNT(
@@ -111,7 +111,7 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [2], f"Expected 2 documents, but found {result_count}.")
+        self.assertEqual(result_count, [13], f"Expected 13 documents, but found {result_count}.")
 
     # same as 6.0 results
     def test_06_test_relationships_to_vulnerable_cpes_old(self):
@@ -125,7 +125,7 @@ class TestArangoDB(unittest.TestCase):
         )
         """
         result_count = self.run_query(query)
-        self.assertEqual(result_count, [1], f"Expected 1 documents, but found {result_count}.")
+        self.assertEqual(result_count, [12], f"Expected 12 documents, but found {result_count}.")
 
 if __name__ == '__main__':
     unittest.main()
