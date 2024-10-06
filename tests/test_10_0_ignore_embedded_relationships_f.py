@@ -65,7 +65,7 @@ class TestArangoDB(unittest.TestCase):
 # check id of one of the generate objects
 # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` created-by+mitre_cwe_edge_collection/relationship--3e117c5b-65ea-5364-9447-905646aad09d+mitre_cwe_vertex_collection/identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3 = 47570226-cefc-5d1d-be1d-eac102751c7f
 
-    def test_01_count_is_ref_object1(self):
+    def test_02_count_is_ref_object1(self):
         query = """
           FOR doc IN mitre_cwe_edge_collection
             FILTER doc._arango_cti_processor_note == "cwe-capec"
