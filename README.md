@@ -118,26 +118,7 @@ python3 arango_cti_processor.py \
 
 ## Backfilling data
 
-[stix2arango contains a set of utility scripts that can be used to backfill all the datasources required for this test](https://github.com/muchdogesec/stix2arango/tree/main/utilities). As an example you can run the following in stix2arango to get a full backfill of data:
-
-```shell
-python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_capec.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_cwe.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_cve.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_cpe.py \
-  --database cti_database
-```
+[stix2arango contains a set of utility scripts that can be used to backfill all the datasources required for this test](https://github.com/muchdogesec/stix2arango/tree/main/utilities).
 
 ## How it works
 
