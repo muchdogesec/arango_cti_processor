@@ -172,8 +172,24 @@ class ArangoProcessor:
         logging.info("deprecating old relations")
         deprecated = self.deprecate_old_relations_chunked(deprecate_obj, collection, rel_note)
         logging.info(f"deprecated {len(deprecated)} relationships")
-        self.create_embedded_relationships(objects, collection, collection_vertex, rel_note)
+        self.create_embedded_relationships([obj for obj in objects if obj['id'] in inserted_ids], collection, collection_vertex, rel_note)
+        updated = self.arango.update_is_latest_for_embedded_refs([v[0] for v in deprecate_obj], collection)
+
         return []
+    
+    def upsert_several_vertices_chuncked(self, vertices, deprecate_obj, edge_collection, vertex_collection, rel_note):
+        for obj in vertices:
+            obj['_arango_cti_processor_note'] = rel_note
+            obj['_record_md5_hash'] = processors.generate_md5(obj)
+        inserted_ids, existing = self.arango.insert_several_objects_chunked(vertices, vertex_collection, chunk_size=1000)
+
+        logging.info("removed %d already existing object", len(existing))
+        self.arango.update_is_latest_several_chunked(inserted_ids, collection_name=vertex_collection, chunk_size=2000)
+        logging.info("deprecating old relations")
+        deprecated = self.deprecate_old_relations_chunked(deprecate_obj, edge_collection, rel_note)
+        logging.info(f"deprecated {len(deprecated)} relationships")
+        self.create_embedded_relationships([obj for obj in vertices if obj['id'] in inserted_ids], edge_collection, vertex_collection, rel_note)
+        updated = self.arango.update_is_latest_for_embedded_refs([v[0] for v in deprecate_obj], edge_collection)
 
     def map_relationships(self, data, relate_function, collection_vertex, collection_edge, notes):
         objects_to_uploads = []
@@ -190,7 +206,15 @@ class ArangoProcessor:
                     obj, self, collection_vertex, collection_edge, notes, **self.kwargs
                 )
 
-        self.upsert_several_objects_chunked(objects_to_uploads, processed_objects, collection_edge, rel_note=notes, collection_vertex=collection_vertex)
+        edges, vertices = [], []
+        for obj in objects_to_uploads:
+            if obj['type'] == 'relationship':
+                edges.append(obj)
+            else:
+                vertices.append(obj)
+        self.upsert_several_objects_chunked(edges, processed_objects, collection_edge, rel_note=notes, collection_vertex=collection_vertex)
+        self.upsert_several_vertices_chuncked(vertices, processed_objects, collection_edge, collection_vertex, rel_note=notes)
+        # self.upsert_several_objects_chunked(objects_to_uploads, processed_objects, collection_edge, rel_note=notes, collection_vertex=collection_vertex)
         return objects_to_uploads
     
     def deprecate_old_relations(self, objects, collection, note):

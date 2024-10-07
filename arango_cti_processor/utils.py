@@ -58,6 +58,7 @@ def get_rel_func_mapping(relationships):
         "sigma-attack": {"sigma_rules_vertex_collection": relate_sigma_to_attack},
         "sigma-cve": {"sigma_rules_vertex_collection": relate_sigma_to_cve},
         "cve-attack": {"nvd_cve_vertex_collection": relate_cve_to_attack},
+        "cve-epss": {"nvd_cve_vertex_collection": generate_epss},
     }
     return [
         (rel, value)
@@ -95,7 +96,7 @@ def parse_relation_object(src, dst, collection, relationship_type: str, note=Non
     return obj
 
 
-def relate_capec_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes):
+def relate_capec_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes, **kwargs):
     objects = []
     try:
         capec_name = get_external_ref_by_name(data, 'capec')
@@ -126,12 +127,48 @@ def relate_capec_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes)
     return objects
 
 
-def relate_cve_to_cpe(data, db: CTIProcessor, collection, collect_edge, notes):
+def match_cve_ids(matchers, cve_name):
+    if not matchers:
+        return True
+    for r in matchers:
+        if re.match(r, cve_name, re.IGNORECASE):
+            return True
+    return False
+
+def retrieve_epss_metrics(epss_url, cve_id):
+    url = f"{epss_url}?cve={cve_id}"
+    response = requests.get(url)
+    #logger.info(f"Status Code => {response.status_code}")
+    if response.status_code != 200:
+        module_logger.warning("Got response status code %d.", response.status_code)
+        raise requests.ConnectionError
+
+    data = response.json()
+    extensions = {}
+    if epss_data := data.get('data'):
+        for key, source_name in [('epss', 'score'), ('percentile', 'percentile'), ('date', 'date')]:
+            extensions[source_name] = epss_data[0].get(key)
+    return extensions
+
+def generate_epss(data, db: CTIProcessor, collection, collection_edge, notes: str, cve_ids=None, **kwargs):
+    objects = []
+    try:
+        cve_name = data.get('name')
+        if data["type"] != "vulnerability" or not match_cve_ids(cve_ids, cve_name):
+            return []
+        cve = {**data, "x_epss": retrieve_epss_metrics(config.EPSS_API_ENDPOINT, cve_name)}
+        return [cve]
+    except:
+        pass
+    return objects
+
+def relate_cve_to_cpe(data, db: CTIProcessor, collection, collect_edge, notes, **kwargs):
     try:
         objects = []
         if data.get("type") == "indicator":
             criteria_ids = {}
             x_cpes = data.get('x_cpes', {})
+
             for vv in x_cpes.get('vulnerable', []):
                 criteria_ids[vv['matchCriteriaId']] = True
             for vv in x_cpes.get('not_vulnerable', []):
@@ -171,7 +208,7 @@ def relate_cve_to_cpe(data, db: CTIProcessor, collection, collect_edge, notes):
     return objects
 
 
-def relate_cve_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes):
+def relate_cve_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes, **kwargs):
     logging.info("relate_cve_to_cwe")
     objects = []
     try:
@@ -226,14 +263,6 @@ def set_latest_for(db: CTIProcessor, id, collection):
         },
     )
 
-def relate_cve_epss(data, db: CTIProcessor, collection, collection_edge, notes: str):
-    objects = []
-    try:
-        pass
-    except:
-        pass
-    return objects
-
 def get_external_ref_by_name(data, source_name) -> dict:
     for ref in data.get("external_references", []):
         if ref.get('source_name') == source_name:
@@ -241,7 +270,7 @@ def get_external_ref_by_name(data, source_name) -> dict:
     return None
 
 def relate_capec_to_attack(
-    data, db: CTIProcessor, collection, collection_edge, notes: str
+    data, db: CTIProcessor, collection, collection_edge, notes: str, **kwargs
 ):
     objects = []
     try:
@@ -279,7 +308,7 @@ def relate_capec_to_attack(
     return objects
 
 
-def relate_cwe_to_capec(data, db: CTIProcessor, collection, collection_edge, notes):
+def relate_cwe_to_capec(data, db: CTIProcessor, collection, collection_edge, notes, **kwargs):
     logging.info("relate_cwe_to_capec")
     objects = []
     try:
@@ -313,7 +342,7 @@ def relate_cwe_to_capec(data, db: CTIProcessor, collection, collection_edge, not
 
 
 def relate_attack_to_capec(
-    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str, **kwargs
 ):
     logging.info("relate_attack_to_capec")
     objects = []
@@ -350,7 +379,7 @@ def relate_attack_to_capec(
 
 
 def relate_sigma_to_attack(
-    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str, **kwargs
 ):
     logging.info("relate_sigma_to_attack")
     if data.get("type") != "indicator" or data.get("pattern_type") != "sigma":
@@ -415,7 +444,7 @@ def relate_sigma_to_attack(
 
 
 def relate_sigma_to_cve(
-    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str, **kwargs
 ):
     objects = []
     logging.info("relate_sigma_to_cve")
@@ -459,7 +488,7 @@ def verify_threshold(response):
 
 
 def relate_cve_to_attack(
-    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str, **kwargs
 ):
     if not config.SMET_ACTIVATE or data.get("type") != "vulnerability":
         return []
