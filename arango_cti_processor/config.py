@@ -24,7 +24,8 @@ MODE_COLLECTION_MAP = {
     "cve-cpe": ["nvd_cve_vertex_collection","nvd_cpe_vertex_collection"],
     "sigma-attack": ["sigma_rules_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"],
     "sigma-cve":    ["sigma_rules_vertex_collection","nvd_cve_vertex_collection"],
-    "cve-attack":   ["nvd_cve_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"]
+    "cve-attack":   ["nvd_cve_vertex_collection","mitre_attack_enterprise_vertex_collection","mitre_attack_ics_vertex_collection","mitre_attack_mobile_vertex_collection"],
+    "cve-epss":     ["nvd_cve_vertex_collection"],
     }
 
 
@@ -62,3 +63,4 @@ OBJECT_MARKING_REFS=[
 ]
 
 CPEMATCH_API_ENDPOINT = "https://services.nvd.nist.gov/rest/json/cpematch/2.0"
+EPSS_API_ENDPOINT = "https://api.first.org/data/v1/epss"
