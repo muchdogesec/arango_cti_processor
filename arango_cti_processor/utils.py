@@ -169,7 +169,7 @@ def generate_epss(vulnerability, db: CTIProcessor, collection, collection_edge, 
 
         return [
             stix_to_dict(Note(
-                id="note--{}".format(str(uuid.uuid5(config.namespace, content))),
+                id=vulnerability['id'].replace("vulnerability", "note"),
                 created=vulnerability['created'],
                 modified=datetime.strptime(epss_data["date"], "%Y-%m-%d").date(),
                 content=content,
@@ -188,7 +188,6 @@ def generate_epss(vulnerability, db: CTIProcessor, collection, collection_edge, 
             ))
         ]
     except Exception as e:
-        raise
         pass
     return objects
 
