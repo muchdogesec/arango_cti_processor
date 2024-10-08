@@ -3,13 +3,15 @@
 To run all tests described here;
 
 ```shell
-pytest
+python3 tests/test_00_run_all_tests.py
 ```
+
+We run this over `pytest` because pytest does not always run the tests in the defined numerical order.
 
 ## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
 ```shell
-python3 -m unittest tests/test_01_0_capec_to_attack.py
+python3 -m unittest tests/test_01_00_capec_to_attack.py
 ```
 
 ## TEST 1.0.5: Perform update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
@@ -19,7 +21,7 @@ This time we don't import any new data, but run the arango_cti_processor command
 This should generate 0 new objects, because the output should be identical to first run, and thus no new versions should be created.
 
 ```shell
-python3 -m unittest tests/test_01_0_5_capec_to_attack.py
+python3 -m unittest tests/test_01_01_capec_to_attack.py
 ```
 
 ## TEST 1.1: Perform update to change CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
