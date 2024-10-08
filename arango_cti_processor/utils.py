@@ -8,6 +8,8 @@ import json
 import hashlib
 import requests
 import re
+from stix2 import Note
+from stix2.serialization import serialize
 
 from .cpe_match import fetch_cpe_matches
 from . import config
@@ -22,6 +24,10 @@ from stix2 import Relationship, Grouping
 from datetime import datetime
 
 module_logger = logging.getLogger("data_ingestion_service")
+
+def stix_to_dict(obj):
+    return json.loads(serialize(obj))
+    
 
 def load_file_from_url(url):
     try:
@@ -82,7 +88,7 @@ def parse_relation_object(src, dst, collection, relationship_type: str, note=Non
         relationship_type=relationship_type,
         source_ref=src.get("id"),
         target_ref=dst.get("id"),
-        created_by_ref="identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
+        created_by_ref=config.IDENTITY_REF,
         object_marking_refs=config.OBJECT_MARKING_REFS,
     )
     if description:
@@ -150,15 +156,39 @@ def retrieve_epss_metrics(epss_url, cve_id):
             extensions[source_name] = epss_data[0].get(key)
     return extensions
 
-def generate_epss(data, db: CTIProcessor, collection, collection_edge, notes: str, cve_ids=None, **kwargs):
+def generate_epss(vulnerability, db: CTIProcessor, collection, collection_edge, notes: str, cve_ids=None, **kwargs):
     objects = []
     try:
-        cve_name = data.get('name')
-        if data["type"] != "vulnerability" or not match_cve_ids(cve_ids, cve_name):
+        cve_name = vulnerability.get('name')
+        if vulnerability["type"] != "vulnerability" or not match_cve_ids(cve_ids, cve_name):
             return []
-        cve = {**data, "x_epss": retrieve_epss_metrics(config.EPSS_API_ENDPOINT, cve_name)}
-        return [cve]
-    except:
+        
+        cve_id = vulnerability['name']
+        epss_data = retrieve_epss_metrics(config.EPSS_API_ENDPOINT, cve_name)
+        content = f"EPSS Score for {cve_id}"
+
+        return [
+            stix_to_dict(Note(
+                id="note--{}".format(str(uuid.uuid5(config.namespace, content))),
+                created=vulnerability['created'],
+                modified=datetime.strptime(epss_data["date"], "%Y-%m-%d").date(),
+                content=content,
+                x_epss=epss_data,
+                object_refs=[
+                    vulnerability['id'],
+                ],
+                extensions= {
+                    "extension-definition--efd26d23-d37d-5cf2-ac95-a101e46ce11d": {
+                        "extension_type": "toplevel-property-extension"
+                    }
+                },
+                object_marking_refs=list(set(vulnerability['object_marking_refs']+config.OBJECT_MARKING_REFS)),
+                created_by_ref=config.IDENTITY_REF,
+                external_references=vulnerability['external_references'][:1],
+            ))
+        ]
+    except Exception as e:
+        raise
         pass
     return objects
 
