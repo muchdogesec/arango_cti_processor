@@ -69,6 +69,7 @@ class TestArangoDB(unittest.TestCase):
           FOR doc IN nvd_cve_edge_collection
           FILTER doc._arango_cti_processor_note == "cve-cwe"
           AND doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -82,6 +83,7 @@ class TestArangoDB(unittest.TestCase):
           FOR doc IN nvd_cve_edge_collection
           FILTER doc._arango_cti_processor_note == "cve-cwe"
           AND doc.source_ref == "vulnerability--ff040ea3-f2d9-5d38-80ae-065a2db41e64"
+          AND doc._is_ref == false
             RETURN doc
         )
         """

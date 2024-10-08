@@ -67,6 +67,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
               AND doc._is_latest == false
               AND doc._arango_cti_processor_note == "capec-attack"
+              AND doc._is_ref == false
               RETURN doc
         )
         """
@@ -82,6 +83,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
               AND doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-attack"
+              AND doc._is_ref == false
               RETURN doc
         )
         """
@@ -96,6 +98,7 @@ class TestArangoDB(unittest.TestCase):
             FILTER doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
             AND doc._is_latest == true
             AND doc._arango_cti_processor_note == "capec-attack"
+            AND doc._is_ref == false
             SORT doc.target_ref ASC
             RETURN doc.target_ref
         """
@@ -120,6 +123,7 @@ class TestArangoDB(unittest.TestCase):
               OR doc.target_ref == "attack-pattern--3257eb21-f9a7-4430-8de1-d8b6e288f529")
               AND doc.source_ref == "attack-pattern--897a5506-45bb-4f6f-96e7-55f4c0b9021a"
               AND doc._arango_cti_processor_note == "capec-attack"
+              AND doc._is_ref == false
               RETURN doc
         )
         """

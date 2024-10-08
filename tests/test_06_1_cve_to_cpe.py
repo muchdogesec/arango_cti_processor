@@ -65,6 +65,7 @@ class TestArangoDB(unittest.TestCase):
         RETURN COUNT(
           FOR doc IN nvd_cve_vertex_collection
             FILTER doc.id == "indicator--b16b3dec-492f-5738-8514-238b5316188f"
+            AND doc._is_ref == false
               RETURN doc
         )
         """
@@ -79,6 +80,7 @@ class TestArangoDB(unittest.TestCase):
           FILTER doc._arango_cti_processor_note == "cve-cpe"
           AND doc.relationship_type == "pattern-contains"
           AND doc._is_latest == true
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -93,6 +95,7 @@ class TestArangoDB(unittest.TestCase):
           FILTER doc._arango_cti_processor_note == "cve-cpe"
           AND doc.relationship_type == "pattern-contains"
           AND doc._is_latest == false
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -107,6 +110,7 @@ class TestArangoDB(unittest.TestCase):
           FILTER doc._arango_cti_processor_note == "cve-cpe"
           AND doc.relationship_type == "is-vulnerable"
           AND doc._is_latest == true
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -121,6 +125,7 @@ class TestArangoDB(unittest.TestCase):
           FILTER doc._arango_cti_processor_note == "cve-cpe"
           AND doc.relationship_type == "is-vulnerable"
           AND doc._is_latest == false
+          AND doc._is_ref == false
             RETURN doc
         )
         """

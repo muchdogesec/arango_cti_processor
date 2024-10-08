@@ -66,6 +66,7 @@ class TestArangoDB(unittest.TestCase):
         RETURN COUNT(
           FOR doc IN mitre_capec_edge_collection
           FILTER doc._arango_cti_processor_note == "capec-cwe"
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -85,6 +86,7 @@ class TestArangoDB(unittest.TestCase):
               "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
             ]
             AND doc._arango_cti_processor_note == "capec-cwe"
+            AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -99,6 +101,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-cwe"
               AND doc.source_ref == "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1"
+              AND doc._is_ref == false
               SORT doc.target_ref ASC
               RETURN doc.target_ref
         """
@@ -120,6 +123,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-cwe"
               AND doc.source_ref == "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1"
+              AND doc._is_ref == false
               SORT doc.id ASC
               RETURN doc.id
         """
@@ -139,6 +143,7 @@ class TestArangoDB(unittest.TestCase):
               FOR doc IN mitre_capec_edge_collection
                 FILTER doc._is_latest == false
                 AND doc._arango_cti_processor_note == "capec-cwe"
+                AND doc._is_ref == false
                 RETURN doc
             )
         """
@@ -152,6 +157,7 @@ class TestArangoDB(unittest.TestCase):
             FOR doc IN mitre_capec_edge_collection
                 FILTER doc._arango_cti_processor_note == "capec-cwe"
                 AND doc.id == "relationship--6dfedb11-9d14-5d0e-bd69-9739dd188b2f"
+                AND doc._is_ref == false
                 RETURN doc.description
         """
         cursor = self.db.aql.execute(query)

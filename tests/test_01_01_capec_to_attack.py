@@ -62,6 +62,7 @@ class TestArangoDB(unittest.TestCase):
         RETURN COUNT(
           FOR doc IN mitre_capec_edge_collection
           FILTER doc._arango_cti_processor_note == "capec-attack"
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -84,6 +85,7 @@ class TestArangoDB(unittest.TestCase):
               "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
             ]
             AND doc._arango_cti_processor_note == "capec-attack"
+            AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -100,6 +102,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-attack"
               AND doc.source_ref == "attack-pattern--e3dd79e7-307b-42dd-9e22-d0345c0ec001"
+              AND doc._is_ref == false
               RETURN doc.target_ref
         """
         cursor = self.db.aql.execute(query)
@@ -119,6 +122,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-attack"
               AND doc.source_ref == "attack-pattern--e3dd79e7-307b-42dd-9e22-d0345c0ec001"
+              AND doc._is_ref == false
               RETURN doc.id
         """
         cursor = self.db.aql.execute(query)
@@ -138,6 +142,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-attack"
               AND doc.source_ref == "attack-pattern--c05fff04-b965-4a11-9c18-379dac31969f"
+              AND doc._is_ref == false
               RETURN doc.target_ref
         """
         cursor = self.db.aql.execute(query)
@@ -157,6 +162,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-attack"
               AND doc.source_ref == "attack-pattern--c05fff04-b965-4a11-9c18-379dac31969f"
+              AND doc._is_ref == false
               RETURN doc.id
         """
         cursor = self.db.aql.execute(query)
@@ -176,6 +182,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-attack"
               AND doc.source_ref == "attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed"
+              AND doc._is_ref == false
               SORT doc.target_ref ASC
               RETURN doc.target_ref
         """
@@ -201,6 +208,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "capec-attack"
               AND doc.source_ref == "attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed"
+              AND doc._is_ref == false
               SORT doc.target_ref ASC
               RETURN doc.id
         """
@@ -223,6 +231,7 @@ class TestArangoDB(unittest.TestCase):
               FOR doc IN mitre_capec_edge_collection
                 FILTER doc._is_latest == false
                 AND doc._arango_cti_processor_note == "capec-attack"
+                AND doc._is_ref == false
                 RETURN doc
             )
         """

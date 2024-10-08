@@ -72,6 +72,7 @@ class TestArangoDB(unittest.TestCase):
                 "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                 "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
             ]
+            AND doc._is_ref == false
             RETURN [doc]
         )
         """
@@ -98,6 +99,7 @@ class TestArangoDB(unittest.TestCase):
         query = """
           FOR doc IN sigma_rules_edge_collection
               FILTER doc.relationship_type == "detects"
+              AND doc._is_ref == false
               SORT doc.id ASC
               RETURN doc.id
         """
@@ -115,6 +117,7 @@ class TestArangoDB(unittest.TestCase):
             FOR doc IN sigma_rules_edge_collection
                 FILTER doc._arango_cti_processor_note == "sigma-cve"
                 AND doc.id == "relationship--72189b73-5547-500c-85ea-f9287eac93f2"
+                AND doc._is_ref == false
                 RETURN doc.description
         """
         cursor = self.db.aql.execute(query)

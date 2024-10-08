@@ -67,6 +67,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc.source_ref == "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1"
               AND doc._arango_cti_processor_note == "capec-cwe"
+              AND doc._is_ref == false
               RETURN doc
         )
         """
@@ -81,6 +82,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == false
               AND doc.source_ref == "attack-pattern--7b423196-9de6-400f-91de-a1f26b3f19f1"
               AND doc._arango_cti_processor_note == "capec-cwe"
+              AND doc._is_ref == false
               RETURN doc
         )
         """

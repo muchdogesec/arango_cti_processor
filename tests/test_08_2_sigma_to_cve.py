@@ -79,6 +79,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc.relationship_type == "detects"
               AND doc.source_ref == "indicator--c6e28172-84af-594d-b09a-565a10121fe0"
+              AND doc._is_ref == false
               RETURN [doc]
         )
         """
@@ -93,6 +94,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == false
               AND doc.relationship_type == "detects"
               AND doc.source_ref == "indicator--c6e28172-84af-594d-b09a-565a10121fe0"
+              AND doc._is_ref == false
               RETURN [doc]
         )
         """

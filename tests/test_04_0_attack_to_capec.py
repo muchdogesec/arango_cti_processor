@@ -75,6 +75,7 @@ class TestArangoDB(unittest.TestCase):
         )
           FILTER doc.relationship_type == "relies-on"
           AND doc._arango_cti_processor_note == "attack-capec"
+          AND doc._is_ref == false
           RETURN doc
         )
         """
@@ -95,6 +96,7 @@ class TestArangoDB(unittest.TestCase):
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
           ]
+          AND doc._is_ref == false
           RETURN doc
         )
         """
@@ -113,6 +115,7 @@ class TestArangoDB(unittest.TestCase):
         )
           FILTER doc.relationship_type == "relies-on"
           AND doc.source_ref == "attack-pattern--36675cd3-fe00-454c-8516-aebecacbe9d9"
+          AND doc._is_ref == false
           RETURN doc
         )
         """
@@ -130,6 +133,7 @@ class TestArangoDB(unittest.TestCase):
             )
               FILTER doc.relationship_type == "relies-on"
               AND doc.id == "relationship--3916b361-59b6-5697-ba1a-020ddef6cf3b"
+              AND doc._is_ref == false
               RETURN doc.id
         """
         result_count = self.run_query(query)
@@ -148,6 +152,7 @@ class TestArangoDB(unittest.TestCase):
                 )
                 FILTER doc._is_latest == false
                 AND doc._arango_cti_processor_note == "attack-capec"
+                AND doc._is_ref == false
                 RETURN doc
             )
         """
@@ -165,6 +170,7 @@ class TestArangoDB(unittest.TestCase):
                 )
                 FILTER doc._arango_cti_processor_note == "attack-capec"
                 AND doc.id == "relationship--443510b1-b5e1-5dd0-b36c-c98cb32235f8"
+                AND doc._is_ref == false
                 RETURN doc.description
         """
         cursor = self.db.aql.execute(query)

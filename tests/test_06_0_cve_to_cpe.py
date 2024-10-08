@@ -66,6 +66,7 @@ class TestArangoDB(unittest.TestCase):
         RETURN COUNT(
           FOR doc IN nvd_cve_edge_collection
           FILTER doc._arango_cti_processor_note == "cve-cpe"
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -79,6 +80,7 @@ class TestArangoDB(unittest.TestCase):
           FOR doc IN nvd_cve_edge_collection
           FILTER doc._arango_cti_processor_note == "cve-cpe"
           AND doc.relationship_type == "pattern-contains"
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -92,6 +94,7 @@ class TestArangoDB(unittest.TestCase):
           FOR doc IN nvd_cve_edge_collection
           FILTER doc._arango_cti_processor_note == "cve-cpe"
           AND doc.relationship_type == "is-vulnerable"
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -109,6 +112,7 @@ class TestArangoDB(unittest.TestCase):
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
           ]
+          AND doc._is_ref == false
           RETURN doc
         )
         """
@@ -121,6 +125,7 @@ class TestArangoDB(unittest.TestCase):
           FOR doc IN nvd_cve_edge_collection
               FILTER doc.source_ref == "indicator--b16b3dec-492f-5738-8514-238b5316188f"
               AND doc.relationship_type == "pattern-contains"
+              AND doc._is_ref == false
               RETURN doc
         )
         """
@@ -135,6 +140,7 @@ class TestArangoDB(unittest.TestCase):
               FOR doc IN nvd_cve_edge_collection
                 FILTER doc._is_latest == false
                 AND doc._arango_cti_processor_note == "cve-cpe"
+                AND doc._is_ref == false
                 RETURN doc
             )
         """
@@ -150,6 +156,7 @@ class TestArangoDB(unittest.TestCase):
         FOR doc IN nvd_cve_edge_collection
             FILTER doc.source_ref == "indicator--b16b3dec-492f-5738-8514-238b5316188f"
             AND doc.relationship_type == "pattern-contains"
+            AND doc._is_ref == false
             SORT doc.id ASC
             RETURN doc.id
         """
@@ -182,6 +189,7 @@ class TestArangoDB(unittest.TestCase):
         FOR doc IN nvd_cve_edge_collection
             FILTER doc.source_ref == "indicator--b16b3dec-492f-5738-8514-238b5316188f"
             AND doc.relationship_type == "is-vulnerable"
+            AND doc._is_ref == false
             SORT doc.id ASC
             RETURN doc.id
         """

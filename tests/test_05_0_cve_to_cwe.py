@@ -66,6 +66,7 @@ class TestArangoDB(unittest.TestCase):
         RETURN COUNT(
           FOR doc IN nvd_cve_edge_collection
           FILTER doc._arango_cti_processor_note == "cve-cwe"
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -83,6 +84,7 @@ class TestArangoDB(unittest.TestCase):
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
           ]
+          AND doc._is_ref == false
           RETURN doc
         )
         """
@@ -98,6 +100,7 @@ class TestArangoDB(unittest.TestCase):
           FOR doc IN nvd_cve_edge_collection
           FILTER doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
           AND doc._arango_cti_processor_note == "cve-cwe"
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -113,6 +116,7 @@ class TestArangoDB(unittest.TestCase):
           FILTER doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
           AND doc.id == "relationship--92d43d17-2c7f-5498-9836-593dbb14afe9"
           AND doc._arango_cti_processor_note == "cve-cwe"
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -127,6 +131,7 @@ class TestArangoDB(unittest.TestCase):
               FOR doc IN nvd_cve_edge_collection
                 FILTER doc._is_latest == false
                 AND doc._arango_cti_processor_note == "cve-cwe"
+                AND doc._is_ref == false
                 RETURN doc
             )
         """
@@ -140,6 +145,7 @@ class TestArangoDB(unittest.TestCase):
             FOR doc IN nvd_cve_edge_collection
                 FILTER doc._arango_cti_processor_note == "cve-cwe"
                 AND doc.id == "relationship--92d43d17-2c7f-5498-9836-593dbb14afe9"
+                AND doc._is_ref == false
                 RETURN doc.description
         """
         cursor = self.db.aql.execute(query)

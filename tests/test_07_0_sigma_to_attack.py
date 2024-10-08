@@ -68,6 +68,7 @@ class TestArangoDB(unittest.TestCase):
         FOR doc in sigma_rules_edge_collection
           FILTER doc._arango_cti_processor_note == "sigma-attack"
           AND doc._is_latest == true
+          AND doc._is_ref == false
           COLLECT type = SPLIT(doc.target_ref, "--")[0] into docs
           RETURN {[type]: COUNT(docs[*].doc)}
         """
@@ -125,6 +126,7 @@ class TestArangoDB(unittest.TestCase):
             FILTER doc._is_latest == true
             AND doc.relationship_type == "detects"
             AND doc.source_ref == "indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf"
+            AND doc._is_ref == false
             SORT doc.id ASC
             RETURN doc.id
         """
@@ -146,6 +148,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == false
               AND doc.relationship_type == "detects"
               AND doc.source_ref == "indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf"
+              AND doc._is_ref == false
               RETURN doc.id
         )
         """
@@ -206,6 +209,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc.relationship_type == "detects"
               AND doc.source_ref == "indicator--7f5c4deb-0874-5872-89c2-065042f7e62b"
+              AND doc._is_ref == false
               RETURN doc.id
         )
         """
@@ -217,6 +221,7 @@ class TestArangoDB(unittest.TestCase):
             FOR doc IN sigma_rules_edge_collection
                 FILTER doc._arango_cti_processor_note == "sigma-attack"
                 AND doc.id == "relationship--d68a67d1-18bc-50b0-9361-f5cc8c1a3164"
+                AND doc._is_ref == false
                 RETURN doc.description
         """
         cursor = self.db.aql.execute(query)
@@ -233,6 +238,7 @@ class TestArangoDB(unittest.TestCase):
             FOR doc IN sigma_rules_edge_collection
                 FILTER doc._arango_cti_processor_note == "sigma-attack"
                 AND doc.id == "relationship--0f024506-f414-50ed-b5d7-633d6c4f59ab"
+                AND doc._is_ref == false
                 RETURN doc.description
         """
         cursor = self.db.aql.execute(query)

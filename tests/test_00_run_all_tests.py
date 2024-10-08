@@ -25,7 +25,7 @@ if __name__ == '__main__':
     # List of test modules to run in order
     test_modules = [
         'tests.test_01_00_capec_to_attack',
-        'tests.test_01_01_capec_to_attack.py',
+        'tests.test_01_01_capec_to_attack',
         'tests.test_01_1_capec_to_attack',
         'tests.test_01_2_capec_to_attack',
         'tests.test_01_3_capec_to_attack',

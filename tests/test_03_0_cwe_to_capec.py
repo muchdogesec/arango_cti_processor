@@ -65,6 +65,7 @@ class TestArangoDB(unittest.TestCase):
         RETURN COUNT(
           FOR doc IN mitre_cwe_edge_collection
           FILTER doc._arango_cti_processor_note == "cwe-capec"
+          AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -84,6 +85,7 @@ class TestArangoDB(unittest.TestCase):
               "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
             ]
             AND doc._arango_cti_processor_note == "cwe-capec"
+            AND doc._is_ref == false
             RETURN doc
         )
         """
@@ -108,6 +110,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "cwe-capec"
               AND doc.source_ref == "weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926"
+              AND doc._is_ref == false
               SORT doc.target_ref ASC
               RETURN doc.target_ref
         """
@@ -143,6 +146,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc._arango_cti_processor_note == "cwe-capec"
               AND doc.source_ref == "weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926"
+              AND doc._is_ref == false
               SORT doc.id ASC
               RETURN doc.id
         """
@@ -169,6 +173,7 @@ class TestArangoDB(unittest.TestCase):
               FOR doc IN mitre_cwe_edge_collection
                 FILTER doc._is_latest == false
                 AND doc._arango_cti_processor_note == "cwe-capec"
+                AND doc._is_ref == false
                 RETURN doc
             )
         """
@@ -182,6 +187,7 @@ class TestArangoDB(unittest.TestCase):
             FOR doc IN mitre_cwe_edge_collection
                 FILTER doc._arango_cti_processor_note == "cwe-capec"
                 AND doc.id == "relationship--e6ea5f7f-f6ea-503a-a529-657be1a00eef"
+                AND doc._is_ref == false
                 RETURN doc.description
         """
         cursor = self.db.aql.execute(query)

@@ -64,6 +64,7 @@ class TestArangoDB(unittest.TestCase):
         FOR doc in sigma_rules_edge_collection
           FILTER doc._arango_cti_processor_note == "sigma-attack"
           AND doc._is_latest == true
+          AND doc._is_ref == false
           COLLECT type = SPLIT(doc.target_ref, "--")[0] into docs
           RETURN {[type]: COUNT(docs[*].doc)}
         """
@@ -90,6 +91,7 @@ class TestArangoDB(unittest.TestCase):
         FOR doc in sigma_rules_edge_collection
           FILTER doc._arango_cti_processor_note == "sigma-attack"
           AND doc._is_latest == false
+          AND doc._is_ref == false
           COLLECT type = SPLIT(doc.target_ref, "--")[0] into docs
           RETURN {[type]: COUNT(docs[*].doc)}
         """
@@ -152,6 +154,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == true
               AND doc.relationship_type == "detects"
               AND doc.source_ref == "indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf"
+              AND doc._is_ref == false
               SORT doc.id ASC
               RETURN doc.id
         """
@@ -174,6 +177,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc._is_latest == false
               AND doc.relationship_type == "detects"
               AND doc.source_ref == "indicator--1a7e070a-64cb-5d4f-aff4-8e5fdcd72edf"
+              AND doc._is_ref == false
               RETURN doc.id
             )
         """

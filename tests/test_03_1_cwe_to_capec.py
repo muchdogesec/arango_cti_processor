@@ -79,6 +79,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc.source_ref == "weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926"
               AND doc._is_latest == false
               AND doc._arango_cti_processor_note == "cwe-capec"
+              AND doc._is_ref == false
               RETURN doc
         )
         """
@@ -93,6 +94,7 @@ class TestArangoDB(unittest.TestCase):
               FILTER doc.source_ref == "weakness--de02e88c-42c5-5ddf-b5d1-1c8aeac79926"
               AND doc._is_latest == true
               AND doc._arango_cti_processor_note == "cwe-capec"
+              AND doc._is_ref == false
               RETURN doc
         )
         """
