@@ -45,13 +45,13 @@ class TestArangoDB(unittest.TestCase):
         cursor = self.db.aql.execute(query)
         return [count for count in cursor]
 
-# now only 2 is latest is capec relationships
-    def test_01_count_is_ref_latest(self):
+# now 2 because one capec ref removed from cwe
+    def test_01_relationship_object_creation(self):
         query = """
         RETURN COUNT(
           FOR doc IN mitre_cwe_edge_collection
             FILTER doc._arango_cti_processor_note == "cwe-capec"
-            AND doc._is_ref == true
+            AND doc._is_ref == false
             AND doc._is_latest == true
             RETURN doc
         )
@@ -61,9 +61,8 @@ class TestArangoDB(unittest.TestCase):
 
         self.assertEqual(result_count, [2], f"Expected 2 documents, but found {result_count}.")
 
-# expect same as 10.0+10.1 = 2+3
-
-    def test_02_count_is_ref_latest_false(self):
+# back to same as 10.0
+    def test_02_count_is_ref_latest(self):
         query = """
         RETURN COUNT(
           FOR doc IN mitre_cwe_edge_collection
@@ -76,7 +75,24 @@ class TestArangoDB(unittest.TestCase):
         cursor = self.db.aql.execute(query)
         result_count = [count for count in cursor]
 
-        self.assertEqual(result_count, [5], f"Expected 5 documents, but found {result_count}.")
+        self.assertEqual(result_count, [6], f"Expected 6 documents, but found {result_count}.")
+
+# expect same as 10.0+10.1 = 9+6
+
+    def test_03_count_is_ref_latest_false(self):
+        query = """
+        RETURN COUNT(
+          FOR doc IN mitre_cwe_edge_collection
+            FILTER doc._arango_cti_processor_note == "cwe-capec"
+            AND doc._is_ref == true
+            AND doc._is_latest == false
+            RETURN doc
+        )
+        """
+        cursor = self.db.aql.execute(query)
+        result_count = [count for count in cursor]
+
+        self.assertEqual(result_count, [15], f"Expected 15 documents, but found {result_count}.")
 
 if __name__ == '__main__':
     unittest.main()

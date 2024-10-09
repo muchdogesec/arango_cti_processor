@@ -46,9 +46,25 @@ class TestArangoDB(unittest.TestCase):
         cursor = self.db.aql.execute(query)
         return [count for count in cursor]
 
+    def test_01_relationship_object_creation(self):
+        query = """
+        RETURN COUNT(
+          FOR doc IN mitre_cwe_edge_collection
+            FILTER doc._arango_cti_processor_note == "cwe-capec"
+            AND doc._is_ref == false
+            AND doc._is_latest == true
+            RETURN doc
+        )
+        """
+        cursor = self.db.aql.execute(query)
+        result_count = [count for count in cursor]
+
+        self.assertEqual(result_count, [2], f"Expected 2 documents, but found {result_count}.")
+
+
 # arango cti processed makes 2 cwe-capec SROs, inside these SROs are a total of 3 embedded relationships (each has 1 created_by_ref and 2 object_marking_refs) so expect 6 total
 
-    def test_01_count_is_ref(self):
+    def test_02_count_is_ref(self):
         query = """
         RETURN COUNT(
           FOR doc IN mitre_cwe_edge_collection
@@ -65,7 +81,7 @@ class TestArangoDB(unittest.TestCase):
 # check id of one of the generate objects
 # `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` created-by+mitre_cwe_edge_collection/relationship--3e117c5b-65ea-5364-9447-905646aad09d+mitre_cwe_vertex_collection/identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3 = 47570226-cefc-5d1d-be1d-eac102751c7f
 
-    def test_02_count_is_ref_object1(self):
+    def test_03_count_is_ref_object1(self):
         query = """
           FOR doc IN mitre_cwe_edge_collection
             FILTER doc._arango_cti_processor_note == "cwe-capec"
