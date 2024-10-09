@@ -283,7 +283,7 @@ python3 -m unittest tests/test_10_1_ignore_embedded_relationships_f.py
 
 ## TEST 10.2: Test removed objects where IGNORE_EMBEDDED_RELATIONSHIPS = false
 
-Removes the added capec in 10.1.
+Removes the added capec in 10.1, so now 2 capecs (and 6 embedded refs)
 
 ```shell
 python3 -m unittest tests/test_10_2_ignore_embedded_relationships_f.py
