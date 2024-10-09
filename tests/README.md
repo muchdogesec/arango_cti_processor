@@ -6,7 +6,7 @@ To run all tests described here;
 python3 tests/test_00_run_all_tests.py
 ```
 
-We run this over `pytest` because pytest does not always run the tests in the defined numerical order.
+We run this over `pytest` because some test here are no longer relevant.
 
 ## TEST 1.0 Validate CAPEC Attack Pattern -> ATT&CK Attack Pattern relationship (`capec-attack`)
 
@@ -296,3 +296,17 @@ python3 -m unittest tests/test_10_2_ignore_embedded_relationships_f.py
 ```shell
 python3 -m unittest tests/test_11_0_ignore_embedded_relationships_t.py
 ```
+
+---
+
+## TEST 12.0: Test cve-epss
+
+This bundle imports a test for 2 CVEs that currently have an EPSS score (CVE-2024-5370, CVE-2024-4165 Note and Vulnerability Object exist in bundle), and a CVE that does not have an EPSS score (CVE-2024-37031) (only vulnerability exists in bundle).
+
+```shell
+python3 -m unittest tests/test_12_0_cve_epss.py
+```
+
+## TEST 12.1: Test cve-epss update
+
+You will need to wait up to 24 hours to run this test. It checks for updates, and relies on new data being posted to the EPSS API.
