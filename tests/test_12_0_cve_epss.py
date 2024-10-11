@@ -65,9 +65,8 @@ class TestArangoDB(unittest.TestCase):
     def test_02_arango_cti_processor_note(self):
         query = """
         RETURN COUNT(
-          FOR doc IN nvd_cve_edge_collection
-          FILTER doc._arango_cti_processor_note == "cve-epss"
-          AND doc._is_ref == false
+          FOR doc IN nvd_cve_vertex_collection
+          FILTER doc.type == "note"
             RETURN doc
         )
         """
