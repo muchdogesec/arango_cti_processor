@@ -11,6 +11,8 @@ import re
 from stix2 import Note
 from stix2.serialization import serialize
 
+from arango_cti_processor.epss import EPSSManager
+
 from .cpe_match import fetch_cpe_matches
 from . import config
 from tqdm import tqdm
@@ -164,29 +166,61 @@ def generate_epss(vulnerability, db: CTIProcessor, collection, collection_edge, 
             return []
         
         cve_id = vulnerability['name']
-        epss_data = retrieve_epss_metrics(config.EPSS_API_ENDPOINT, cve_name)
+        epss_data = EPSSManager.get_data_for_cve(cve_id)
         content = f"EPSS Score for {cve_id}"
+        stix_id = vulnerability['id'].replace("vulnerability", "note")
 
-        return [
-            stix_to_dict(Note(
-                id=vulnerability['id'].replace("vulnerability", "note"),
-                created=vulnerability['created'],
-                modified=datetime.strptime(epss_data["date"], "%Y-%m-%d").date(),
-                content=content,
-                x_epss=epss_data,
-                object_refs=[
-                    vulnerability['id'],
-                ],
-                extensions= {
-                    "extension-definition--efd26d23-d37d-5cf2-ac95-a101e46ce11d": {
-                        "extension_type": "toplevel-property-extension"
-                    }
-                },
-                object_marking_refs=list(set(vulnerability['object_marking_refs']+config.OBJECT_MARKING_REFS)),
-                created_by_ref=config.IDENTITY_REF,
-                external_references=vulnerability['external_references'][:1],
-            ))
-        ]
+        if epss_data:
+            epss_data = [epss_data]
+        else:
+            epss_data = []
+        
+        if not epss_data:
+            return []
+        
+        modified = datetime.strptime(epss_data[-1]["date"], "%Y-%m-%d").date()
+
+        query = f"""
+        FOR doc IN @@collection
+        FILTER doc.id == @stix_id
+        REMOVE doc IN @@collection
+        RETURN doc
+        """
+        
+
+        db_note = list(db.arango.db.aql.execute(query, bind_vars={'@collection': 'nvd_cve_vertex_collection', "stix_id": stix_id}))
+        note: dict = db_note and db_note[0]
+
+        if not note:
+            return [stix_to_dict(Note(
+                    id=stix_id,
+                    created=vulnerability['created'],
+                    modified=modified,
+                    content=content,
+                    x_epss=epss_data,
+                    object_refs=[
+                        vulnerability['id'],
+                    ],
+                    extensions= {
+                        "extension-definition--efd26d23-d37d-5cf2-ac95-a101e46ce11d": {
+                            "extension_type": "toplevel-property-extension"
+                        }
+                    },
+                    object_marking_refs=list(set(vulnerability['object_marking_refs']+config.OBJECT_MARKING_REFS)),
+                    created_by_ref=config.IDENTITY_REF,
+                    external_references=vulnerability['external_references'][:1],
+                ))]
+        else:
+            existing_dates = set(map(lambda x: x['date'], note['x_epss']))
+            if existing_dates.issuperset([epss_data[0]['date']]):
+                return [note]
+            note.update(
+                x_epss=sorted(epss_data+note['x_epss'], key=lambda epss: epss['date'], reverse=True),
+            )
+            note.update(
+                modified=datetime.strptime(note['x_epss'][0]["date"], "%Y-%m-%d")
+            )
+            return [stix_to_dict(note)]
     except Exception as e:
         pass
     return objects
