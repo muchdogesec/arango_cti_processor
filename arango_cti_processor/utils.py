@@ -220,7 +220,9 @@ def generate_epss(vulnerability, db: CTIProcessor, collection, collection_edge, 
             note.update(
                 modified=datetime.strptime(note['x_epss'][0]["date"], "%Y-%m-%d")
             )
-            return [stix_to_dict(note)]
+            note = stix_to_dict(note)
+            note.update(_record_md5_hash=generate_md5(note))
+            return [note]
     except Exception as e:
         pass
     return objects
