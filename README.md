@@ -92,7 +92,7 @@ Where;
 * `--database` (required): the arangoDB database name where the objects you want to link are found. It must contain the collections required for the `--relationship` option(s) selected
 * `--relationship` (optional, dictionary): you can apply updates to certain relationships at run time. Default is all. Note, you should ensure your `database` contains all the required seeded data. User can select from;
 	* `capec-attack`
-  * `capec-cwe`
+  * `capec-cwe` (archived -- CAPEC no longer updated)
   * `cwe-capec`
   * `attack-capec` (archived -- ATT&CK objects no longer contain references to CAPEC)
   * `cve-cwe`
