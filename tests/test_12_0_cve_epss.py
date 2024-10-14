@@ -96,5 +96,26 @@ class TestArangoDB(unittest.TestCase):
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
 
+    # no note existed for CVE-2024-1848 (vulnerability--f670ff06-f9cc-5434-bab3-61d6fdb63e93) in imported bundle. This checks actip generates a Note version from it from new EPSS data
+
+    def test_04_check_new_object(self):
+        query = """
+          FOR doc IN nvd_cve_vertex_collection
+            FILTER doc.type == "note"
+            AND doc.id == "note--f670ff06-f9cc-5434-bab3-61d6fdb63e93"
+            RETURN {
+                id: doc.id,
+                created_by_ref: doc.created_by_ref
+            }
+        """
+        result_count = self.run_query(query)
+        expected_ids = [
+          {
+            "id": "note--f670ff06-f9cc-5434-bab3-61d6fdb63e93",
+            "created_by_ref": "identity--562918ee-d5da-5579-b6a1-fae50cc6bad3"
+          }
+        ]
+        self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
 if __name__ == '__main__':
     unittest.main()

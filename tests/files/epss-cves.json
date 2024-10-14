@@ -230,32 +230,27 @@
         {
             "type": "vulnerability",
             "spec_version": "2.1",
-            "id": "vulnerability--c6fa5d56-1198-57e2-93a6-8faf3db43a4a",
+            "id": "vulnerability--f670ff06-f9cc-5434-bab3-61d6fdb63e93",
             "created_by_ref": "identity--562918ee-d5da-5579-b6a1-fae50cc6bad3",
-            "created": "2024-06-03T06:15:10.143Z",
-            "modified": "2024-06-03T14:46:24.250Z",
-            "name": "CVE-2024-37031",
-            "description": "The Active Admin (aka activeadmin) framework before 3.2.2 for Ruby on Rails allows stored XSS in certain situations where users can create entities (to be later edited in forms) with arbitrary names, aka a \"dynamic form legends\" issue. 4.0.0.beta7 is also a fixed version.",
+            "created": "2024-03-22T11:15:46.633Z",
+            "modified": "2024-09-02T09:15:04.427Z",
+            "name": "CVE-2024-1848",
+            "description": "Heap-based Buffer Overflow, Memory Corruption, Out-Of-Bounds Read, Out-Of-Bounds Write, Stack-based Buffer Overflow, Type Confusion, Uninitialized Variable, Use-After-Free vulnerabilities exist in the file reading procedure in SOLIDWORKS Desktop on Release SOLIDWORKS 2024.\nThese vulnerabilities could allow an attacker to execute arbitrary code while opening a specially crafted CATPART, DWG, DXF, IPT, JT, SAT, SLDDRW, SLDPRT, STL, STP, X_B or X_T file.",
             "external_references": [
                 {
                     "source_name": "cve",
-                    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-37031",
-                    "external_id": "CVE-2024-37031"
+                    "url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1848",
+                    "external_id": "CVE-2024-1848"
                 },
                 {
-                    "source_name": "cve@mitre.org",
-                    "description": "",
-                    "url": "https://github.com/activeadmin/activeadmin/releases/tag/v3.2.2"
+                    "source_name": "cwe",
+                    "url": "https://cwe.mitre.org/data/definitions/CWE-122.html",
+                    "external_id": "CWE-122"
                 },
                 {
-                    "source_name": "cve@mitre.org",
+                    "source_name": "3DS.Information-Security@3ds.com",
                     "description": "",
-                    "url": "https://github.com/activeadmin/activeadmin/security/advisories/GHSA-9mg6-x45v-hcfm"
-                },
-                {
-                    "source_name": "cve@mitre.org",
-                    "description": "",
-                    "url": "https://rubygems.org/gems/activeadmin/versions/3.2.2"
+                    "url": "https://www.3ds.com/vulnerability/advisories"
                 },
                 {
                     "source_name": "vulnStatus",
@@ -263,7 +258,7 @@
                 },
                 {
                     "source_name": "sourceIdentifier",
-                    "description": "cve@mitre.org"
+                    "description": "3DS.Information-Security@3ds.com"
                 }
             ],
             "object_marking_refs": [
@@ -275,7 +270,15 @@
                     "extension_type": "toplevel-property-extension"
                 }
             },
-            "x_cvss": {}
+            "x_cvss": {
+                "v3_1": {
+                    "base_score": 7.8,
+                    "base_severity": "HIGH",
+                    "exploitability_score": 1.8,
+                    "impact_score": 5.9,
+                    "vector_string": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+                }
+            }
         }
     ]
 }

@@ -301,13 +301,15 @@ python3 -m unittest tests/test_11_0_ignore_embedded_relationships_t.py
 
 ## TEST 12.0: Test cve-epss
 
-This bundle imports a test for 2 CVEs that currently have an EPSS score (CVE-2024-5370, CVE-2024-4165 Note and Vulnerability Object exist in bundle), and a CVE that does not have an EPSS score (CVE-2024-37031) (only vulnerability exists in bundle).
+This bundle imports a test for 2 CVEs that currently have an EPSS score (CVE-2024-5370, CVE-2024-4165 Note and Vulnerability Object exist in bundle), and a CVE that does not have an EPSS note (CVE-2024-1848) (only vulnerability exists in bundle), but EPSS score does exist.
 
 The dates on the two note EPSS scores are 2024-10-08.
 
 ```shell
 python3 -m unittest tests/test_12_0_cve_epss.py
 ```
+
+Thus tests expects updated notes for CVE-2024-5370 & CVE-2024-4165, and a new Note for CVE-2024-1848
 
 ## TEST 12.1: Test cve-epss update
 
