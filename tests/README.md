@@ -310,3 +310,7 @@ python3 -m unittest tests/test_12_0_cve_epss.py
 ## TEST 12.1: Test cve-epss update
 
 You will need to wait up to 24 hours to run this test. It checks for updates, and relies on new data being posted to the EPSS API.
+
+```shell
+python3 -m unittest tests/test_12_1_cve_epss.py
+```

@@ -24,11 +24,6 @@ class TestArangoDB(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        make_uploads([
-                ("nvd_cve", "tests/files/epss-cves.json"),
-            ], database="arango_cti_processor_standard_tests", delete_db=True, 
-            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME, stix2arango_note=STIX2ARANGO_NOTE)
-        print(f'======Test bundles uploaded successfully======')
         # Run the arango_cti_processor.py script
         subprocess.run([
             "python3", "arango_cti_processor.py",
@@ -73,7 +68,7 @@ class TestArangoDB(unittest.TestCase):
         result_count = self.run_query(query)
         self.assertEqual(result_count, [2], f"Expected 2 documents, but found {result_count}.")
 
-    # here we expect 2 results per note (the one imported for 2024-10-08, and the one added by the script for NOW)
+    # here we expect 3 results per note (the one imported for 2024-10-08, and the one added by the script for YESTERDAY, and the one NOW)
     def test_03_check_count_of_dates(self):
         query = """
           FOR doc IN nvd_cve_vertex_collection
@@ -95,6 +90,8 @@ class TestArangoDB(unittest.TestCase):
           }
         ]
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
+
+
 
 if __name__ == '__main__':
     unittest.main()

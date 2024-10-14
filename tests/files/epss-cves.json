@@ -29,11 +29,13 @@
                     "extension_type": "toplevel-property-extension"
                 }
             },
-            "x_epss": [{
-                "date": "2024-10-08",
-                "percentile": "0.163710000",
-                "score": "0.000450000"
-            }]
+            "x_epss": [
+                {
+                    "date": "2024-10-08",
+                    "percentile": "0.163710000",
+                    "score": "0.000450000"
+                }
+            ]
         },
         {
             "type": "vulnerability",
@@ -137,11 +139,13 @@
                     "extension_type": "toplevel-property-extension"
                 }
             },
-            "x_epss": [{
-                "date": "2024-10-08",
-                "percentile": "0.163710000",
-                "score": "0.000450000"
-            }]
+            "x_epss": [
+                {
+                    "date": "2024-10-08",
+                    "percentile": "0.163710000",
+                    "score": "0.000450000"
+                }
+            ]
         },
         {
             "type": "vulnerability",
