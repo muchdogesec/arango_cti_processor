@@ -231,11 +231,14 @@ class ArangoProcessor:
         RETURN doc.id
         """
 
-        return self.arango.execute_raw_query(query, bind_vars={
+        deprecated = self.arango.execute_raw_query(query, bind_vars={
             "active_rels": active_rels,
             "@collection": collection,
             "note": note,
         })
+    
+        deprecated_refs = self.arango.update_is_latest_for_embedded_refs(deprecated, collection)
+        return deprecated + deprecated_refs
     
     def deprecate_old_relations_chunked(self, objects, collection, note, chunk_size=1000):
         logging.info(f"Running deprecator for {len(objects)} items")
