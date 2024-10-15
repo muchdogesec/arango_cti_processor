@@ -206,7 +206,10 @@ def generate_epss(vulnerability, db: CTIProcessor, collection, collection_edge, 
                             "extension_type": "toplevel-property-extension"
                         }
                     },
-                    object_marking_refs=list(set(vulnerability['object_marking_refs']+config.OBJECT_MARKING_REFS)),
+                    object_marking_refs=[
+                        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                        "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
+                    ],
                     created_by_ref=config.IDENTITY_REF,
                     external_references=vulnerability['external_references'][:1],
                 ))]
