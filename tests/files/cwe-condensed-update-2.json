@@ -1,0 +1,119 @@
+{
+    "type": "bundle",
+    "id": "bundle--c3ead7f6-7d5d-4c8f-b939-5359b60576e1",
+    "objects": [
+        {
+            "type": "weakness",
+            "spec_version": "2.1",
+            "id": "weakness--ce0c11b1-d560-5b9b-be5b-e372bf53bf0e",
+            "created_by_ref": "identity--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b",
+            "created": "2019-10-15T00:00:00.000Z",
+            "modified": "2024-06-01T00:00:00.000Z",
+            "name": "On-Chip Debug and Test Interface With Improper Access Control",
+            "description": "The chip does not implement or does not correctly perform access control to check whether users are authorized to access internal registers and test modes through the physical debug/test interface. <html:p>A device's internal information may be accessed through a scan chain of interconnected internal registers, usually through a JTAG interface. The JTAG interface provides access to these registers in a serial fashion in the form of a scan chain for the purposes of debugging programs running on a device. Since almost all information contained within a device may be accessed over this interface, device manufacturers typically insert some form of authentication and authorization to prevent unintended use of this sensitive information. This mechanism is implemented in addition to on-chip protections that are already present.</html:p>\n      <html:p>If authorization, authentication, or some other form of access control is not implemented or not implemented correctly, a user may be able to bypass on-chip protection mechanisms through the debug interface.</html:p>\n      <html:p>Sometimes, designers choose not to expose the debug pins on the motherboard. Instead, they choose to hide these pins in the intermediate layers of the board. This is primarily done to work around the lack of debug authorization inside the chip. In such a scenario (without debug authorization), when the debug interface is exposed, chip internals are accessible to an attacker.</html:p>\n     ",
+            "modes_of_introduction": [
+                "Architecture and Design",
+                "Implementation"
+            ],
+            "common_consequences": [
+                "Confidentiality",
+                "Confidentiality",
+                "Authorization",
+                "Integrity",
+                "Integrity",
+                "Access Control"
+            ],
+            "detection_methods": [
+                "Dynamic Analysis with Manual Results Interpretation",
+                "Dynamic Analysis with Manual Results Interpretation",
+                "Fuzzing"
+            ],
+            "external_references": [
+                {
+                    "source_name": "cwe",
+                    "url": "http://cwe.mitre.org/data/definitions/1191.html",
+                    "external_id": "CWE-1191"
+                },
+                {
+                    "source_name": "Kurt Rosenfeld, Ramesh Karri",
+                    "description": "Attacks and Defenses for JTAG",
+                    "url": "https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5406671",
+                    "external_id": "REF-1037"
+                },
+                {
+                    "source_name": "Gopal Vishwakarma, Wonjun Lee",
+                    "description": "Exploiting JTAG and Its Mitigation in IOT: A Survey",
+                    "url": "https://www.mdpi.com/1999-5903/10/12/121/pdf",
+                    "external_id": "REF-1043"
+                },
+                {
+                    "source_name": "Gopal Vishwakarma, Wonjun Lee",
+                    "description": "JTAG Explained (finally!): Why \"IoT\", Software Security Engineers, and Manufacturers Should Care",
+                    "url": "https://www.mdpi.com/1999-5903/10/12/121/pdf",
+                    "external_id": "REF-1084"
+                },
+                {
+                    "source_name": "Bob Molyneaux, Mark McDermott, Anil Sabbavarapu",
+                    "description": "Design for Testability & Design for Debug",
+                    "url": "http://users.ece.utexas.edu/~mcdermot/vlsi-2/Lecture_17.pdf",
+                    "external_id": "REF-1085"
+                },
+                {
+                    "source_name": "Florian Zaruba",
+                    "description": "dmi_jtag.sv",
+                    "url": "https://github.com/HACK-EVENT/hackatdac21/blob/71103971e8204de6a61afc17d3653292517d32bf/piton/design/chip/tile/ariane/src/riscv-dbg/src/dmi_jtag.sv#L192:L204",
+                    "external_id": "REF-1355"
+                },
+                {
+                    "source_name": "Florian Zaruba",
+                    "description": "Fix CWE-1191 in dmi_jtag.sv",
+                    "url": "https://github.com/HACK-EVENT/hackatdac21/blob/58f984d492fdb0369c82ef10fcbbaa4b9850f9fb/piton/design/chip/tile/ariane/src/riscv-dbg/src/dmi_jtag.sv#L200",
+                    "external_id": "REF-1354"
+                },
+                {
+                    "source_name": "Florian Zaruba",
+                    "description": "Fix CWE-1191 in dmi_jtag.sv",
+                    "url": "https://github.com/HACK-EVENT/hackatdac21/blob/58f984d492fdb0369c82ef10fcbbaa4b9850f9fb/piton/design/chip/tile/ariane/src/riscv-dbg/src/dmi_jtag.sv#L131",
+                    "external_id": "REF-1353"
+                },
+                {
+                    "source_name": "Florian Zaruba",
+                    "description": "dmi_jtag.sv",
+                    "url": "https://github.com/HACK-EVENT/hackatdac21/blob/71103971e8204de6a61afc17d3653292517d32bf/piton/design/chip/tile/ariane/src/riscv-dbg/src/dmi_jtag.sv#L118:L204",
+                    "external_id": "REF-1352"
+                },
+                {
+                    "source_name": "dmi_jtag.sv",
+                    "description": "dmi_jtag.sv",
+                    "url": "https://github.com/HACK-EVENT/hackatdac21/blob/71103971e8204de6a61afc17d3653292517d32bf/piton/design/chip/tile/ariane/src/riscv-dbg/src/dmi_jtag.sv#L82",
+                    "external_id": "REF-1364"
+                },
+                {
+                    "source_name": "fix cwe_1205 in dmi_jtag.sv",
+                    "description": "fix cwe_1205 in dmi_jtag.sv",
+                    "url": "https://github.com/HACK-EVENT/hackatdac21/blob/c4f4b832218b50c406dbf9f425d3b654117c1355/piton/design/chip/tile/ariane/src/riscv-dbg/src/dmi_jtag.sv#L158",
+                    "external_id": "REF-1365"
+                },
+                {
+                    "source_name": "capec",
+                    "url": "https://capec.mitre.org/data/definitions/1.html",
+                    "external_id": "CAPEC-1"
+                },
+                {
+                    "source_name": "capec",
+                    "url": "https://capec.mitre.org/data/definitions/180.html",
+                    "external_id": "CAPEC-180"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b"
+            ],
+            "extensions": {
+                "extension-definition--31725edc-7d81-5db7-908a-9134f322284a": {
+                    "extension_type": "new-sdo"
+                }
+            }
+        }
+    ]
+}

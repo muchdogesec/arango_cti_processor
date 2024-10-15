@@ -1,16 +1,14 @@
 # Arango CTI Processor
 
+![](docs/arango_cti_processor.png)
+
 A small script that creates relationships between common CTI knowledge-bases in STIX 2.1 format.
 
 ## tl;dr
 
 [![arango_cti_processor](https://img.youtube.com/vi/2GVVC2RfIq8/0.jpg)](https://www.youtube.com/watch?v=2GVVC2RfIq8)
 
-## Before you get started
-
-If you do not want to backfill, maintain, or support your own CVE STIX objects check out CTI Butler which provides a fully manage database of these objects and more!
-
-https://www.ctibutler.com/
+[Watch the demo](https://www.youtube.com/watch?v=2GVVC2RfIq8).
 
 ## Overview
 
@@ -94,14 +92,15 @@ Where;
 * `--database` (required): the arangoDB database name where the objects you want to link are found. It must contain the collections required for the `--relationship` option(s) selected
 * `--relationship` (optional, dictionary): you can apply updates to certain relationships at run time. Default is all. Note, you should ensure your `database` contains all the required seeded data. User can select from;
 	* `capec-attack`
-  * `capec-cwe`
+  * `capec-cwe` (archived -- CAPEC no longer updated)
   * `cwe-capec`
-  * `attack-capec`
+  * `attack-capec` (archived -- ATT&CK objects no longer contain references to CAPEC)
   * `cve-cwe`
   * `cve-cpe`
+  * `cve-epss`
   * `sigma-attack`
   * `sigma-cve`
-* `--ignore_embedded_relationships` (optional, boolean). Default is false. if `true` passed, this will stop any embedded relationships from being generated. This is a stix2arango feature where STIX SROs will also be created for `_ref` and `_refs` properties inside each object (e.g. if `_ref` property = `identity--1234` and SRO between the object with the `_ref` property and `identity--1234` will be created). See stix2arango docs for more detail if required.
+* `--ignore_embedded_relationships` (optional, boolean). Default is false. if `true` passed, this will stop any embedded relationships from being generated. This is a stix2arango feature where STIX SROs will also be created for `_ref` and `_refs` properties inside each object (e.g. if `_ref` property = `identity--1234` and SRO between the object with the `_ref` property and `identity--1234` will be created). See stix2arango docs for more detail if required, essentially this a wrapper for the same `--ignore_embedded_relationships` setting implemented by stix2arango
 * `--stix2arango_note` (optional, string): will be used as a value for `_stix2arango_note` for all objects created by arango_cti_processor
 * `--modified_min` (optional, date). By default arango_cti_processor will consider all objects in the database specified with the property `_is_latest==true` (that is; the latest version of the object). Using this flag with a modified time value will further filter the results processed by arango_cti_processor to STIX objects with a `modified` time >= to the value specified. This is most useful in CVE modes, where a high volume of CVEs are published daily.
 
@@ -119,28 +118,7 @@ python3 arango_cti_processor.py \
 
 ## Backfilling data
 
-[stix2arango contains a set of utility scripts that can be used to backfill all the datasources required for this test](https://github.com/muchdogesec/stix2arango/tree/main/utilities). As an example you can run the following in stix2arango to get a full backfill of data:
-
-```shell
-python3 utilities/arango_cti_processor/insert_archive_attack_enterprise.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_attack_ics.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_attack_mobile.py
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_capec.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_cwe.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_sigma_rules.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_cve.py \
-  --database cti_database && \
-python3 utilities/arango_cti_processor/insert_archive_cpe.py \
-  --database cti_database
-```
-
-This is what we use to backfill [CTI Butler](https://www.ctibutler.com/).
+[stix2arango contains a set of utility scripts that can be used to backfill all the datasources required for this test](https://github.com/muchdogesec/stix2arango/tree/main/utilities).
 
 ## How it works
 
@@ -158,4 +136,4 @@ If you would like to know how the logic of this script works in detail, please c
 
 ## License
 
-[AGPLv3](/LICENSE).
+[Apache 2.0](/LICENSE).

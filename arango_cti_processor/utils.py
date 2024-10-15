@@ -1,10 +1,19 @@
 from __future__ import annotations
 import logging
+import math
+import time
+from urllib.parse import parse_qsl, urlparse
 import uuid
 import json
 import hashlib
 import requests
 import re
+from stix2 import Note
+from stix2.serialization import serialize
+
+from arango_cti_processor.epss import EPSSManager
+
+from .cpe_match import fetch_cpe_matches
 from . import config
 from tqdm import tqdm
 
@@ -18,32 +27,9 @@ from datetime import datetime
 
 module_logger = logging.getLogger("data_ingestion_service")
 
-
-def get_relationship():
-    return {
-        "mitre_capec_vertex_collection": {
-            "capec-attack": relate_capec_to_attack,
-            "capec-cwe": relate_capec_to_cwe,
-        },
-        "mitre_cwe_vertex_collection": {"cwe-capec": relate_cwe_to_capec},
-        "mitre_attack_enterprise_vertex_collection": {
-            "attack-capec": relate_attack_to_capec
-        },
-        "mitre_attack_ics_vertex_collection": {"attack-capec": relate_attack_to_capec},
-        "mitre_attack_mobile_vertex_collection": {
-            "attack-capec": relate_attack_to_capec
-        },
-        "nvd_cve_vertex_collection": {
-            "cve-cwe": relate_cve_to_cwe,
-            "cve-cpe": relate_cve_to_cpe,
-            "cve-attack": relate_cve_to_attack,
-        },
-        "sigma_rules_vertex_collection": {
-            "sigma-attack": relate_sigma_to_attack,
-            "sigma-cve": relate_sigma_to_cve,
-        },
-    }
-
+def stix_to_dict(obj):
+    return json.loads(serialize(obj))
+    
 
 def load_file_from_url(url):
     try:
@@ -80,6 +66,7 @@ def get_rel_func_mapping(relationships):
         "sigma-attack": {"sigma_rules_vertex_collection": relate_sigma_to_attack},
         "sigma-cve": {"sigma_rules_vertex_collection": relate_sigma_to_cve},
         "cve-attack": {"nvd_cve_vertex_collection": relate_cve_to_attack},
+        "cve-epss": {"nvd_cve_vertex_collection": generate_epss},
     }
     return [
         (rel, value)
@@ -88,7 +75,7 @@ def get_rel_func_mapping(relationships):
     ]
 
 
-def parse_relation_object(src, dst, collection, relationship_type: str, note=None, is_embedded_ref=False):
+def parse_relation_object(src, dst, collection, relationship_type: str, note=None, is_embedded_ref=False, description=None):
     generated_id = "relationship--" + str(
         uuid.uuid5(
             config.namespace,
@@ -103,9 +90,11 @@ def parse_relation_object(src, dst, collection, relationship_type: str, note=Non
         relationship_type=relationship_type,
         source_ref=src.get("id"),
         target_ref=dst.get("id"),
-        created_by_ref="identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
+        created_by_ref=config.IDENTITY_REF,
         object_marking_refs=config.OBJECT_MARKING_REFS,
     )
+    if description:
+        obj['description'] = description
     obj["_from"] = src["_id"]
     obj["_to"] = dst["_id"]
     obj["_is_ref"] = is_embedded_ref
@@ -115,15 +104,17 @@ def parse_relation_object(src, dst, collection, relationship_type: str, note=Non
     return obj
 
 
-def relate_capec_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes):
+def relate_capec_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes, **kwargs):
     objects = []
     try:
+        capec_name = get_external_ref_by_name(data, 'capec')
         for rel in data.get("external_references", []):
             if rel.get("source_name") == "cwe":
+                cwe_name = rel.get("external_id")
                 custom_query = (
                     "FILTER "
                     "POSITION(doc.external_references[*].external_id, '{}', false)"
-                    " ".format(rel.get("external_id"))
+                    " ".format(cwe_name)
                 )
                 results = db.filter_objects_in_collection_using_custom_query(
                     "mitre_cwe_vertex_collection", custom_query
@@ -135,7 +126,8 @@ def relate_capec_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes)
                         result,
                         collection,
                         relationship_type="exploits",
-                        note=notes
+                        note=notes,
+                        description=f"{capec_name} exploits {cwe_name}",
                     )
                     objects.append(rel)
     except Exception as e:
@@ -143,15 +135,119 @@ def relate_capec_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes)
     return objects
 
 
-def relate_cve_to_cpe(data, db: CTIProcessor, collection, collect_edge, notes):
+def match_cve_ids(matchers, cve_name):
+    if not matchers:
+        return True
+    for r in matchers:
+        if re.match(r, cve_name, re.IGNORECASE):
+            return True
+    return False
+
+def retrieve_epss_metrics(epss_url, cve_id):
+    url = f"{epss_url}?cve={cve_id}"
+    response = requests.get(url)
+    #logger.info(f"Status Code => {response.status_code}")
+    if response.status_code != 200:
+        module_logger.warning("Got response status code %d.", response.status_code)
+        raise requests.ConnectionError
+
+    data = response.json()
+    extensions = {}
+    if epss_data := data.get('data'):
+        for key, source_name in [('epss', 'score'), ('percentile', 'percentile'), ('date', 'date')]:
+            extensions[source_name] = epss_data[0].get(key)
+    return extensions
+
+def generate_epss(vulnerability, db: CTIProcessor, collection, collection_edge, notes: str, cve_ids=None, **kwargs):
+    objects = []
+    try:
+        cve_name = vulnerability.get('name')
+        if vulnerability["type"] != "vulnerability" or not match_cve_ids(cve_ids, cve_name):
+            return []
+        
+        cve_id = vulnerability['name']
+        epss_data = EPSSManager.get_data_for_cve(cve_id)
+        content = f"EPSS Score for {cve_id}"
+        stix_id = vulnerability['id'].replace("vulnerability", "note")
+
+        if epss_data:
+            epss_data = [epss_data]
+        else:
+            epss_data = []
+        
+        if not epss_data:
+            return []
+        
+        modified = datetime.strptime(epss_data[-1]["date"], "%Y-%m-%d").date()
+
+        query = f"""
+        FOR doc IN @@collection
+        FILTER doc.id == @stix_id
+        REMOVE doc IN @@collection
+        RETURN doc
+        """
+        
+
+        db_note = list(db.arango.db.aql.execute(query, bind_vars={'@collection': 'nvd_cve_vertex_collection', "stix_id": stix_id}))
+        note: dict = db_note and db_note[0]
+
+        if not note:
+            return [stix_to_dict(Note(
+                    id=stix_id,
+                    created=vulnerability['created'],
+                    modified=modified,
+                    content=content,
+                    x_epss=epss_data,
+                    object_refs=[
+                        vulnerability['id'],
+                    ],
+                    extensions= {
+                        "extension-definition--efd26d23-d37d-5cf2-ac95-a101e46ce11d": {
+                            "extension_type": "toplevel-property-extension"
+                        }
+                    },
+                    object_marking_refs=[
+                        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                        "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
+                    ],
+                    created_by_ref=config.IDENTITY_REF,
+                    external_references=vulnerability['external_references'][:1],
+                ))]
+        else:
+            existing_dates = set(map(lambda x: x['date'], note['x_epss']))
+            if existing_dates.issuperset([epss_data[0]['date']]):
+                return [note]
+            note.update(
+                x_epss=sorted(epss_data+note['x_epss'], key=lambda epss: epss['date'], reverse=True),
+            )
+            note.update(
+                modified=datetime.strptime(note['x_epss'][0]["date"], "%Y-%m-%d")
+            )
+            note = stix_to_dict(note)
+            note.update(_record_md5_hash=generate_md5(note))
+            return [note]
+    except Exception as e:
+        pass
+    return objects
+
+def relate_cve_to_cpe(data, db: CTIProcessor, collection, collect_edge, notes, **kwargs):
     try:
         objects = []
         if data.get("type") == "indicator":
-            pattern = r"software:cpe='(.*?)'"
-            matches = re.findall(pattern, data.get("pattern"))
-            custom_query = f"FILTER doc.cpe IN {matches}"
+            criteria_ids = {}
+            x_cpes = data.get('x_cpes', {})
+
+            for vv in x_cpes.get('vulnerable', []):
+                criteria_ids[vv['matchCriteriaId']] = True
+            for vv in x_cpes.get('not_vulnerable', []):
+                criteria_ids[vv['matchCriteriaId']] = False
+            cpe_names = fetch_cpe_matches(data['name'], criteria_ids)
+            bind_vars = {
+                'cpe_names': list(cpe_names)
+            }
+            custom_query = f"FILTER doc.cpe IN @cpe_names"
             results = db.filter_objects_in_collection_using_custom_query(
-                collection_name="nvd_cpe_vertex_collection", custom_query=custom_query
+                collection_name="nvd_cpe_vertex_collection", custom_query=custom_query, bind_vars=bind_vars
             )
 
             for result in results:
@@ -160,27 +256,38 @@ def relate_cve_to_cpe(data, db: CTIProcessor, collection, collect_edge, notes):
                     result,
                     collection,
                     relationship_type="pattern-contains",
-                    note=notes
+                    note=notes,
+                    description=f"{data['name']} pattern contains {result['name']}",
                 )
                 objects.append(rel)
+                if cpe_names[result["cpe"]]:
+                    rel2 = parse_relation_object(
+                        data,
+                        result,
+                        collection,
+                        relationship_type="is-vulnerable",
+                        note=notes,
+                        description=f"{data['name']} is vulnerable {result['name']}",
+                    )
+                    objects.append(rel2)
+
     except Exception as e:
         module_logger.exception(e)
     return objects
 
 
-def relate_cve_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes):
+def relate_cve_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes, **kwargs):
     logging.info("relate_cve_to_cwe")
     objects = []
     try:
+        cve_name = get_external_ref_by_name(data, 'cve')
         for rel in data.get("external_references", []):
-            if rel.get("source_name") == "cve":
-                cve_id = rel.get("external_id")
-
             if rel.get("source_name") == "cwe":
+                cwe_name = rel.get("external_id")
                 custom_query = (
                     "FILTER "
                     "POSITION(doc.external_references[*].external_id, '{}', false)"
-                    " ".format(rel.get("external_id"))
+                    " ".format(cwe_name)
                 )
                 results = db.filter_objects_in_collection_using_custom_query(
                     "mitre_cwe_vertex_collection", custom_query
@@ -191,7 +298,8 @@ def relate_cve_to_cwe(data, db: CTIProcessor, collection, collect_edge, notes):
                         result,
                         collection,
                         relationship_type="exploited-using",
-                        note=notes
+                        note=notes,
+                        description=f"{cve_name} is exploited using {cwe_name}",
                     )
                     objects.append(rel)
     except Exception as e:
@@ -223,22 +331,29 @@ def set_latest_for(db: CTIProcessor, id, collection):
         },
     )
 
+def get_external_ref_by_name(data, source_name) -> dict:
+    for ref in data.get("external_references", []):
+        if ref.get('source_name') == source_name:
+            return ref.get('external_id')
+    return None
 
 def relate_capec_to_attack(
-    data, db: CTIProcessor, collection, collection_edge, notes: str
+    data, db: CTIProcessor, collection, collection_edge, notes: str, **kwargs
 ):
     objects = []
     try:
         # updated(4) -> final(0) False --> updated(4) True
-        if data.get("type") != "attack-pattern" or not data.get("external_references"):
+        
+        capec_name = get_external_ref_by_name(data, 'capec')
+        if not capec_name or data.get("type") != "attack-pattern" or not data.get("external_references"):
             return []
-
         for rel in data["external_references"]:
             if rel.get("source_name") in ["ATTACK"]:
+                attack_name = rel.get("external_id")
                 custom_query = (
                     "FILTER "
                     "POSITION(t.external_references[*].external_id, '{}', false) and t._is_latest"
-                    " ".format(rel.get("external_id"))
+                    " ".format(attack_name)
                 )
                 collections_ = [
                     vertex for vertex in db.vertex_collections if "attack" in vertex
@@ -252,7 +367,8 @@ def relate_capec_to_attack(
                         result,
                         collection,
                         relationship_type="technique",
-                        note=notes
+                        note=notes,
+                        description=f"{capec_name} uses technique {attack_name}",
                     )
                     objects.append(rel)
     except Exception as e:
@@ -260,17 +376,18 @@ def relate_capec_to_attack(
     return objects
 
 
-def relate_cwe_to_capec(data, db: CTIProcessor, collection, collection_edge, notes):
+def relate_cwe_to_capec(data, db: CTIProcessor, collection, collection_edge, notes, **kwargs):
     logging.info("relate_cwe_to_capec")
     objects = []
     try:
-        cwe_id = ""
+        cwe_id = get_external_ref_by_name(data, 'cwe')
         for rel in data.get("external_references", []):
             if rel.get("source_name") == "capec":
+                capec_id = rel.get("external_id")
                 custom_query = (
                     "FILTER "
                     "POSITION(doc.external_references[*].external_id, '{}', false)"
-                    " ".format(rel.get("external_id"))
+                    " ".format(capec_id)
                 )
                 results = db.filter_objects_in_collection_using_custom_query(
                     "mitre_capec_vertex_collection", custom_query
@@ -282,7 +399,8 @@ def relate_cwe_to_capec(data, db: CTIProcessor, collection, collection_edge, not
                         result,
                         collection,
                         relationship_type="exploited-using",
-                        note=notes
+                        note=notes,
+                        description=f"{cwe_id} is exploited using {capec_id}",
                     )
                     objects.append(rel)
 
@@ -292,18 +410,22 @@ def relate_cwe_to_capec(data, db: CTIProcessor, collection, collection_edge, not
 
 
 def relate_attack_to_capec(
-    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str, **kwargs
 ):
     logging.info("relate_attack_to_capec")
     objects = []
     try:
+        attack_name = get_external_ref_by_name(data, 'mitre-attack')
+        if not attack_name:
+            return objects
         for rel in data.get("external_references", []):
             if rel.get("source_name") == "capec":
                 module_logger.info(rel)
+                capec_name = rel.get("external_id")
                 custom_query = (
                     "FILTER "
                     "POSITION(doc.external_references[*].external_id, '{}', false) and doc._is_latest "
-                    " ".format(rel.get("external_id"))
+                    " ".format(capec_name)
                 )
                 results = db.filter_objects_in_collection_using_custom_query(
                     collection_name="mitre_capec_vertex_collection",
@@ -315,7 +437,8 @@ def relate_attack_to_capec(
                         result,
                         collection_vertex,
                         relationship_type="relies-on",
-                        note=notes
+                        note=notes,
+                        description=f"{attack_name} relies on {capec_name}",
                     )
                     objects.append(rel)
     except Exception as e:
@@ -324,13 +447,14 @@ def relate_attack_to_capec(
 
 
 def relate_sigma_to_attack(
-    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str, **kwargs
 ):
     logging.info("relate_sigma_to_attack")
     if data.get("type") != "indicator" or data.get("pattern_type") != "sigma":
         return []
     objects = []
     try:
+        sigma_name = data.get('name')
         for ref in data.get("external_references", []):
             if ref["source_name"] != "mitre-attack":
                 continue
@@ -378,7 +502,8 @@ def relate_sigma_to_attack(
                     result,
                     collection_vertex,
                     relationship_type="detects",
-                    note=notes
+                    note=notes,
+                    description=f"{sigma_name} detects {external_id}",
                 )
                 objects.append(rel)
     except Exception as e:
@@ -387,19 +512,21 @@ def relate_sigma_to_attack(
 
 
 def relate_sigma_to_cve(
-    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str, **kwargs
 ):
     objects = []
     logging.info("relate_sigma_to_cve")
     if data.get("type") != "indicator" or data.get("pattern_type") != "sigma":
         return objects
     try:
+        sigma_name = data.get('name')
         for ref in data.get("external_references", []):
             if ref["source_name"].lower() == "cve":
+                cve_name = ref["external_id"].upper()
                 custom_query = (
                     "FILTER "
                     "doc.name=='{}' and doc._is_latest and doc.type=='vulnerability'"
-                    " ".format(ref["external_id"].upper())
+                    " ".format(cve_name)
                 )
                 results = db.filter_objects_in_collection_using_custom_query(
                     collection_name="nvd_cve_vertex_collection",
@@ -411,7 +538,8 @@ def relate_sigma_to_cve(
                         result,
                         collection_vertex,
                         relationship_type="detects",
-                        note=notes
+                        note=notes,
+                        description=f"{sigma_name} detects {cve_name}",
                     )
                     objects.append(rel)
     except Exception as e:
@@ -428,7 +556,7 @@ def verify_threshold(response):
 
 
 def relate_cve_to_attack(
-    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str
+    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str, **kwargs
 ):
     if not config.SMET_ACTIVATE or data.get("type") != "vulnerability":
         return []
