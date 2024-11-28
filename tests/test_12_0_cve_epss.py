@@ -148,6 +148,7 @@ class TestArangoDB(unittest.TestCase):
         query = """
           FOR doc IN nvd_cve_vertex_collection
             FILTER doc.type == "note"
+            SORT doc.id
             RETURN {
                 id: doc.id,
                 date_count: LENGTH(doc.x_epss)

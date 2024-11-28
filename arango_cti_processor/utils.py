@@ -63,8 +63,6 @@ def get_rel_func_mapping(relationships):
         },
         "cve-cwe": {"nvd_cve_vertex_collection": relate_cve_to_cwe},
         "cve-cpe": {"nvd_cve_vertex_collection": relate_cve_to_cpe},
-        "sigma-attack": {"sigma_rules_vertex_collection": relate_sigma_to_attack},
-        "sigma-cve": {"sigma_rules_vertex_collection": relate_sigma_to_cve},
         "cve-attack": {"nvd_cve_vertex_collection": relate_cve_to_attack},
         "cve-epss": {"nvd_cve_vertex_collection": generate_epss},
     }
@@ -445,108 +443,6 @@ def relate_attack_to_capec(
         module_logger.exception(e)
     return objects
 
-
-def relate_sigma_to_attack(
-    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str, **kwargs
-):
-    logging.info("relate_sigma_to_attack")
-    if data.get("type") != "indicator" or data.get("pattern_type") != "sigma":
-        return []
-    objects = []
-    try:
-        sigma_name = data.get('name')
-        for ref in data.get("external_references", []):
-            if ref["source_name"] != "mitre-attack":
-                continue
-            external_id: str = ref.get('external_id', '')
-            if external_id.startswith('T'):
-                #technique
-                custom_query = (
-                    "FILTER "
-                    "t.type == 'attack-pattern' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest"
-                    " ".format(ref["external_id"])
-                )
-            elif external_id.startswith('S'):
-                #software
-                custom_query = (
-                    "FILTER "
-                    "t.type == 'tool' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest"
-                    " ".format(ref["external_id"])
-                )
-            elif external_id.startswith('G'):
-                #grouping
-                custom_query = (
-                    "FILTER "
-                    "t.type == 'intrusion-set' AND POSITION(t.external_references[*].external_id, '{}', false) AND t._is_latest"
-                    " ".format(ref["external_id"])
-                )
-            else:
-                #tactic
-                custom_query = (
-                    "FILTER t.type == 'x-mitre-tactic' "
-                    "AND t._is_latest "
-                    "AND t.x_mitre_shortname=='{}'".format(external_id.replace("_", "-"))
-                )
-
-            collections_ = []
-            for vertex in db.vertex_collections:
-                if "attack" in vertex:
-                    collections_.append(vertex)
-            results = db.filter_objects_in_list_collection_using_custom_query(
-                collection_list=collections_, filters=custom_query
-            )[0]
-
-            for result in results:
-                rel = parse_relation_object(
-                    data,
-                    result,
-                    collection_vertex,
-                    relationship_type="detects",
-                    note=notes,
-                    description=f"{sigma_name} detects {external_id}",
-                )
-                objects.append(rel)
-    except Exception as e:
-        module_logger.exception(e)
-    return objects
-
-
-def relate_sigma_to_cve(
-    data, db: CTIProcessor, collection_vertex: str, collection_edge: str, notes: str, **kwargs
-):
-    objects = []
-    logging.info("relate_sigma_to_cve")
-    if data.get("type") != "indicator" or data.get("pattern_type") != "sigma":
-        return objects
-    try:
-        sigma_name = data.get('name')
-        for ref in data.get("external_references", []):
-            if ref["source_name"].lower() == "cve":
-                cve_name = ref["external_id"].upper()
-                custom_query = (
-                    "FILTER "
-                    "doc.name=='{}' and doc._is_latest and doc.type=='vulnerability'"
-                    " ".format(cve_name)
-                )
-                results = db.filter_objects_in_collection_using_custom_query(
-                    collection_name="nvd_cve_vertex_collection",
-                    custom_query=custom_query,
-                )
-                for result in results:
-                    rel = parse_relation_object(
-                        data,
-                        result,
-                        collection_vertex,
-                        relationship_type="detects",
-                        note=notes,
-                        description=f"{sigma_name} detects {cve_name}",
-                    )
-                    objects.append(rel)
-    except Exception as e:
-        module_logger.exception(e)
-    return objects
-
-
 def verify_threshold(response):
     res_array = []
     for res in response:
@@ -594,9 +490,6 @@ def generate_md5(obj: dict):
     json_str = json.dumps(obj_copy, sort_keys=True, default=str).encode("utf-8")
     return hashlib.md5(json_str).hexdigest()
 
-
-def sigma_groups(db: CTIProcessor):
-    return []
 
 EMBEDDED_RELATIONSHIP_RE = re.compile(r"([a-z_]+)_refs{0,1}")
 
