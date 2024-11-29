@@ -25,7 +25,7 @@ class TestArangoDB(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         make_uploads([
-                ("mitre_capec", "tests/files/stix-capec-v3_9.json"),
+                ("mitre_capec", "tests/files/actip-stix-capec-v3_9.json"),
                 ("mitre_attack_enterprise", "tests/files/actip-enterprise-attack-14_1.json"),
                 ("mitre_attack_ics", "tests/files/actip-ics-attack-14_1.json"),
                 ("mitre_attack_mobile", "tests/files/actip-mobile-attack-14_1.json"),

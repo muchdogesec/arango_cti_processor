@@ -42,12 +42,7 @@ def parse_arguments():
         "--created_min",
         required=False,
         help="By default arango_cti_processor will consider all objects in the database specified with the property `_is_latest==true` (that is; the latest version of the object). Using this flag with a created time value will further filter the results processed by arango_cti_processor to STIX objects with a `created` time >= to the value specified. This is most useful in CVE modes, where a high volume of CVEs are published daily.")
-    parser.add_argument(
-        "--cve_ids",
-        required=False,
-        default=[],
-        type=lambda s: s.split(","),
-    )
+
     return parser.parse_args()
 
 

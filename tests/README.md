@@ -37,7 +37,6 @@ Expected is that the new object is identified by the script and relationships ge
 
 For the updated objects, expected is that old SROs created by arango_cti_processor are marked as `_is_latest==false` (2 total) and 3 new objects (1 new, 2 existing recreated)
 
-
 ```shell
 python3 -m unittest tests/test_01_1_capec_to_attack.py
 ```
@@ -124,7 +123,7 @@ python3 -m unittest tests/test_03_1_cwe_to_capec.py
 
 ---
 
-## TEST 4.0: Validate ATT&CK Attack Pattern -> CAPEC Attack Pattern relationship (`attack-capec`)
+## TEST 4.0: [ARCHIVED] Validate ATT&CK Attack Pattern -> CAPEC Attack Pattern relationship (`attack-capec`)
 
 ```shell
 python3 -m unittest tests/test_04_0_attack_to_capec.py
@@ -132,12 +131,11 @@ python3 -m unittest tests/test_04_0_attack_to_capec.py
 
 Archived -- ATT&CK objects no longer contain references to CAPEC. Tests updated to reflect this.
 
+---
 
-## TEST 5.0: Test modified time min cli arg
+## TEST 9.0: Test modified time min cli arg
 
-The bundle for this test contains two objects one with a modified time before 2024-01-01 (CVE-2023-22518 vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6 has 2 CWEs) and one after (CVE-2021-26084 vulnerability--ff040ea3-f2d9-5d38-80ae-065a2db41e64 has 1 CWE).
-
-The CLI `modified_min` arguement is 2024-01-01 so the expectation is that only one SRO is created by arango_cti_processor.
+The CLI `modified_min` argument is 2022-01-01 so the expectation is that only one SRO is created by arango_cti_processor (1 time is older than this (`2015-01-01T00:00:00.000Z`), one time is younger than this (`2024-01-01T00:00:00.000Z`))
 
 ```shell
 python3 -m unittest tests/test_09_0_modified_min.py
@@ -145,7 +143,7 @@ python3 -m unittest tests/test_09_0_modified_min.py
 
 ## TEST 9.1: Test created time min cli arg
 
-Similar to 9.1, although this time introduces created time.
+The CLI `created_min` argument is 2020-01-01 so the expectation is that only one SRO is created by arango_cti_processor (1 time is older than this (`2000-01-01T00:00:00.000Z`), one time is younger than this (`2022-01-01T00:00:00.000Z`))
 
 ```shell
 python3 -m unittest tests/test_09_1_created_min.py
@@ -185,26 +183,4 @@ python3 -m unittest tests/test_10_2_ignore_embedded_relationships_f.py
 
 ```shell
 python3 -m unittest tests/test_11_0_ignore_embedded_relationships_t.py
-```
-
----
-
-## TEST 12.0: Test cve-epss
-
-This bundle imports a test for 2 CVEs that currently have an EPSS score (CVE-2024-5370, CVE-2024-4165 Note and Vulnerability Object exist in bundle), and a CVE that does not have an EPSS note (CVE-2024-1848) (only vulnerability exists in bundle), but EPSS score does exist.
-
-The dates on the two note EPSS scores are 2024-10-08.
-
-```shell
-python3 -m unittest tests/test_12_0_cve_epss.py
-```
-
-Thus tests expects updated notes for CVE-2024-5370 & CVE-2024-4165, and a new Note for CVE-2024-1848
-
-## TEST 12.1: Test cve-epss update
-
-You will need to wait up to 24 hours to run this test. It checks for updates, and relies on new data being posted to the EPSS API since last test (12.0)
-
-```shell
-python3 -m unittest tests/test_12_1_cve_epss.py
 ```
