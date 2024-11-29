@@ -14,10 +14,10 @@ ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME", "root")
 ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD", "")
 ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL", "http://127.0.0.1:8529")
 TESTS_DATABASE = "arango_cti_processor_standard_tests_database"
-TEST_MODE = "cve-cwe"
+TEST_MODE = "cwe-capec"
 STIX2ARANGO_NOTE = __name__.split('.')[-1]
 IGNORE_EMBEDDED_RELATIONSHIPS = "false"
-CREATED_MIN = "2024-01-01"
+CREATED_MIN = "2020-01-01"
 
 client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
 
@@ -26,8 +26,8 @@ class TestArangoDB(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         make_uploads([
-                ("nvd_cve", "tests/files/cve_bundle_controlled_created_times.json"),
-                ("mitre_cwe", "tests/files/cwe-bundle-v4_13.json"),
+                ("mitre_capec", "tests/files/actip-stix-capec-v3_9.json"),
+                ("mitre_cwe", "tests/files/actip-cwe-capec-controlled_created_times.json"),
             ], database="arango_cti_processor_standard_tests", delete_db=True, 
             host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME, stix2arango_note=STIX2ARANGO_NOTE)
         print(f'======Test bundles uploaded successfully======')
@@ -51,7 +51,7 @@ class TestArangoDB(unittest.TestCase):
     # should still return 2 objects b/c these never update
     def test_01_auto_imported_objects(self):
         query = """
-          FOR doc IN nvd_cve_vertex_collection
+          FOR doc IN mitre_cwe_vertex_collection
             FILTER doc._arango_cti_processor_note == "automatically imported object at script runtime"
             RETURN doc.id
         """
@@ -66,9 +66,9 @@ class TestArangoDB(unittest.TestCase):
     def test_02_object_should_not_process(self):
         query = """
         RETURN COUNT(
-          FOR doc IN nvd_cve_edge_collection
-          FILTER doc._arango_cti_processor_note == "cve-cwe"
-          AND doc.source_ref == "vulnerability--5d45090c-57fe-543e-96a9-bbd5ea9d6cb6"
+          FOR doc IN mitre_cwe_edge_collection
+          FILTER doc._arango_cti_processor_note == "cwe-capec"
+          AND doc.source_ref == "weakness--94110a45-2221-5fb5-aa09-322b8dfc4b6a"
           AND doc._is_ref == false
             RETURN doc
         )
@@ -80,9 +80,9 @@ class TestArangoDB(unittest.TestCase):
     def test_03_object_should_process(self):
         query = """
         RETURN COUNT(
-          FOR doc IN nvd_cve_edge_collection
-          FILTER doc._arango_cti_processor_note == "cve-cwe"
-          AND doc.source_ref == "vulnerability--ff040ea3-f2d9-5d38-80ae-065a2db41e64"
+          FOR doc IN mitre_cwe_edge_collection
+          FILTER doc._arango_cti_processor_note == "cwe-capec"
+          AND doc.source_ref == "weakness--416c9a7c-c45d-5f4e-8cf0-e38718a13370"
           AND doc._is_ref == false
             RETURN doc
         )

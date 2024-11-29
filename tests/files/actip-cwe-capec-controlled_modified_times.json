@@ -1,0 +1,118 @@
+{
+    "type": "bundle",
+    "id": "bundle--f30cebc3-c394-45cf-a292-9b59858b663f",
+    "objects": [
+        {
+            "type": "weakness",
+            "spec_version": "2.1",
+            "id": "weakness--94110a45-2221-5fb5-aa09-322b8dfc4b6a",
+            "created_by_ref": "identity--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b",
+            "created": "2000-01-01T00:00:00.000Z",
+            "modified": "2015-01-01T00:00:00.000Z",
+            "name": "Insufficient Visual Distinction of Homoglyphs Presented to User",
+            "description": "The product displays information or identifiers to a user, but the display mechanism does not make it easy for the user to distinguish between visually similar or identical glyphs (homoglyphs), which may cause the user to misinterpret a glyph and perform an unintended, insecure action. <html:p>Some glyphs, pictures, or icons can be semantically distinct to a program, while appearing very similar or identical to a human user. These are referred to as homoglyphs. For example, the lowercase \"l\" (ell) and uppercase \"I\" (eye) have different character codes, but these characters can be displayed in exactly the same way to a user, depending on the font. This can also occur between different character sets. For example, the Latin capital letter \"A\" and the Greek capital letter \"\u0391\" (Alpha) are treated as distinct by programs, but may be displayed in exactly the same way to a user. Accent marks may also cause letters to appear very similar, such as the Latin capital letter grave mark \"\u00c0\" and its equivalent \"\u00c1\" with the acute accent.</html:p>\n            <html:p>Adversaries can exploit this visual similarity for attacks such as phishing, e.g. by providing a link to an attacker-controlled hostname that looks like a hostname that the victim trusts. In a different use of homoglyphs, an adversary may create a back door username that is visually similar to the username of a regular user, which then makes it more difficult for a system administrator to detect the malicious username while reviewing logs.</html:p>\n         ",
+            "modes_of_introduction": [
+                "Architecture and Design",
+                "Implementation"
+            ],
+            "likelihood_of_exploit": [
+                "Medium"
+            ],
+            "common_consequences": [
+                "Integrity",
+                "Confidentiality"
+            ],
+            "detection_methods": [
+                "Manual Dynamic Analysis"
+            ],
+            "external_references": [
+                {
+                    "source_name": "cwe",
+                    "url": "http://cwe.mitre.org/data/definitions/1007.html",
+                    "external_id": "CWE-1007"
+                },
+                {
+                    "source_name": "Michael Howard, David LeBlanc",
+                    "description": "Writing Secure Code",
+                    "url": "https://www.microsoftpressstore.com/store/writing-secure-code-9780735617223",
+                    "external_id": "REF-7"
+                },
+                {
+                    "source_name": "Gregory Baatard, Peter Hannay",
+                    "description": "The 2011 IDN Homograph Attack Mitigation Survey",
+                    "url": "http://ro.ecu.edu.au/cgi/viewcontent.cgi?article=1174&context=ecuworks2012",
+                    "external_id": "REF-8"
+                },
+                {
+                    "source_name": "capec",
+                    "url": "https://capec.mitre.org/data/definitions/632.html",
+                    "external_id": "CAPEC-632"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b"
+            ],
+            "extensions": {
+                "extension-definition--31725edc-7d81-5db7-908a-9134f322284a": {
+                    "extension_type": "new-sdo"
+                }
+            }
+        },
+        {
+            "type": "weakness",
+            "spec_version": "2.1",
+            "id": "weakness--416c9a7c-c45d-5f4e-8cf0-e38718a13370",
+            "created_by_ref": "identity--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b",
+            "created": "2022-01-01T00:00:00.000Z",
+            "modified": "2024-01-01T00:00:00.000Z",
+            "name": "Processor Optimization Removal or Modification of Security-critical Code",
+            "description": "The developer builds a security-critical protection mechanism into the software, but the processor optimizes the execution of the program such that the mechanism is removed or modified. None",
+            "modes_of_introduction": [
+                "Architecture and Design"
+            ],
+            "likelihood_of_exploit": [
+                "Low"
+            ],
+            "common_consequences": [
+                "Integrity"
+            ],
+            "detection_methods": [
+                "White Box"
+            ],
+            "external_references": [
+                {
+                    "source_name": "cwe",
+                    "url": "http://cwe.mitre.org/data/definitions/1037.html",
+                    "external_id": "CWE-1037"
+                },
+                {
+                    "source_name": "Paul Kocher, Daniel Genkin, Daniel Gruss, Werner Haas, Mike Hamburg, Moritz Lipp, Stefan Mangard, Thomas Prescher, Michael Schwarz, Yuval Yarom",
+                    "description": "Spectre Attacks: Exploiting Speculative Execution",
+                    "url": "https://arxiv.org/abs/1801.01203",
+                    "external_id": "REF-11"
+                },
+                {
+                    "source_name": "Moritz Lipp, Michael Schwarz, Daniel Gruss, Thomas Prescher, Werner Haas, Stefan Mangard, Paul Kocher, Daniel Genkin, Yuval Yarom, Mike Hamburg",
+                    "description": "Meltdown",
+                    "url": "https://arxiv.org/abs/1801.01207",
+                    "external_id": "REF-12"
+                },
+                {
+                    "source_name": "capec",
+                    "url": "https://capec.mitre.org/data/definitions/663.html",
+                    "external_id": "CAPEC-663"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b"
+            ],
+            "extensions": {
+                "extension-definition--31725edc-7d81-5db7-908a-9134f322284a": {
+                    "extension_type": "new-sdo"
+                }
+            }
+        }
+    ]
+}
