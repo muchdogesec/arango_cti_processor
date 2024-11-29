@@ -66,7 +66,7 @@ class TestArangoDB(unittest.TestCase):
     def test_02_object_should_not_process(self):
         query = """
         RETURN COUNT(
-          FOR doc IN mitre_cwe_vertex_collection
+          FOR doc IN mitre_cwe_edge_collection
           FILTER doc._arango_cti_processor_note == "cwe-capec"
           AND doc.source_ref == "weakness--94110a45-2221-5fb5-aa09-322b8dfc4b6a"
           AND doc._is_ref == false
@@ -80,7 +80,7 @@ class TestArangoDB(unittest.TestCase):
     def test_03_object_should_process(self):
         query = """
         RETURN COUNT(
-          FOR doc IN mitre_cwe_vertex_collection
+          FOR doc IN mitre_cwe_edge_collection
           FILTER doc._arango_cti_processor_note == "cwe-capec"
           AND doc.source_ref == "weakness--416c9a7c-c45d-5f4e-8cf0-e38718a13370"
           AND doc._is_ref == false
