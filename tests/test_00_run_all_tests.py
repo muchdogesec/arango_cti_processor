@@ -36,7 +36,6 @@ if __name__ == '__main__':
         'tests.test_03_0_cwe_to_capec',
         'tests.test_03_1_cwe_to_capec',
         'tests.test_04_0_attack_to_capec',
-        
         'tests.test_09_0_modified_min',
         'tests.test_09_1_created_min',
         'tests.test_10_0_ignore_embedded_relationships_f',

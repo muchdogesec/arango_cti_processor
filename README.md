@@ -29,24 +29,6 @@ ArangoDB CTI Processor is designed to work with the following data sources:
     * Mobile
 * MITRE CWE
 * MITRE CAPEC
-* Sigma Rules
-* NVD CPE
-* NVD CVE
-
-## Prerequisites
-
-Assumes the database entered at the command line has the following collection names;
-
-* `mitre_attack_enterprise_vertex_collection`/`mitre_attack_enterprise_edge_collection`
-* `mitre_attack_mobile_vertex_collection`/`mitre_attack_mobile_edge_collection`
-* `mitre_attack_ics_vertex_collection`/`mitre_attack_ics_edge_collection`
-* `mitre_capec_vertex_collection`/`mitre_capec_edge_collection`
-* `mitre_cwe_vertex_collection`/`mitre_cwe_edge_collection`
-* `nvd_cpe_vertex_collection`/`nvd_cpe_edge_collection`
-* `nvd_cve_vertex_collection`/`nvd_cve_edge_collection`
-* `sigma_rules_vertex_collection`/`sigma_rules_edge_collection`
-
-[These utilities in stix2arango will do this automatically for you](https://github.com/muchdogesec/stix2arango/tree/main/utilities).
 
 ## Usage
 
@@ -63,19 +45,17 @@ source arango_cti_processor-venv/bin/activate
 pip3 install -r requirements.txt
 ````
 
-Note, the installation assumes ArangoDB is already installed locally.
+### Configuration options
 
-[You can install ArangoDB here](https://arangodb.com/download/). arango_cti_processor is compatible with both the Enterprise and Community versions.
+Arango CTI Processor has various settings that are defined in an `.env` file.
 
-### Setup configoration options
-
-You will need to create an `.env` file as follows;
+To create a template for the file:
 
 ```shell
 cp .env.example .env
 ```
 
-You will then need to specify details of your ArangoDB install (host, user, and password). It is important the user chosen has the ability to write/update new databases, collections and records.
+To see more information about how to set the variables, and what they do, read the `.env.markdown` file.
 
 ### Run
 
@@ -91,18 +71,13 @@ Where;
 
 * `--database` (required): the arangoDB database name where the objects you want to link are found. It must contain the collections required for the `--relationship` option(s) selected
 * `--relationship` (optional, dictionary): you can apply updates to certain relationships at run time. Default is all. Note, you should ensure your `database` contains all the required seeded data. User can select from;
-	* `capec-attack`
-  * `capec-cwe` (archived -- CAPEC no longer updated)
-  * `cwe-capec`
-  * `attack-capec` (archived -- ATT&CK objects no longer contain references to CAPEC)
-  * `cve-cwe`
-  * `cve-cpe`
-  * `cve-epss`
-  * `sigma-attack`
-  * `sigma-cve`
+    * `capec-attack`
+    * `capec-cwe` (archived -- CAPEC no longer updated)
+    * `cwe-capec`
+    * `attack-capec` (archived -- ATT&CK objects no longer contain references to CAPEC)
 * `--ignore_embedded_relationships` (optional, boolean). Default is false. if `true` passed, this will stop any embedded relationships from being generated. This is a stix2arango feature where STIX SROs will also be created for `_ref` and `_refs` properties inside each object (e.g. if `_ref` property = `identity--1234` and SRO between the object with the `_ref` property and `identity--1234` will be created). See stix2arango docs for more detail if required, essentially this a wrapper for the same `--ignore_embedded_relationships` setting implemented by stix2arango
 * `--stix2arango_note` (optional, string): will be used as a value for `_stix2arango_note` for all objects created by arango_cti_processor
-* `--modified_min` (optional, date). By default arango_cti_processor will consider all objects in the database specified with the property `_is_latest==true` (that is; the latest version of the object). Using this flag with a modified time value will further filter the results processed by arango_cti_processor to STIX objects with a `modified` time >= to the value specified. This is most useful in CVE modes, where a high volume of CVEs are published daily.
+* `--modified_min` (optional, date). By default arango_cti_processor will consider all objects in the database specified with the property `_is_latest==true` (that is; the latest version of the object). Using this flag with a modified time value will further filter the results processed by arango_cti_processor to STIX objects with a `modified` time >= to the value specified.
 
 On each run, only the `_is_latest==true` version of objects will be considered by the script.
 
@@ -115,10 +90,6 @@ python3 arango_cti_processor.py \
   --stix2arango_note test01 \
   --ignore_embedded_relationships false 
 ```
-
-## Backfilling data
-
-[stix2arango contains a set of utility scripts that can be used to backfill all the datasources required for this test](https://github.com/muchdogesec/stix2arango/tree/main/utilities).
 
 ## How it works
 
