@@ -29,8 +29,6 @@ COLLECTION_VERTEX= [
     "mitre_attack_mobile_vertex_collection",
     "mitre_capec_vertex_collection",
     "mitre_cwe_vertex_collection",
-    "nvd_cpe_vertex_collection",
-    "nvd_cve_vertex_collection",
 ]
 COLLECTION_EDGE = [
     "mitre_attack_enterprise_edge_collection",
@@ -38,8 +36,6 @@ COLLECTION_EDGE = [
     "mitre_attack_mobile_edge_collection",
     "mitre_capec_edge_collection",
     "mitre_cwe_edge_collection",
-    "nvd_cpe_edge_collection",
-    "nvd_cve_edge_collection",
 ]
 namespace = UUID("2e51a631-99d8-52a5-95a6-8314d3f4fbf3")
 
@@ -55,5 +51,3 @@ OBJECT_MARKING_REFS=[
 ]
 IDENTITY_REF = "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
 
-CPEMATCH_API_ENDPOINT = "https://services.nvd.nist.gov/rest/json/cpematch/2.0"
-EPSS_API_ENDPOINT = "https://api.first.org/data/v1/epss"
