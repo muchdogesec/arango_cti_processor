@@ -16,12 +16,12 @@ Here at DOGESEC we have many repositories that generate STIX objects for differe
 
 For example, MITRE ATT&CK objects have references to MITRE CAPEC objects.
 
-ArangoDB CTI Processor is a script that;
+Arango CTI Processor is a script that;
 
 1. reads the ingested CTI from the supported sources in ArangoDB
 2. creates STIX Relationships and Grouping objects to represent the relationships between them
 
-ArangoDB CTI Processor is designed to work with the following data sources:
+Arango CTI Processor is designed to work with the following data sources:
 
 * MITRE ATT&CK
     * Enterprise
