@@ -16,12 +16,12 @@ Here at DOGESEC we have many repositories that generate STIX objects for differe
 
 For example, MITRE ATT&CK objects have references to MITRE CAPEC objects.
 
-ArangoDB CTI Processor is a script that;
+Arango CTI Processor is a script that;
 
 1. reads the ingested CTI from the supported sources in ArangoDB
 2. creates STIX Relationships and Grouping objects to represent the relationships between them
 
-ArangoDB CTI Processor is designed to work with the following data sources:
+Arango CTI Processor is designed to work with the following data sources:
 
 * MITRE ATT&CK
     * Enterprise
@@ -64,12 +64,13 @@ python3 arango_cti_processor.py \
     --database DATABASE \
     --relationship RELATIONSHIP \
     --ignore_embedded_relationships BOOLEAN \
-    --stix2arango_note STRING
+    --stix2arango_note STRING \
+    --modified_min DATETIME
 ```
 
 Where;
 
-* `--database` (required): the arangoDB database name where the objects you want to link are found. It must contain the collections required for the `--relationship` option(s) selected
+* `--database` (required): the arangoDB database name where the objects you want to link are found. It must contain the collections required for the `--relationship` option(s) selected (see `.env.markdown` for more)
 * `--relationship` (optional, dictionary): you can apply updates to certain relationships at run time. Default is all. Note, you should ensure your `database` contains all the required seeded data. User can select from;
     * `capec-attack`
     * `capec-cwe` (archived -- CAPEC no longer updated)
