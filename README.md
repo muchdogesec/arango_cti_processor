@@ -64,12 +64,13 @@ python3 arango_cti_processor.py \
     --database DATABASE \
     --relationship RELATIONSHIP \
     --ignore_embedded_relationships BOOLEAN \
-    --stix2arango_note STRING
+    --stix2arango_note STRING \
+    --modified_min DATETIME
 ```
 
 Where;
 
-* `--database` (required): the arangoDB database name where the objects you want to link are found. It must contain the collections required for the `--relationship` option(s) selected
+* `--database` (required): the arangoDB database name where the objects you want to link are found. It must contain the collections required for the `--relationship` option(s) selected (see `.env.markdown` for more)
 * `--relationship` (optional, dictionary): you can apply updates to certain relationships at run time. Default is all. Note, you should ensure your `database` contains all the required seeded data. User can select from;
     * `capec-attack`
     * `capec-cwe` (archived -- CAPEC no longer updated)
