@@ -24,4 +24,4 @@ stix2-patterns==2.0.0; python_version >= '3.6'
 tqdm==4.66.4; python_version >= '3.7'
 urllib3==2.2.2; python_version >= '3.8'
 zipp==3.19.1; python_version >= '3.8'
-https://github.com/muchdogesec/stix2arango/archive/main.zip?v=1
+https://github.com/muchdogesec/stix2arango/releases/download/main-2024-12-07-08-53-27/stix2arango-0.0.2-py3-none-any.whl
