@@ -6,9 +6,9 @@ A small script that creates relationships between common CTI knowledge-bases in 
 
 ## tl;dr
 
-[![arango_cti_processor](https://img.youtube.com/vi/2GVVC2RfIq8/0.jpg)](https://www.youtube.com/watch?v=2GVVC2RfIq8)
+[![arango_cti_processor](https://img.youtube.com/vi/CcoA18Pa8ZU/0.jpg)](https://www.youtube.com/watch?v=CcoA18Pa8ZU)
 
-[Watch the demo](https://www.youtube.com/watch?v=2GVVC2RfIq8).
+[Watch the demo](https://www.youtube.com/watch?v=CcoA18Pa8ZU).
 
 ## Overview
 
