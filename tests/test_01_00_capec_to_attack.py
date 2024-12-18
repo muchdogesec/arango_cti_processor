@@ -16,7 +16,7 @@ ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL", "http://127.0.0.1:8529")
 TESTS_DATABASE = "arango_cti_processor_standard_tests_database"
 TEST_MODE = "capec-attack"
 STIX2ARANGO_NOTE = __name__.split('.')[-1]
-IGNORE_EMBEDDED_RELATIONSHIPS = "false"
+IGNORE_EMBEDDED_RELATIONSHIPS = "true"
 
 client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
 
@@ -30,7 +30,7 @@ class TestArangoDB(unittest.TestCase):
                 ("mitre_attack_ics", "tests/files/actip-ics-attack-14_1.json"),
                 ("mitre_attack_mobile", "tests/files/actip-mobile-attack-14_1.json"),
             ], database="arango_cti_processor_standard_tests", delete_db=True, 
-            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME, stix2arango_note=STIX2ARANGO_NOTE)
+            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME)
         print(f'======Test bundles uploaded successfully======')
         # Run the arango_cti_processor.py script
         subprocess.run([
