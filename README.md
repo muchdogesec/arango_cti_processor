@@ -73,11 +73,8 @@ Where;
 * `--database` (required): the arangoDB database name where the objects you want to link are found. It must contain the collections required for the `--relationship` option(s) selected (see `.env.markdown` for more)
 * `--relationship` (optional, dictionary): you can apply updates to certain relationships at run time. Default is all. Note, you should ensure your `database` contains all the required seeded data. User can select from;
     * `capec-attack`
-    * `capec-cwe` (archived -- CAPEC no longer updated)
     * `cwe-capec`
-    * `attack-capec` (archived -- ATT&CK objects no longer contain references to CAPEC)
 * `--ignore_embedded_relationships` (optional, boolean). Default is false. if `true` passed, this will stop any embedded relationships from being generated. This is a stix2arango feature where STIX SROs will also be created for `_ref` and `_refs` properties inside each object (e.g. if `_ref` property = `identity--1234` and SRO between the object with the `_ref` property and `identity--1234` will be created). See stix2arango docs for more detail if required, essentially this a wrapper for the same `--ignore_embedded_relationships` setting implemented by stix2arango
-* `--stix2arango_note` (optional, string): will be used as a value for `_stix2arango_note` for all objects created by arango_cti_processor
 * `--modified_min` (optional, date). By default arango_cti_processor will consider all objects in the database specified with the property `_is_latest==true` (that is; the latest version of the object). Using this flag with a modified time value will further filter the results processed by arango_cti_processor to STIX objects with a `modified` time >= to the value specified.
 * `--created_min` (optional, date). Same as `modified_min` but considers `created` date.
 
@@ -89,7 +86,6 @@ On each run, only the `_is_latest==true` version of objects will be considered b
 python3 arango_cti_processor.py \
   --database arango_cti_processor_standard_tests_database \
   --relationship capec-attack \
-  --stix2arango_note test01 \
   --ignore_embedded_relationships false 
 ```
 
