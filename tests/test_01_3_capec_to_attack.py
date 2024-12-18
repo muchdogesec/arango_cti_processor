@@ -34,7 +34,6 @@ class TestArangoDB(unittest.TestCase):
             "python3", "arango_cti_processor.py",
             "--database", TESTS_DATABASE,
             "--relationship", TEST_MODE,
-            "--stix2arango_note", STIX2ARANGO_NOTE,
             "--ignore_embedded_relationships", IGNORE_EMBEDDED_RELATIONSHIPS
         ], check=True)
         print(f'======arango_cti_processor run successfully======')

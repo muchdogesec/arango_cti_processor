@@ -35,7 +35,6 @@ class TestArangoDB(unittest.TestCase):
             "python3", "arango_cti_processor.py",
             "--database", TESTS_DATABASE,
             "--relationship", TEST_MODE,
-            "--stix2arango_note", STIX2ARANGO_NOTE,
             "--ignore_embedded_relationships", IGNORE_EMBEDDED_RELATIONSHIPS
         ], check=True)
         print(f'======arango_cti_processor run successfully======')
@@ -194,7 +193,7 @@ class TestArangoDB(unittest.TestCase):
         result_count = [doc for doc in cursor]
 
         expected_ids = [
-          "CWE-1007 is exploited using CAPEC-632"
+          "CWE-1007 (Insufficient Visual Distinction of Homoglyphs Presented to User) is exploited using CAPEC-632 (Homograph Attack via Homoglyphs)"
         ]
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")

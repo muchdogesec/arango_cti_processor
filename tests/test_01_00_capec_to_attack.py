@@ -37,7 +37,6 @@ class TestArangoDB(unittest.TestCase):
             "python3", "arango_cti_processor.py",
             "--database", TESTS_DATABASE,
             "--relationship", TEST_MODE,
-            "--stix2arango_note", STIX2ARANGO_NOTE,
             "--ignore_embedded_relationships", IGNORE_EMBEDDED_RELATIONSHIPS
         ], check=True)
         print(f'======arango_cti_processor run successfully======')
@@ -261,7 +260,7 @@ class TestArangoDB(unittest.TestCase):
         result_count = [doc for doc in cursor]
 
         expected_ids = [
-          "CAPEC-1 uses technique T1574.010"
+          "CAPEC-1 (Accessing Functionality Not Properly Constrained by ACLs) uses technique T1574.010 (Services File Permissions Weakness)"
         ]
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")

@@ -85,11 +85,10 @@ class TestArangoDB(unittest.TestCase):
         query = """
           FOR doc IN mitre_cwe_edge_collection
             FILTER doc._arango_cti_processor_note == "cwe-capec"
-            AND doc.id == "relationship--47570226-cefc-5d1d-be1d-eac102751c7f"
+            LIMIT 1
             RETURN [{
                 "created_by_ref": doc.created_by_ref,
                 "object_marking_refs": doc.object_marking_refs,
-                "_stix2arango_note": doc._stix2arango_note,
                 "_arango_cti_processor_note": doc._arango_cti_processor_note,
                 "_is_latest": doc._is_latest
             }]
@@ -103,7 +102,6 @@ class TestArangoDB(unittest.TestCase):
                     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
                     "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
                   ],
-                  "_stix2arango_note": "test_10_0_ignore_embedded_relationships_f",
                   "_arango_cti_processor_note": "cwe-capec",
                   "_is_latest": True
                 }
