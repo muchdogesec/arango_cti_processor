@@ -15,8 +15,7 @@ ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD", "")
 ARANGODB_HOST_URL = os.getenv("ARANGODB_HOST_URL", "http://127.0.0.1:8529")
 TESTS_DATABASE = "arango_cti_processor_standard_tests_database"
 TEST_MODE = "cwe-capec"
-STIX2ARANGO_NOTE = __name__.split('.')[-1]
-IGNORE_EMBEDDED_RELATIONSHIPS = "false"
+IGNORE_EMBEDDED_RELATIONSHIPS = "true"
 
 client = ArangoClient(hosts=f"{ARANGODB_HOST_URL}")
 
@@ -28,14 +27,13 @@ class TestArangoDB(unittest.TestCase):
                 ("mitre_cwe", "tests/files/actip-cwe-bundle-v4_13.json"),
                 ("mitre_capec", "tests/files/actip-stix-capec-v3_9.json"),
             ], database="arango_cti_processor_standard_tests", delete_db=True, 
-            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME, stix2arango_note=STIX2ARANGO_NOTE)
+            host_url=ARANGODB_HOST_URL, password=ARANGODB_PASSWORD, username=ARANGODB_USERNAME)
         print(f'======Test bundles uploaded successfully======')
         # Run the arango_cti_processor.py script
         subprocess.run([
             "python3", "arango_cti_processor.py",
             "--database", TESTS_DATABASE,
             "--relationship", TEST_MODE,
-            "--stix2arango_note", STIX2ARANGO_NOTE,
             "--ignore_embedded_relationships", IGNORE_EMBEDDED_RELATIONSHIPS
         ], check=True)
         print(f'======arango_cti_processor run successfully======')
@@ -194,7 +192,7 @@ class TestArangoDB(unittest.TestCase):
         result_count = [doc for doc in cursor]
 
         expected_ids = [
-          "CWE-1007 is exploited using CAPEC-632"
+          "CWE-1007 (Insufficient Visual Distinction of Homoglyphs Presented to User) is exploited using CAPEC-632 (Homograph Attack via Homoglyphs)"
         ]
 
         self.assertEqual(result_count, expected_ids, f"Expected {expected_ids}, but found {result_count}.")
