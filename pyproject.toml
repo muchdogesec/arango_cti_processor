@@ -4,11 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "arango_cti_processor"
-version = "0.0.3"
+version = "1.0.0"
 authors = [
-  { name="DOGESEC", email="support@dogesec.com" },
+  { name = "dogesec" }
 ]
-description = "A package containing the stix definitions for custom objects used at dogesec"
+maintainers = [
+  { name = "dogesec" }
+]
+description = "A small script that creates relationships between common CTI knowledge-bases in STIX 2.1 format."
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
@@ -24,9 +27,11 @@ dependencies = [
     "requests>=2.32.4; python_version >= '3.7'",
     "stix2arango"
   ]
+
 [project.urls]
 Homepage = "https://github.com/muchdogesec/arango_cti_processor"
 Issues = "https://github.com/muchdogesec/arango_cti_processor/issues"
+"dogesec HQ" = "https://dogesec.com"
 
 [project.scripts]
 arango_cti_processor = "arango_cti_processor.__main__:main"
