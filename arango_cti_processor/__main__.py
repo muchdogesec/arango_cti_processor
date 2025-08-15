@@ -67,5 +67,5 @@ def run_all(database=None, modes: list[str]=None, **kwargs):
 
 def main():
     args = parse_arguments()
-    stix_obj = run_all(**args.__dict__)
+    run_all(**args.__dict__)
 

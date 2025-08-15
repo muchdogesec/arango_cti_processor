@@ -10,7 +10,7 @@ from arango_cti_processor import config
 from enum import IntEnum, StrEnum
 from stix2arango.services.arangodb_service import ArangoDBService
 
-from arango_cti_processor.tools.utils import generate_md5, get_embedded_refs
+from arango_cti_processor.tools.utils import generate_md5, get_embedded_refs, import_default_objects
 
 
 class RelationType(StrEnum):
@@ -23,9 +23,10 @@ RELATION_MANAGERS: dict[str, 'type[STIXRelationManager]'] = {}
 class STIXRelationManager:
     MIN_DATE_STR = "1970-01-01"
 
-    def __init_subclass__(cls,/, relationship_note) -> None:
+    def __init_subclass__(cls,/, relationship_note, register=True) -> None:
         cls.relationship_note = relationship_note
-        RELATION_MANAGERS[relationship_note] = cls
+        if register:
+            RELATION_MANAGERS[relationship_note] = cls
 
     relation_type: RelationType = RelationType.RELATE_SEQUENTIAL
     vertex_collection : str = None
@@ -166,19 +167,6 @@ class STIXRelationManager:
     def relate_multiple(self, objects):
         raise NotImplementedError('must be subclassed')
     
-    def _filter_cve_ids(self, objects: list[dict]):
-        logging.info("filtering with --cve_ids")
-        if not self.cve_ids:
-            return objects
-        retval = []
-        for i, obj in enumerate(objects):
-            if obj['name'].upper() in self.cve_ids:
-                retval.append(obj)
-        logging.info("filter --cve_ids: %d objects", len(retval))
-        return retval
-    
-
-    
     def process(self, **kwargs):
         logging.info("getting objects")
         objects = self.get_objects(**kwargs)
@@ -200,4 +188,3 @@ class STIXRelationManager:
 
         self.upload_vertex_data(vertices)
         self.upload_edge_data(edges)
- 
