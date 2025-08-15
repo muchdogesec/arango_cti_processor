@@ -61,7 +61,7 @@ RETURN KEEP(doc, "_id", "_key", "id", "kill_chain_phases", "external_references"
                     obj,
                     tactic["id"],
                     relationship_type="tactic",
-                    description=f"{obj['attack_id']} ({obj['name']}) is tactic {tactic['attack_id']} ({tactic['name']})",
+                    description=f"Technique {obj['attack_id']} ({obj['name']}) belongs to Tactic {tactic['attack_id']} ({tactic['name']})",
                     external_references=(obj['external_references'][0], tactic['external_references'][0]),
                 )
             )
