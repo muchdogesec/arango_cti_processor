@@ -122,7 +122,7 @@ When a match is found, the code will create a STIX 2.1 SRO in the following form
     "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
     "created": "<CAPEC CREATED TIME>",
     "modified": "<CAPEC MODIFIED TIME>",
-    "relationship_type": "technique",
+    "relationship_type": "related-to",
     "source_ref": "attack-pattern--<CAPEC STIX OBJECT ID>",
     "target_ref": "attack-pattern--<ATT&CK STIX OBJECT ID>",
     "description": "<CAPEC name> <relationship_type without - char> <ATT&CK name>",
