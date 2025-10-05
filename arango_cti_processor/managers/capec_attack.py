@@ -30,7 +30,7 @@ class CapecAttack(CweCapec, relationship_note='capec-attack'):
         return self.create_relationship(
             obj,
             ref_obj['id'],
-            relationship_type="technique",
+            relationship_type="related-to",
             description=f"{obj['name']} uses technique {ref_obj['name']}",
             external_references=self.get_external_references(obj['ext_id'], ref_obj['ext_id']),
         )

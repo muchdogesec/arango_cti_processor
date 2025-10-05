@@ -19,14 +19,13 @@ namespace = UUID("2e51a631-99d8-52a5-95a6-8314d3f4fbf3")
 
 DEFAULT_OBJECT_URL = [
     "https://github.com/muchdogesec/stix4doge/raw/main/objects/marking-definition/arango_cti_processor.json", # this is arango_cti_processor marking-definition
-    "https://github.com/muchdogesec/stix4doge/raw/main/objects/identity/arango_cti_processor.json" # this is arango_cti_processor identity
+    "https://github.com/muchdogesec/stix4doge/raw/main/objects/identity/dogesec.json" # this is dogesec identity
 ]
 
 OBJECT_MARKING_REFS=[
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
     "marking-definition--152ecfe1-5015-522b-97e4-86b60c57036d"
 ]
-IDENTITY_REF = "identity--152ecfe1-5015-522b-97e4-86b60c57036d"
 
 EPSS_API_ENDPOINT = "https://api.first.org/data/v1/epss"
 
@@ -34,4 +33,4 @@ OBJECT_MARKING_REFS=[
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
     "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
 ]
-IDENTITY_REF = "identity--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
+IDENTITY_REF = "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5"

@@ -68,7 +68,7 @@ class STIXRelationManager:
                     f"{relationship_type}+{source['id']}+{target_ref}",
                 )
             )
-            
+
         retval = dict(
             id=relationship_id,
             type="relationship",
