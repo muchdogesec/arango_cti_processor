@@ -6,7 +6,7 @@ To support the generation of relationship, ArangoDB CTI Processor checks the fol
 
 The following objects are automatically inserted (if they do not exist) to each vertex collection on script run (e.g. if running `capec-attack`, then the objects will be stored in `mitre_capec_vertex_collection`).
 
-* Identity: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/arango_cti_processor.json
+* Identity: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/identity/dogesec.json
 * Marking Definition: https://raw.githubusercontent.com/muchdogesec/stix4doge/main/objects/marking-definition/arango_cti_processor.json
 
 When imported these objects always have the following Arango custom properties added to them:
