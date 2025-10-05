@@ -60,15 +60,9 @@ RETURN KEEP(doc, "_id", "_key", "id", "kill_chain_phases", "external_references"
                 self.create_relationship(
                     technique,
                     tactic["id"],
-<<<<<<< Updated upstream
-                    relationship_type="tactic",
-                    description=f"Technique {obj['attack_id']} ({obj['name']}) belongs to Tactic {tactic['attack_id']} ({tactic['name']})",
-                    external_references=(obj['external_references'][0], tactic['external_references'][0]),
-=======
                     relationship_type="related-to",
                     description=f"Technique {technique['attack_id']} ({technique['name']}) belongs to Tactic {tactic['attack_id']} ({tactic['name']})",
                     external_references=(technique['external_references'][0], tactic['external_references'][0]),
->>>>>>> Stashed changes
                 )
             )
             relationships[-1].update(_to=tactic['_id'])
