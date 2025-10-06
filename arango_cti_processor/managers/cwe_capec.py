@@ -70,7 +70,7 @@ RETURN MERGE({name, ext_id}, KEEP(doc, "created", "id", "modified", "_id" ))
         return self.create_relationship(
             obj,
             ref_obj['id'],
-            relationship_type="exploited-using",
+            relationship_type="related-to",
             description=f"{obj['name']} is exploited using {ref_obj['name']}",
             external_references=self.get_external_references(obj['ext_id'], ref_obj['ext_id']),
         )

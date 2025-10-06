@@ -53,16 +53,16 @@ RETURN KEEP(doc, "_id", "_key", "id", "kill_chain_phases", "external_references"
             techniques.append(d)
         return techniques
 
-    def relate_single(self, obj):
+    def relate_single(self, technique):
         relationships: list[dict] = []
-        for tactic in self.get_phases(obj.get('kill_chain_phases', [])):
+        for tactic in self.get_phases(technique.get('kill_chain_phases', [])):
             relationships.append(
                 self.create_relationship(
-                    obj,
+                    technique,
                     tactic["id"],
-                    relationship_type="tactic",
-                    description=f"Technique {obj['attack_id']} ({obj['name']}) belongs to Tactic {tactic['attack_id']} ({tactic['name']})",
-                    external_references=(obj['external_references'][0], tactic['external_references'][0]),
+                    relationship_type="related-to",
+                    description=f"Technique {technique['attack_id']} ({technique['name']}) belongs to Tactic {tactic['attack_id']} ({tactic['name']})",
+                    external_references=(technique['external_references'][0], tactic['external_references'][0]),
                 )
             )
             relationships[-1].update(_to=tactic['_id'])
