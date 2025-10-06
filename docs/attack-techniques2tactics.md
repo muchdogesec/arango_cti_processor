@@ -1,5 +1,7 @@
 ## Attack Technique -> Tactics
 
+**IMPORTANT**: this mode is run automatically when it detects `kill_chain_phases`
+
 IN ATT&CK/DISARM/ATLAS Techniques and Sub-techniques are linked to Tactics using the `kill_chain_phases` in the Attack Pattern objects.
 
 e.g. for Access Token Manipulation (T1134)
