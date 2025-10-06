@@ -119,16 +119,16 @@ When a match is found, the code will create a STIX 2.1 SRO in the following form
     "type": "relationship",
     "spec_version": "2.1",
     "id": "relationship--<UUIDV5 GENERATION LOGIC>",
-    "created_by_ref": "<IMPORTED IDENTITY OBJECT>",
+    "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
     "created": "<CAPEC CREATED TIME>",
     "modified": "<CAPEC MODIFIED TIME>",
-    "relationship_type": "technique",
+    "relationship_type": "related-to",
     "source_ref": "attack-pattern--<CAPEC STIX OBJECT ID>",
     "target_ref": "attack-pattern--<ATT&CK STIX OBJECT ID>",
     "description": "<CAPEC name> <relationship_type without - char> <ATT&CK name>",
     "object_marking_refs": [
         "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-        "<MARKING DEFINITION IMPORTED>"
+        "arking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
     ]
 }
 ```

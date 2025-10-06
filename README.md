@@ -4,11 +4,11 @@
 
 A small script that creates relationships between common CTI knowledge-bases in STIX 2.1 format.
 
-## tl;dr
+## Before you get started
 
-[![arango_cti_processor](https://img.youtube.com/vi/CcoA18Pa8ZU/0.jpg)](https://www.youtube.com/watch?v=CcoA18Pa8ZU)
+![](docs/ctibutler-web.png)
 
-[Watch the demo](https://www.youtube.com/watch?v=CcoA18Pa8ZU).
+Arango CTI Processor is built into [CTI Butler](https://www.ctibutler.com) which also handles the download of knowledgebase objects (what you need for ACTIP to work). As such, [CTI Butler](https://www.ctibutler.com) is probably better suited to what you're looking for.
 
 ## Overview
 
@@ -29,6 +29,10 @@ Arango CTI Processor is designed to work with the following data sources:
     * Mobile
 * MITRE CWE
 * MITRE CAPEC
+
+![](docs/arango_cti_processor-data-structure.jpg)
+
+[Source](https://miro.com/app/board/uXjVJ-ns2bI=/)
 
 ## Usage
 
