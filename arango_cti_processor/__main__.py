@@ -41,16 +41,10 @@ def parse_arguments():
         required=True,
         help="the arangoDB database name where the objects you want to link are found. It must contain the collections required for the `--relationship` option(s) selected")
     parser.add_argument(
-        "--modified_min",
-        metavar="YYYY-MM-DD[Thh:mm:dd]",
+        "--version",
+        metavar="VERSION",
         required=False,
-        help="By default arango_cti_processor will consider all objects in the database specified with the property `_is_latest==true` (that is; the latest version of the object). Using this flag with a modified time value will further filter the results processed by arango_cti_processor to STIX objects with a `modified` time >= to the value specified. This is most useful in CVE modes, where a high volume of CVEs are published daily.")
-    parser.add_argument(
-        "--created_min",
-        metavar="YYYY-MM-DD[Thh:mm:dd]",
-        required=False,
-        help="By default arango_cti_processor will consider all objects in the database specified with the property `_is_latest==true` (that is; the latest version of the object). Using this flag with a created time value will further filter the results processed by arango_cti_processor to STIX objects with a `created` time >= to the value specified. This is most useful in CVE modes, where a high volume of CVEs are published daily.")
-
+        help="By default arango_cti_processor will consider all objects in the database specified with the property `_is_latest==true` (that is; the latest version of the object). Using this flag will allow actip to only consider objects where `_stix2arango_note == 'version=VERSION'`")
     
     return parser.parse_args()
 
@@ -59,7 +53,7 @@ def run_all(database=None, modes: list[str]=None, **kwargs):
     collections = list(itertools.chain(*[RELATION_MANAGERS[mode].required_collections for mode in modes]))
     validate_collections(processor.db, collections=collections)
     
-    import_default_objects(processor, default_objects=itertools.chain(*[RELATION_MANAGERS[mode].default_objects for mode in modes]), collections=collections)
+    import_default_objects(processor, default_objects=list(itertools.chain(*[RELATION_MANAGERS[mode].default_objects for mode in modes])), collections=collections)
     manager_klasses = sorted([RELATION_MANAGERS[mode] for mode in modes], key=lambda manager: manager.priority)
     for manager_klass in manager_klasses:
         relation_manager = manager_klass(processor, **kwargs)

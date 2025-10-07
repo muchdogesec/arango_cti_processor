@@ -57,13 +57,9 @@ def import_default_objects(processor: ArangoDBService, default_objects: list = N
     
 
 def load_file_from_url(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # Raise an HTTPError for bad responses
-        return response.text
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error loading JSON from {url}: {e}")
-        raise Exception("Load default objects error")
+    response = requests.get(url)
+    response.raise_for_status()  # Raise an HTTPError for bad responses
+    return response.text
     
 def stix2dict(obj: 'stix2.base._STIXBase'):
     return json.loads(obj.serialize())
