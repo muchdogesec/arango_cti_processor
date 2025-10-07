@@ -1,0 +1,74 @@
+name: Run Tests
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  test-pipeline:
+    runs-on: ubuntu-latest
+    environment: test_pipeline
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Start ArangoDB
+        id: start_arango_db
+        run: |
+          docker run --name actip-action-arangodb -d -p 8529:8529 -e ARANGO_ROOT_PASSWORD= arangodb/arangodb:latest 
+          RETRY_DELAY=3
+          RETRY_COUNT=10
+          echo "Waiting for server to start"
+          curl --retry-delay $RETRY_DELAY --retry $RETRY_COUNT --retry-all-errors localhost:8529/_api > /dev/null
+          if [ $? -ne 0 ]; then
+            echo "exiting after waiting $(( $RETRY_DELAY * $RETRY_COUNT )) seconds for arangodb to start"
+            exit 1
+          fi
+    
+      - name: Setup environment
+        id: setup_environment
+        run: |
+            echo >> tests/tests.env
+            set -a; 
+            source tests/tests.env
+            set +a;
+            cp tests/tests.env .env
+
+
+            pip install -r tests/requirements.txt
+            pip install -e .
+
+      - name: Run tests
+        id: run_tests
+        run: |
+          pytest --cov=arango_cti_processor --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy tests/src -v
+
+      - name: Upload coverage reports to Codecov
+        id: upload_unit_test_coverage
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        id: upload_unit_test_results
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
