@@ -22,10 +22,6 @@ DEFAULT_OBJECT_URL = [
     "https://github.com/muchdogesec/stix4doge/raw/main/objects/identity/dogesec.json" # this is dogesec identity
 ]
 
-OBJECT_MARKING_REFS=[
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--152ecfe1-5015-522b-97e4-86b60c57036d"
-]
 
 EPSS_API_ENDPOINT = "https://api.first.org/data/v1/epss"
 
