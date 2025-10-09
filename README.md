@@ -1,5 +1,7 @@
 # Arango CTI Processor
 
+[![codecov](https://codecov.io/gh/muchdogesec/arango_cti_processor/graph/badge.svg?token=5W6ODLX6ZL)](https://codecov.io/gh/muchdogesec/arango_cti_processor)
+
 ![](docs/arango_cti_processor.png)
 
 A small script that creates relationships between common CTI knowledge-bases in STIX 2.1 format.
