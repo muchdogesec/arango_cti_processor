@@ -14,7 +14,7 @@ from stix2arango.services import ArangoDBService
 
 @pytest.fixture(scope='session')
 def upload_all():
-    base_file_path = Path('tests/new_files')
+    base_file_path = Path('tests/files')
     data = [
         ('mitre_cwe', '1.9', 'cwe-objects.json'),
         ('mitre_capec', '3.7', 'capec_v3_7.json'),
