@@ -1,0 +1,1335 @@
+{
+  "type": "bundle",
+  "id": "bundle--96dbfebf-cb7b-4fa3-b624-9d4f8c9cea34",
+  "objects": [
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "In applications, particularly web applications, access to functionality is mitigated by an authorization framework. This framework maps Access Control Lists (ACLs) to elements of the application's functionality; particularly URL's for web apps. In the case that the administrator failed to specify an ACL for a particular element, an attacker may be able to access it with impunity. An attacker with the ability to access functionality not properly constrained by ACLs can obtain sensitive information and possibly compromise the entire application. Such an attacker can access resources that must be available only to users at a higher privilege level, can access management sections of the application, or can run queries for data that they otherwise not supposed to.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-1",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/1.html"
+        },
+        {
+          "external_id": "CWE-276",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/276.html"
+        },
+        {
+          "external_id": "CWE-285",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/285.html"
+        },
+        {
+          "external_id": "CWE-434",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/434.html"
+        },
+        {
+          "external_id": "CWE-693",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/693.html"
+        },
+        {
+          "external_id": "CWE-732",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/732.html"
+        },
+        {
+          "external_id": "CWE-1191",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1191.html"
+        },
+        {
+          "external_id": "CWE-1193",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1193.html"
+        },
+        {
+          "external_id": "CWE-1220",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1220.html"
+        },
+        {
+          "external_id": "CWE-1297",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1297.html"
+        },
+        {
+          "external_id": "CWE-1311",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1311.html"
+        },
+        {
+          "external_id": "CWE-1314",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1314.html"
+        },
+        {
+          "external_id": "CWE-1315",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1315.html"
+        },
+        {
+          "external_id": "CWE-1318",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1318.html"
+        },
+        {
+          "external_id": "CWE-1320",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1320.html"
+        },
+        {
+          "external_id": "CWE-1321",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1321.html"
+        },
+        {
+          "external_id": "CWE-1327",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1327.html"
+        },
+        {
+          "description": "Hijack Execution Flow: ServicesFile Permissions Weakness",
+          "external_id": "T1574.010",
+          "source_name": "ATTACK",
+          "url": "https://attack.mitre.org/wiki/Technique/T1574/010"
+        }
+      ],
+      "id": "attack-pattern--92cdcd3d-d734-4442-afc3-4599f261498b",
+      "modified": "2022-09-29T00:00:00.000Z",
+      "name": "Accessing Functionality Not Properly Constrained by ACLs",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Standard",
+      "x_capec_can_precede_refs": [
+        "attack-pattern--9ad2c2eb-9939-4590-9683-2e789692d262"
+      ],
+      "x_capec_child_of_refs": [
+        "attack-pattern--fd669b7d-0e79-473c-9808-a860dfb0c871"
+      ],
+      "x_capec_consequences": {
+        "Access_Control": [
+          "Gain Privileges"
+        ],
+        "Authorization": [
+          "Gain Privileges"
+        ],
+        "Confidentiality": [
+          "Gain Privileges"
+        ]
+      },
+      "x_capec_domains": [
+        "Software",
+        "Hardware"
+      ],
+      "x_capec_example_instances": [
+        "\n               <xhtml:p>Implementing the Model-View-Controller (MVC) within Java EE's Servlet paradigm using a \"Single front controller\" pattern that demands that brokered HTTP requests be authenticated before hand-offs to other Action Servlets.</xhtml:p>\n               <xhtml:p>If no security-constraint is placed on those Action Servlets, such that positively no one can access them, the front controller can be subverted.</xhtml:p>\n            "
+      ],
+      "x_capec_execution_flow": "<h2> Execution Flow </h2><div><h3>Explore</h3><ol><li> <p> <b>Survey: </b>The attacker surveys the target application, possibly as a valid and authenticated user</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Spidering web sites for all available links</td></tr><tr><td>Brute force guessing of resource names</td></tr><tr><td>Brute force guessing of user names / credentials</td></tr><tr><td>Brute force guessing of function names / actions</td></tr></tbody></table><li> <p> <b>Identify Functionality: </b>At each step, the attacker notes the resource or functionality access mechanism invoked upon performing specific actions</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Use the web inventory of all forms and inputs and apply attack data to those inputs.</td></tr><tr><td>Use a packet sniffer to capture and record network traffic</td></tr><tr><td>Execute the software in a debugger and record API calls into the operating system or important libraries. This might occur in an environment other than a production environment, in order to find weaknesses that can be exploited in a production environment.</td></tr></tbody></table></ol></div><div><h3>Experiment</h3><ol><li> <p> <b>Iterate over access capabilities: </b>Possibly as a valid user, the attacker then tries to access each of the noted access mechanisms directly in order to perform functions not constrained by the ACLs.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Fuzzing of API parameters (URL parameters, OS API parameters, protocol parameters)</td></tr></tbody></table></ol></div>",
+      "x_capec_likelihood_of_attack": "High",
+      "x_capec_parent_of_refs": [
+        "attack-pattern--74bac7d9-693d-40d2-82bf-eb132f13bcaf",
+        "attack-pattern--3ba20dcc-8fec-4d74-a472-eb9694fe8142",
+        "attack-pattern--1abd165a-57e9-4b78-9221-7b6fcdc57810",
+        "attack-pattern--e8a8a8f5-3ad5-4d3f-a35b-48036147266b"
+      ],
+      "x_capec_prerequisites": [
+        "The application must be navigable in a manner that associates elements (subsections) of the application with ACLs.",
+        "The various resources, or individual URLs, must be somehow discoverable by the attacker",
+        "The administrator must have forgotten to associate an ACL or has associated an inappropriately permissive ACL with a particular navigable resource."
+      ],
+      "x_capec_resources_required": [
+        "None: No specialized resources are required to execute this type of attack."
+      ],
+      "x_capec_skills_required": {
+        "Low": "In order to discover unrestricted resources, the attacker does not need special tools or skills. They only have to observe the resources or access mechanisms invoked as each action is performed and then try and access those access mechanisms directly."
+      },
+      "x_capec_status": "Draft",
+      "x_capec_typical_severity": "High",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "This attack pattern involves causing a buffer overflow through manipulation of environment variables. Once the adversary finds that they can modify an environment variable, they may try to overflow associated buffers. This attack leverages implicit trust often placed in environment variables.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-10",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/10.html"
+        },
+        {
+          "external_id": "CWE-120",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/120.html"
+        },
+        {
+          "external_id": "CWE-302",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/302.html"
+        },
+        {
+          "external_id": "CWE-118",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/118.html"
+        },
+        {
+          "external_id": "CWE-119",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/119.html"
+        },
+        {
+          "external_id": "CWE-74",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/74.html"
+        },
+        {
+          "external_id": "CWE-99",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/99.html"
+        },
+        {
+          "external_id": "CWE-20",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/20.html"
+        },
+        {
+          "external_id": "CWE-680",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/680.html"
+        },
+        {
+          "external_id": "CWE-733",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/733.html"
+        },
+        {
+          "external_id": "CWE-697",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/697.html"
+        },
+        {
+          "description": "Buffer Overflow via Environment Variables",
+          "source_name": "OWASP Attacks",
+          "url": "https://owasp.org/www-community/attacks/Buffer_Overflow_via_Environment_Variables"
+        },
+        {
+          "description": "G. Hoglund, G. McGraw, Exploiting Software: How to Break Code, 2004--02, Addison-Wesley",
+          "external_id": "REF-1",
+          "source_name": "reference_from_CAPEC"
+        },
+        {
+          "description": "Sharefuzz",
+          "external_id": "REF-2",
+          "source_name": "reference_from_CAPEC",
+          "url": "http://sharefuzz.sourceforge.net"
+        }
+      ],
+      "id": "attack-pattern--4a29d66d-8617-4382-b456-578ecdb1609e",
+      "modified": "2022-09-29T00:00:00.000Z",
+      "name": "Buffer Overflow via Environment Variables",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Detailed",
+      "x_capec_can_follow_refs": [
+        "attack-pattern--ca989a50-b24e-4917-a234-ce4788fa21c7"
+      ],
+      "x_capec_child_of_refs": [
+        "attack-pattern--77e51461-7843-411c-a90e-852498957f76"
+      ],
+      "x_capec_consequences": {
+        "Access_Control": [
+          "Gain Privileges"
+        ],
+        "Authorization": [
+          "Gain Privileges"
+        ],
+        "Availability": [
+          "Unreliable Execution",
+          "Execute Unauthorized Commands (Run Arbitrary Code)"
+        ],
+        "Confidentiality": [
+          "Execute Unauthorized Commands (Run Arbitrary Code)",
+          "Read Data",
+          "Gain Privileges"
+        ],
+        "Integrity": [
+          "Execute Unauthorized Commands (Run Arbitrary Code)",
+          "Modify Data"
+        ]
+      },
+      "x_capec_domains": [
+        "Software"
+      ],
+      "x_capec_example_instances": [
+        "\n               <xhtml:p>A buffer overflow in sccw allows local users to gain root access via the $HOME environmental variable. See also: CVE-1999-0906</xhtml:p>\n            ",
+        "\n               <xhtml:p>A buffer overflow in the rlogin program involves its consumption of the $TERM environmental variable. See also: CVE-1999-0046</xhtml:p>\n            "
+      ],
+      "x_capec_execution_flow": "<h2> Execution Flow </h2><div><h3>Explore</h3><ol><li> <p> <b>Identify target application: </b>The adversary identifies a target application or program to perform the buffer overflow on. In this attack the adversary looks for an application that loads the content of an environment variable into a buffer.</p></li></ol></div><div><h3>Experiment</h3><ol><li> <p> <b>Find injection vector: </b>The adversary identifies an injection vector to deliver the excessive content to the targeted application's buffer.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Change the values of environment variables thought to be used by the application to contain excessive data. If the program is loading the value of the environment variable into a buffer, this could cause a crash and an attack vector will be found.</td></tr></tbody></table><li> <p> <b>Craft overflow content: </b>The adversary crafts the content to be injected. If the intent is to simply cause the software to crash, the content need only consist of an excessive quantity of random data. If the intent is to leverage the overflow for execution of arbitrary code, the adversary crafts the payload in such a way that the overwritten return address is replaced with one of the adversary's choosing.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Create malicious shellcode that will execute when the program execution is returned to it.</td></tr><tr><td>Use a NOP-sled in the overflow content to more easily \"slide\" into the malicious code. This is done so that the exact return address need not be correct, only in the range of all of the NOPs</td></tr></tbody></table></ol></div><div><h3>Exploit</h3><ol><li> <p> <b>Overflow the buffer: </b>Using the injection vector, the adversary injects the crafted overflow content into the buffer.</p></li></ol></div>",
+      "x_capec_extended_description": "Although the focus of this attack is putting excessive content into an environment variable that is loaded into a buffer, environment variables can be used to assist a classic buffer overflow attack as well. In the case where the buffer used in a traditional buffer overflow attack is not large enough to store the adversary's shell code, they will store the shell code in an environment variable and attempt to return to its address, rather than back into the data they wrote to the buffer.",
+      "x_capec_likelihood_of_attack": "High",
+      "x_capec_prerequisites": [
+        "The application uses environment variables.",
+        "An environment variable exposed to the user is vulnerable to a buffer overflow.",
+        "The vulnerable environment variable uses untrusted data.",
+        "Tainted data used in the environment variables is not properly validated. For instance boundary checking is not done before copying the input data to a buffer."
+      ],
+      "x_capec_skills_required": {
+        "High": "Exploiting a buffer overflow to inject malicious code into the stack of a software system or even the heap can require a higher skill level.",
+        "Low": "An attacker can simply overflow a buffer by inserting a long string into an attacker-modifiable injection vector. The result can be a DoS."
+      },
+      "x_capec_status": "Draft",
+      "x_capec_typical_severity": "High",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "An adversary exploits a weakness in input validation on the target to inject new code into that which is currently executing. This differs from code inclusion in that code inclusion involves the addition or replacement of a reference to a code file, which is subsequently loaded by the target and used as part of the code of some application.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-242",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/242.html"
+        },
+        {
+          "external_id": "CWE-94",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/94.html"
+        },
+        {
+          "description": "Code Injection",
+          "source_name": "OWASP Attacks",
+          "url": "https://owasp.org/www-community/attacks/Code_Injection"
+        },
+        {
+          "description": "OWASP Web Security Testing Guide, The Open Web Application Security Project (OWASP)",
+          "external_id": "REF-612",
+          "source_name": "reference_from_CAPEC",
+          "url": "https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/11-Testing_for_Code_Injection.html"
+        }
+      ],
+      "id": "attack-pattern--7f0f7de2-bf09-4f60-86bb-6933192b7128",
+      "modified": "2020-12-17T00:00:00.000Z",
+      "name": "Code Injection",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Meta",
+      "x_capec_consequences": {
+        "Availability": [
+          "Other (Code Injection attack patterns can result in a wide variety of consequences and negatively affect all three elements of the security triad.)"
+        ],
+        "Confidentiality": [
+          "Other (Code Injection attack patterns can result in a wide variety of consequences and negatively affect all three elements of the security triad.)"
+        ],
+        "Integrity": [
+          "Other (Code Injection attack patterns can result in a wide variety of consequences and negatively affect all three elements of the security triad.)"
+        ]
+      },
+      "x_capec_domains": [
+        "Software"
+      ],
+      "x_capec_likelihood_of_attack": "High",
+      "x_capec_parent_of_refs": [
+        "attack-pattern--634aeef0-13a8-449b-afea-332cbc6095bf",
+        "attack-pattern--521348c2-b1df-492f-ac83-1f3ffe102046",
+        "attack-pattern--30047c4f-cbf1-48ff-906c-3c6d58feb1a1",
+        "attack-pattern--581433c0-1d73-4975-80f1-6dcee4761bbc",
+        "attack-pattern--70b83583-ffe3-4e6d-b4a6-61a9b9efc346"
+      ],
+      "x_capec_prerequisites": [
+        "The target software does not validate user-controlled input such that the execution of a process may be altered by sending code in through legitimate data channels, using no other mechanism."
+      ],
+      "x_capec_status": "Stable",
+      "x_capec_typical_severity": "High",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "An adversary crafts a request to a target that results in the target listing/indexing the content of a directory as output. One common method of triggering directory contents as output is to construct a request containing a path that terminates in a directory name rather than a file name since many applications are configured to provide a list of the directory's contents when such a request is received. An adversary can use this to explore the directory tree on a target as well as learn the names of files. This can often end up revealing test files, backup files, temporary files, hidden files, configuration files, user accounts, script contents, as well as naming conventions, all of which can be used by an attacker to mount additional attacks.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-127",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/127.html"
+        },
+        {
+          "external_id": "CWE-424",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/424.html"
+        },
+        {
+          "external_id": "CWE-425",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/425.html"
+        },
+        {
+          "external_id": "CWE-288",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/288.html"
+        },
+        {
+          "external_id": "CWE-285",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/285.html"
+        },
+        {
+          "external_id": "CWE-732",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/732.html"
+        },
+        {
+          "external_id": "CWE-276",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/276.html"
+        },
+        {
+          "external_id": "CWE-693",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/693.html"
+        },
+        {
+          "description": "File and Directory Discovery",
+          "external_id": "T1083",
+          "source_name": "ATTACK",
+          "url": "https://attack.mitre.org/wiki/Technique/T1083"
+        },
+        {
+          "description": "WASC Threat Classification 2.0, 2010, The Web Application Security Consortium (WASC)",
+          "external_id": "REF-11",
+          "source_name": "reference_from_CAPEC",
+          "url": "http://projects.webappsec.org/Directory-Indexing"
+        }
+      ],
+      "id": "attack-pattern--62c46d1c-f091-467e-a4b0-61927db31f38",
+      "modified": "2021-06-24T00:00:00.000Z",
+      "name": "Directory Indexing",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Detailed",
+      "x_capec_child_of_refs": [
+        "attack-pattern--49132d37-44e8-458c-a06e-0e5b9ac9bbd6"
+      ],
+      "x_capec_consequences": {
+        "Confidentiality": [
+          "Read Data (Information Leakage)"
+        ]
+      },
+      "x_capec_domains": [
+        "Software"
+      ],
+      "x_capec_example_instances": [
+        "\n               <xhtml:p>The adversary uses directory listing to view sensitive files in the application. This is an example of accessing the backup file. The attack issues a request for http://www.example.com/admin/ and receives the following dynamic directory indexing content in the response: Index of /admin Name Last Modified Size Description backup/ 31-May-2007 08:18 - Apache/ 2.0.55 Server at www.example.com Port 80</xhtml:p>\n               <xhtml:p>The target application does not have direct hyperlink to the \"backup\" directory in the normal html webpage, however the attacker has learned of this directory due to indexing the content. The client then requests the backup directory URL and receives output which has a \"db_dump.php\" file in it. This sensitive data should not be disclosed publicly.</xhtml:p>\n            "
+      ],
+      "x_capec_execution_flow": "<h2> Execution Flow </h2><div><h3>Explore</h3><ol><li> <p> <b>Directory Discovery: </b>Use a method, either manual, scripted, or automated to discover the directories on the server by making requests for directories that may possibly exist. During this phase the adversary is less concerned with whether a directory can be accessed or indexed and more focused on simply discovering what directories do exist on the target.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Send requests to the web server for common directory names</td></tr><tr><td>If directories are discovered that are native to a server type further refine the directory search to include directories usually present on those types of servers.</td></tr><tr><td>Search for uncommon or potentially user created directories that may be present.</td></tr></tbody></table></ol></div><div><h3>Experiment</h3><ol><li> <p> <b>Iteratively explore directory/file structures: </b>The adversary attempts to access the discovered directories that allow access and may attempt to bypass server or application level ACLs by using manual or automated methods</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Use a scanner tool to dynamically add directories/files to include their scan based upon data obtained in initial probes.</td></tr><tr><td>Use a browser to manually explore the website by issuing a request ending the URL in a slash '/'.</td></tr><tr><td>Attempt to bypass ACLs on directories by using methods that known to work against some server types by appending data to the directory request. For instance, appending a Null byte to the end of the request which may cause an ACL to fail and allow access.</td></tr><tr><td>Sequentially request a list of common base files to each directory discovered.</td></tr><tr><td>Try multiple fuzzing techniques to list directory contents for directories that will not reveal their contents with a \"/\" request</td></tr></tbody></table></ol></div><div><h3>Exploit</h3><ol><li> <p> <b>Read directories or files which are not intended for public viewing.: </b>The adversary attempts to access the discovered directories that allow access and may attempt to bypass server or application level ACLs by using manual or automated methods</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Try multiple exploit techniques to list directory contents for directories that will not reveal their contents with a \"/\" request</td></tr><tr><td>Try other known exploits to elevate privileges sufficient to bypass protected directories.</td></tr><tr><td>List the files in the directory by issuing a request with the URL ending in a \"/\" slash.</td></tr><tr><td>Access the files via direct URL and capture contents.</td></tr><tr><td>Attempt to bypass ACLs on directories by using methods that are known to work against some server types by appending data to the directory request. For instance, appending a Null byte to the end of the request which may cause an ACL to fail and allow access.</td></tr><tr><td>Sequentially request a list of common base files to each directory discovered.</td></tr></tbody></table></ol></div>",
+      "x_capec_likelihood_of_attack": "High",
+      "x_capec_prerequisites": [
+        "The target must be misconfigured to return a list of a directory's content when it receives a request that ends in a directory name rather than a file name.",
+        "The adversary must be able to control the path that is requested of the target.",
+        "The administrator must have failed to properly configure an ACL or has associated an overly permissive ACL with a particular directory.",
+        "The server version or patch level must not inherently prevent known directory listing attacks from working."
+      ],
+      "x_capec_resources_required": [
+        "Ability to send HTTP requests to a web application."
+      ],
+      "x_capec_skills_required": {
+        "High": "To bypass the access control of the directory of listings",
+        "Low": "To issue the request to URL without given a specific file name"
+      },
+      "x_capec_status": "Draft",
+      "x_capec_typical_severity": "Medium",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2021-06-24T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "\n            <xhtml:p>An adversary leverages a firmware weakness within the Thunderbolt protocol, on a computing device to manipulate Thunderbolt controller firmware in order to exploit vulnerabilities in the implementation of authorization and verification schemes within Thunderbolt protection mechanisms. Upon gaining physical access to a target device, the adversary conducts high-level firmware manipulation of the victim Thunderbolt controller SPI (Serial Peripheral Interface) flash, through the use of a SPI Programing device and an external Thunderbolt device, typically as the target device is booting up. If successful, this allows the adversary to modify memory, subvert authentication mechanisms, spoof identities and content, and extract data and memory from the target device. Currently 7 major vulnerabilities exist within Thunderbolt protocol with 9 attack vectors as noted in the Execution Flow.</xhtml:p>\n         ",
+      "external_references": [
+        {
+          "external_id": "CAPEC-665",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/665.html"
+        },
+        {
+          "external_id": "CWE-345",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/345.html"
+        },
+        {
+          "external_id": "CWE-353",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/353.html"
+        },
+        {
+          "external_id": "CWE-288",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/288.html"
+        },
+        {
+          "external_id": "CWE-1188",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1188.html"
+        },
+        {
+          "external_id": "CWE-862",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/862.html"
+        },
+        {
+          "description": "Exploitation for Defensive Evasion",
+          "external_id": "T1211",
+          "source_name": "ATTACK",
+          "url": "https://attack.mitre.org/wiki/Technique/T1211"
+        },
+        {
+          "description": "Pre-OS Boot: Component Firmware",
+          "external_id": "T1542.002",
+          "source_name": "ATTACK",
+          "url": "https://attack.mitre.org/wiki/Technique/T1542/002"
+        },
+        {
+          "description": "Modify Authentication Process",
+          "external_id": "T1556",
+          "source_name": "ATTACK",
+          "url": "https://attack.mitre.org/wiki/Technique/T1556"
+        },
+        {
+          "description": "Björn Ruytenberg, Thunderspy When Lighting Strikes Thrice: Breaking Thunderbolt 3 Security, 2020, Eindhoven University of Technology",
+          "external_id": "REF-647",
+          "source_name": "reference_from_CAPEC",
+          "url": "https://thunderspy.io/"
+        },
+        {
+          "description": "Björn Ruytenberg, Breaking Thunderbolt Protocol Security: Vulnerability Report, 2020--04---17, Eindhoven University of Technology",
+          "external_id": "REF-648",
+          "source_name": "reference_from_CAPEC",
+          "url": "https://thunderspy.io/assets/reports/breaking-thunderbolt-security-bjorn-ruytenberg-20200417.pdf"
+        },
+        {
+          "description": "Liam Tung, Thunderbolt flaws affect millions of computers – even locking unattended devices won't help, 2020--05---11, ZDNet",
+          "external_id": "REF-649",
+          "source_name": "reference_from_CAPEC",
+          "url": "https://www.zdnet.com/article/thunderbolt-flaws-affect-millions-of-computers-even-locking-unattended-devices-wont-help/"
+        },
+        {
+          "description": "Liam Tung, Microsoft: Worried about Thunderbolt attacks? Get a Windows 10 Secured-Core PC, 2020--05---14, ZDNet",
+          "external_id": "REF-650",
+          "source_name": "reference_from_CAPEC",
+          "url": "https://www.zdnet.com/article/microsoft-worried-about-thunderbolt-attacks-get-a-windows-10-secured-core-pc/"
+        },
+        {
+          "description": "Jon Porter, Thunderbolt flaw allows access to a PC’s data in minutes, 2020--05---11, The Verge",
+          "external_id": "REF-651",
+          "source_name": "reference_from_CAPEC",
+          "url": "https://www.theverge.com/2020/5/11/21254290/thunderbolt-security-vulnerability-thunderspy-encryption-access-intel-laptops"
+        },
+        {
+          "description": "Jerry Bryant, MORE INFORMATION ON THUNDERBOLT(TM) SECURITY, 2020--05---10, Intel Corporation",
+          "external_id": "REF-652",
+          "source_name": "reference_from_CAPEC",
+          "url": "https://blogs.intel.com/technology/2020/05/more-information-on-thunderspy/#gs.0o6pmk"
+        }
+      ],
+      "id": "attack-pattern--4317ab6c-93e4-4c5a-a814-0cd2752c61b9",
+      "modified": "2022-09-29T00:00:00.000Z",
+      "name": "Exploitation of Thunderbolt Protection Flaws",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Detailed",
+      "x_capec_child_of_refs": [
+        "attack-pattern--a46718a5-0206-44da-a4f8-b1943f85188b"
+      ],
+      "x_capec_consequences": {
+        "Access_Control": [
+          "Bypass Protection Mechanism"
+        ],
+        "Authorization": [
+          "Execute Unauthorized Commands"
+        ],
+        "Confidentiality": [
+          "Read Data"
+        ],
+        "Integrity": [
+          "Modify Data"
+        ]
+      },
+      "x_capec_domains": [
+        "Communications",
+        "Software"
+      ],
+      "x_capec_example_instances": [
+        "\n               <xhtml:p>An adversary steals a password protected laptop that contains a Thunderbolt 3 enabled port, from a work environment. The adversary uses a screw driver to remove the back panel of the laptop and connects a SPI Programming device to the Thunderbolt Host Controller SPI Flash of the stolen victim device to interface with it on the adversary's own Thunderbolt enabled device via Thunderbolt cables. The SPI Programming device is utilized to execute scripts/tools from the adversary's own system to copy, parse, and modify the victim's Thunderbolt firmware stored on SPI Flash. The device UUID value is obtained, by computing the appropriate offset based upon Thunderbolt firmware version and the OS of victim device, from the DROM section of victim Thunderbolt host controller firmware image. The firmware image is written to adversary Thunderbolt host controller SPI flash to clone and spoof victim device identity. The adversary reboots the victim device, with the victim device identifying the Thunderbolt connection of the adversary's Thunderbolt device as itself and enables PCIe tunneling. The adversary finally transfers the hard drive and memory contents of victim device across Thunderbolt connection.</xhtml:p>\n            "
+      ],
+      "x_capec_execution_flow": "<h2> Execution Flow </h2><div><h3>Explore</h3><ol><li> <p> <b>Survey physical victim environment and potential Thunderbolt system targets: </b>The adversary monitors the target's physical environment to identify systems with Thunderbolt interfaces, identify potential weaknesses in physical security in addition to periods of nonattendance by the victim over their Thunderbolt interface equipped devices, and when the devices are in locked or sleep state.</p></li><li> <p> <b>Evaluate the target system and its Thunderbolt interface: </b>The adversary determines the device's operating system, Thunderbolt interface version, and any implemented Thunderbolt protections to plan the attack.</p></li></ol></div><div><h3>Experiment</h3><ol><li> <p> <b>Obtain and/or clone firmware image: </b>The adversary physically manipulates Thunderbolt enabled devices to acquire the firmware image from the target and/or adversary Thunderbolt host controller's SPI (Serial Peripheral Interface) flash.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Disassemble victim and/or adversary device enclosure with basic tools to gain access to Thunderbolt controller SPI flash by connecting adversary SPI programmer.</td></tr><tr><td>Adversary connects SPI programmer to adversary-controlled Thunderbolt enabled device to obtain/clone victim thunderbolt controller firmware image through tools/scripts.</td></tr><tr><td>Clone firmware image with SPI programmer and tools/scripts on adversary-controlled device.</td></tr></tbody></table><li> <p> <b>Parse and locate relevant firmware data structures and information based upon Thunderbolt controller model, firmware version, and other information: </b>The acquired victim and/or adversary firmware image is parsed for specific data and other relevant identifiers required for exploitation, based upon the victim device information and firmware version.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Utilize pre-crafted tools/scripts to parse and locate desired firmware data and modify it.</td></tr><tr><td>Locate DROM (Device Read Only Memory) data structure section and calculate/determine appropriate offset to replicate victim device UUID.</td></tr><tr><td>Locate ACL (Access Control List) data structure and calculate/determine appropriate offsets to identify victim device UUID.</td></tr><tr><td>Locate data structure containing challenge-response key information between appropriate offsets.</td></tr></tbody></table><li> <p> <b>Disable Thunderbolt security and prevent future Thunderbolt security modifications (if necessary): </b>The adversary overrides the target device's Thunderbolt Security Level to \"None\" (SL0) and/or enables block protections upon the SPI flash to prevent the ability for the victim to perform and/or recognize future Thunderbolt security modifications as well as update the Thunderbolt firmware.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>The adversary-controlled Thunderbolt device, connected to SPI programmer and victim device via Thunderbolt ports, is utilized to execute commands within tools/scripts to disable SPI flash protections, modify Thunderbolt Security Level, and enable malicious SPI flash protections.</td></tr></tbody></table><li> <p> <b>Modify/replace victim Thunderbolt firmware image: </b>The modified victim and/or adversary thunderbolt firmware image is written to attacker SPI flash.</p></li></ol></div><div><h3>Exploit</h3><ol><li> <p> <b>Connect adversary-controlled thunderbolt enabled device to victim device and verify successful execution of malicious actions: </b>The adversary needs to determine if their exploitation of selected vulnerabilities had the intended effects upon victim device.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Observe victim device identify adversary device as the victim device and enables PCIe tunneling.</td></tr><tr><td>Resume victim device from sleep, connect adversary-controlled device and observe security is disabled and Thunderbolt connectivity is restored with PCIe tunneling being enabled.</td></tr><tr><td>Observe that in UEFI or Thunderbolt Management Tool/UI that the Security Level does not match adversary modified Security Level of \"None\" (SL0)</td></tr><tr><td>Observe after installation of Firmware update that within Thunderbolt Management UI the \"NVM version\" is unchanged/same prior to the prompt of successful Firmware update/installation.</td></tr></tbody></table><li> <p> <b>Exfiltration of desired data from victim device to adversary device: </b>Utilize PCIe tunneling to transfer desired data and information from victim device across Thunderbolt connection.</p></li></ol></div>",
+      "x_capec_likelihood_of_attack": "Low",
+      "x_capec_peer_of_refs": [
+        "attack-pattern--96c60498-fdd4-4f9f-a21f-c1a4ee84f0f3",
+        "attack-pattern--bd4f8f46-1bc7-40a9-b15a-e36b7671cf5b",
+        "attack-pattern--22802ed6-ddc6-4da7-b6be-60b10d26198b"
+      ],
+      "x_capec_prerequisites": [
+        "The adversary needs at least a few minutes of physical access to a system with an open Thunderbolt port, version 3 or lower, and an external thunderbolt device controlled by the adversary with maliciously crafted software and firmware, via an SPI Programming device, to exploit weaknesses in security protections."
+      ],
+      "x_capec_resources_required": [
+        "SPI Programming device capable of modifying/configuring or replacing the firmware of Thunderbolt device stored on SPI Flash of target Thunderbolt controller, as well as modification/spoofing of adversary-controlled Thunderbolt controller.",
+        "Precrafted scripts/tools capable of implementing the modification and replacement of Thunderbolt Firmware.",
+        "Thunderbolt-enabled computing device capable of interfacing with target Thunderbolt device and extracting/dumping data and memory contents of target device."
+      ],
+      "x_capec_skills_required": {
+        "High": "Detailed knowledge on scripting and SPI programming in order to configure and modify Thunderbolt controller firmware and software configurations."
+      },
+      "x_capec_status": "Stable",
+      "x_capec_typical_severity": "Very High",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "An attack of this type exploits a system's trust in configuration and resource files. When the executable loads the resource (such as an image file or configuration file) the attacker has modified the file to either execute malicious code directly or manipulate the target process (e.g. application server) to execute based on the malicious configuration parameters. Since systems are increasingly interrelated mashing up resources from local and remote sources the possibility of this attack occurring is high.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-35",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/35.html"
+        },
+        {
+          "external_id": "CWE-94",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/94.html"
+        },
+        {
+          "external_id": "CWE-96",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/96.html"
+        },
+        {
+          "external_id": "CWE-95",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/95.html"
+        },
+        {
+          "external_id": "CWE-97",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/97.html"
+        },
+        {
+          "external_id": "CWE-272",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/272.html"
+        },
+        {
+          "external_id": "CWE-59",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/59.html"
+        },
+        {
+          "external_id": "CWE-282",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/282.html"
+        },
+        {
+          "external_id": "CWE-270",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/270.html"
+        },
+        {
+          "description": "Obfuscated Files or Information: HTML Smuggling",
+          "external_id": "T1027.006",
+          "source_name": "ATTACK",
+          "url": "https://attack.mitre.org/wiki/Technique/T1027/006"
+        },
+        {
+          "description": "Obfuscated Files or Information: Embedded Payloads",
+          "external_id": "T1027.009",
+          "source_name": "ATTACK",
+          "url": "https://attack.mitre.org/wiki/Technique/T1027/009"
+        },
+        {
+          "description": "Hide Artifacts: Resource Forking",
+          "external_id": "T1564.009",
+          "source_name": "ATTACK",
+          "url": "https://attack.mitre.org/wiki/Technique/T1564/009"
+        },
+        {
+          "description": "G. Hoglund, G. McGraw, Exploiting Software: How to Break Code, 2004--02, Addison-Wesley",
+          "external_id": "REF-1",
+          "source_name": "reference_from_CAPEC"
+        }
+      ],
+      "id": "attack-pattern--9a7c6cbc-e3f9-4925-992e-f07e1359de87",
+      "modified": "2023-01-24T00:00:00.000Z",
+      "name": "Leverage Executable Code in Non-Executable Files",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Detailed",
+      "x_capec_child_of_refs": [
+        "attack-pattern--7f2c0e10-0afe-4edf-bb23-43d6f29ec932"
+      ],
+      "x_capec_consequences": {
+        "Access_Control": [
+          "Gain Privileges"
+        ],
+        "Authorization": [
+          "Gain Privileges"
+        ],
+        "Availability": [
+          "Execute Unauthorized Commands (Run Arbitrary Code)"
+        ],
+        "Confidentiality": [
+          "Execute Unauthorized Commands (Run Arbitrary Code)",
+          "Gain Privileges"
+        ],
+        "Integrity": [
+          "Execute Unauthorized Commands (Run Arbitrary Code)",
+          "Modify Data"
+        ]
+      },
+      "x_capec_domains": [
+        "Software"
+      ],
+      "x_capec_example_instances": [
+        "Virtually any system that relies on configuration files for runtime behavior is open to this attack vector. The configuration files are frequently stored in predictable locations, so an attacker that can fingerprint a server process such as a web server or database server can quickly identify the likely locale where the configuration is stored. And this is of course not limited to server processes. Unix shells rely on profile files to store environment variables, search paths for programs and so on. If the aliases are changed, then a standard Unix \"cp\" command can be rerouted to \"rm\" or other standard command so the user's intention is subverted.",
+        "The attack can be directed at a client system, such as causing buffer overrun through loading seemingly benign image files, as in Microsoft Security Bulletin MS04-028 where specially crafted JPEG files could cause a buffer overrun once loaded into the browser.",
+        "\n               <xhtml:p>Another example targets clients reading pdf files. In this case the attacker simply appends javascript to the end of a legitimate url for a pdf (http://www.gnucitizen.org/blog/danger-danger-danger/)</xhtml:p>\n               <xhtml:p>http://path/to/pdf/file.pdf#whatever_name_you_want=javascript:your_code_here</xhtml:p>\n               <xhtml:p>The client assumes that they are reading a pdf, but the attacker has modified the resource and loaded executable javascript into the client's browser process.</xhtml:p>\n            ",
+        "\n               <xhtml:p>The attack can also target server processes. The attacker edits the resource or configuration file, for example a web.xml file used to configure security permissions for a J2EE app server, adding role name \"public\" grants all users with the public role the ability to use the administration functionality.</xhtml:p>\n               <xhtml:div style=\"margin-left:1em;\" class=\"informative\">< security-constraint><xhtml:div style=\"margin-left:1em;\"><description>Security processing rules for admin screens</description><url-pattern>/admin/*</url-pattern><http-method>POST</http-method><http-method>GET</http-method><xhtml:div style=\"margin-left:1em;\"><auth-constraint><xhtml:div style=\"margin-left:1em;\"><role-name>administrator</role-name><role-name>public</role-name></xhtml:div>\n                        </auth-constraint></xhtml:div>\n                  </xhtml:div>\n                  </security-constraint></xhtml:div>\n               <xhtml:p>The server trusts its configuration file to be correct, but when they are manipulated, the attacker gains full control.</xhtml:p>\n            "
+      ],
+      "x_capec_likelihood_of_attack": "High",
+      "x_capec_peer_of_refs": [
+        "attack-pattern--521348c2-b1df-492f-ac83-1f3ffe102046",
+        "attack-pattern--08c74bd3-c5ad-4d6c-a8bb-bb93d7503ddb"
+      ],
+      "x_capec_prerequisites": [
+        "The attacker must have the ability to modify non-executable files consumed by the target software."
+      ],
+      "x_capec_resources_required": [
+        "Ability to communicate synchronously or asynchronously with server that publishes an over-privileged directory, program, or interface. Optionally, ability to capture output directly through synchronous communication or other method such as FTP."
+      ],
+      "x_capec_skills_required": {
+        "Low": "To identify and execute against an over-privileged system interface"
+      },
+      "x_capec_status": "Draft",
+      "x_capec_typical_severity": "Very High",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "This attack targets user controlled variables (DEBUG=1, PHP Globals, and So Forth). An adversary can override variables leveraging user-supplied, untrusted query variables directly used on the application server without any data sanitization. In extreme cases, the adversary can change variables controlling the business logic of the application. For instance, in languages like PHP, a number of poorly set default configurations may allow the user to override variables.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-77",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/77.html"
+        },
+        {
+          "external_id": "CWE-15",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/15.html"
+        },
+        {
+          "external_id": "CWE-94",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/94.html"
+        },
+        {
+          "external_id": "CWE-96",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/96.html"
+        },
+        {
+          "external_id": "CWE-285",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/285.html"
+        },
+        {
+          "external_id": "CWE-302",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/302.html"
+        },
+        {
+          "external_id": "CWE-473",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/473.html"
+        },
+        {
+          "external_id": "CWE-1321",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1321.html"
+        },
+        {
+          "description": "G. Hoglund, G. McGraw, Exploiting Software: How to Break Code, 2004--02, Addison-Wesley",
+          "external_id": "REF-1",
+          "source_name": "reference_from_CAPEC"
+        },
+        {
+          "description": "Artur Maj, Securing PHP: Step-by-Step, 2003--06---22, Security Focus",
+          "external_id": "REF-520",
+          "source_name": "reference_from_CAPEC",
+          "url": "http://www.securityfocus.com/infocus/1706"
+        },
+        {
+          "description": "Clancy Malcolm, Ten Security Checks for PHP, Part 1, 2003--03---20",
+          "external_id": "REF-521",
+          "source_name": "reference_from_CAPEC"
+        },
+        {
+          "description": "PHP Manual, The PHP Group",
+          "external_id": "REF-522",
+          "source_name": "reference_from_CAPEC",
+          "url": "http://www.php.net/manual/en/security.globals.php"
+        }
+      ],
+      "id": "attack-pattern--5e4a268e-f89f-445a-aa42-395922f56bf0",
+      "modified": "2022-09-29T00:00:00.000Z",
+      "name": "Manipulating User-Controlled Variables",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Standard",
+      "x_capec_child_of_refs": [
+        "attack-pattern--1fa1539d-4a13-4453-bf43-ad0987b2fbf5"
+      ],
+      "x_capec_consequences": {
+        "Access_Control": [
+          "Gain Privileges"
+        ],
+        "Authorization": [
+          "Gain Privileges"
+        ],
+        "Availability": [
+          "Execute Unauthorized Commands (Run Arbitrary Code)"
+        ],
+        "Confidentiality": [
+          "Execute Unauthorized Commands (Run Arbitrary Code)",
+          "Read Data",
+          "Gain Privileges"
+        ],
+        "Integrity": [
+          "Modify Data",
+          "Execute Unauthorized Commands (Run Arbitrary Code)"
+        ]
+      },
+      "x_capec_domains": [
+        "Software"
+      ],
+      "x_capec_example_instances": [
+        "\n               <xhtml:p>PHP is a study in bad security. The main idea pervading PHP is \"ease of use,\" and the mantra \"don't make the developer go to any extra work to get stuff done\" applies in all cases. This is accomplished in PHP by removing formalism from the language, allowing declaration of variables on first use, initializing everything with preset values, and taking every meaningful variable from a transaction and making it available. In cases of collision with something more technical, the simple almost always dominates in PHP.</xhtml:p>\n               <xhtml:p>One consequence of all this is that PHP allows users of a Web application to override environment variables with user-supplied, untrusted query variables. Thus, critical values such as the CWD and the search path can be overwritten and directly controlled by a remote anonymous user.</xhtml:p>\n               <xhtml:p>Another similar consequence is that variables can be directly controlled and assigned from the user-controlled values supplied in GET and POST request fields. So seemingly normal code like this, does bizarre things:</xhtml:p>\n               <xhtml:div style=\"margin-left:1em;\" class=\"informative\">while($count < 10){// Do something$count++;}</xhtml:div>\n               <xhtml:p>Normally, this loop will execute its body ten times. The first iteration will be an undefined zero, and further trips though the loop will result in an increment of the variable $count. The problem is that the coder does not initialize the variable to zero before entering the loop. This is fine because PHP initializes the variable on declaration. The result is code that seems to function, regardless of badness. The problem is that a user of the Web application can supply a request such as</xhtml:p>\n               <xhtml:div style=\"margin-left:1em;\" class=\"informative\">GET /login.php?count=9</xhtml:div>\n               <xhtml:p>and cause $count to start out at the value 9, resulting in only one trip through the loop. Yerg.</xhtml:p>\n               <xhtml:p>Depending on the configuration, PHP may accept user-supplied variables in place of environment variables. PHP initializes global variables for all process environment variables, such as $PATH and $HOSTNAME. These variables are of critical importance because they may be used in file or network operations. If an adversary can supply a new $PATH variable (such as PATH='/var'), the program may be exploitable.</xhtml:p>\n               <xhtml:p>PHP may also take field tags supplied in GET/POST requests and transform them into global variables. This is the case with the $count variable we explored in our previous example.</xhtml:p>\n               <xhtml:p>Consider another example of this problem in which a program defines a variable called $tempfile. An adversary can supply a new temp file such as $tempfile = \"/etc/passwd\". Then the temp file may get erased later via a call to unlink($tempfile);. Now the passwd file has been erased--a bad thing indeed on most OSs.</xhtml:p>\n               <xhtml:p>Also consider that the use of include() and require() first search $PATH, and that using calls to the shell may execute crucial programs such as ls. In this way, ls may be \"Trojaned\" (the adversary can modify $PATH to cause a Trojan copy of ls to be loaded). This type of attack could also apply to loadable libraries if $LD_LIBRARY_PATH is modified.</xhtml:p>\n               <xhtml:p>Finally, some versions of PHP may pass user data to syslog as a format string, thus exposing the application to a format string buffer overflow.</xhtml:p>See also: File upload allows arbitrary file read by setting hidden form variables to match internal variable names (CVE-2000-0860)"
+      ],
+      "x_capec_execution_flow": "<h2> Execution Flow </h2><div><h3>Explore</h3><ol><li> <p> <b>Probe target application: </b>The adversary first probes the target application to determine important information about the target. This information could include types software used, software versions, what user input the application consumes, and so on.</p></li></ol></div><div><h3>Experiment</h3><ol><li> <p> <b>Find user-controlled variables: </b>Using the information found by probing the application, the adversary attempts to manipulate many user-controlled variables and observes the effects on the application. If the adversary notices any significant changes to the application, they will know that a certain variable is useful to the application.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Adversaries will try to alter many common variable names such as \"count\", \"tempFile\", \"i\", etc. The hope is that they can alter the flow of the application without knowing the inner-workings.</td></tr><tr><td>Adversaries will try to alter known environment variables.</td></tr></tbody></table></ol></div><div><h3>Exploit</h3><ol><li> <p> <b>Manipulate user-controlled variables: </b>Once the adversary has found a user-controller variable(s) that is important to the application, they will manipulate it to change the normal behavior in a way that benefits the adversary.</p></li></ol></div>",
+      "x_capec_likelihood_of_attack": "High",
+      "x_capec_parent_of_refs": [
+        "attack-pattern--f190e1b3-e8d6-4aef-817c-b3e7782e2aed",
+        "attack-pattern--a506984b-0870-42d9-8bcd-0787f13b8c2e"
+      ],
+      "x_capec_prerequisites": [
+        "A variable consumed by the application server is exposed to the client.",
+        "A variable consumed by the application server can be overwritten by the user.",
+        "The application server trusts user supplied data to compute business logic.",
+        "The application server does not perform proper input validation."
+      ],
+      "x_capec_skills_required": {
+        "Low": "The malicious user can easily try some well-known global variables and find one which matches.",
+        "Medium": "The adversary can use automated tools to probe for variables that they can control."
+      },
+      "x_capec_status": "Draft",
+      "x_capec_typical_severity": "Very High",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "Generally these are manually edited files that are not in the preview of the system administrators, any ability on the attackers' behalf to modify these files, for example in a CVS repository, gives unauthorized access directly to the application, the same as authorized users.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-75",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/75.html"
+        },
+        {
+          "external_id": "CWE-349",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/349.html"
+        },
+        {
+          "external_id": "CWE-99",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/99.html"
+        },
+        {
+          "external_id": "CWE-77",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/77.html"
+        },
+        {
+          "external_id": "CWE-346",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/346.html"
+        },
+        {
+          "external_id": "CWE-353",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/353.html"
+        },
+        {
+          "external_id": "CWE-354",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/354.html"
+        },
+        {
+          "description": "G. Hoglund, G. McGraw, Exploiting Software: How to Break Code, 2004--02, Addison-Wesley",
+          "external_id": "REF-1",
+          "source_name": "reference_from_CAPEC"
+        }
+      ],
+      "id": "attack-pattern--08c74bd3-c5ad-4d6c-a8bb-bb93d7503ddb",
+      "modified": "2022-09-29T00:00:00.000Z",
+      "name": "Manipulating Writeable Configuration Files",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Standard",
+      "x_capec_child_of_refs": [
+        "attack-pattern--f9f65fdd-5857-4a57-a725-066465397601"
+      ],
+      "x_capec_consequences": {
+        "Access_Control": [
+          "Gain Privileges"
+        ],
+        "Authorization": [
+          "Gain Privileges"
+        ],
+        "Confidentiality": [
+          "Gain Privileges"
+        ]
+      },
+      "x_capec_domains": [
+        "Software"
+      ],
+      "x_capec_example_instances": [
+        "\n               <xhtml:p>The BEA Weblogic server uses a config.xml file to store configuration data. If this file is not properly protected by the system access control, an attacker can write configuration information to redirect server output through system logs, database connections, malicious URLs and so on. Access to the Weblogic server may be from a so-called Custom realm which manages authentication and authorization privileges on behalf of user principals. Given write access, the attacker can insert a pointer to a custom realm jar file in the config.xml</xhtml:p>\n               <xhtml:div style=\"margin-left:1em;\" class=\"informative\">< CustomRealm<xhtml:div style=\"margin-left:1em;\">ConfigurationData=\"java.util.Properties\"Name=\"CustomRealm\"RealmClassName=\"Maliciousrealm.jar\"/></xhtml:div>\n               </xhtml:div>\n               <xhtml:p>The main issue with configuration files is that the attacker can leverage all the same functionality the server has, but for malicious means. Given the complexity of server configuration, these changes may be very hard for administrators to detect.</xhtml:p>\n            "
+      ],
+      "x_capec_likelihood_of_attack": "High",
+      "x_capec_prerequisites": [
+        "Configuration files must be modifiable by the attacker"
+      ],
+      "x_capec_skills_required": {
+        "Medium": "To identify vulnerable configuration files, and understand how to manipulate servers and erase forensic evidence"
+      },
+      "x_capec_status": "Draft",
+      "x_capec_typical_severity": "Very High",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "An adversary is able to exploit features of the target that should be reserved for privileged users or administrators but are exposed to use by lower or non-privileged accounts. Access to sensitive information and functionality must be controlled to ensure that only authorized users are able to access these resources.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-122",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/122.html"
+        },
+        {
+          "external_id": "CWE-269",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/269.html"
+        },
+        {
+          "external_id": "CWE-732",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/732.html"
+        },
+        {
+          "external_id": "CWE-1317",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1317.html"
+        },
+        {
+          "description": "Abuse Elevation Control Mechanism",
+          "external_id": "T1548",
+          "source_name": "ATTACK",
+          "url": "https://attack.mitre.org/wiki/Technique/T1548"
+        }
+      ],
+      "id": "attack-pattern--fd669b7d-0e79-473c-9808-a860dfb0c871",
+      "modified": "2022-09-29T00:00:00.000Z",
+      "name": "Privilege Abuse",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Meta",
+      "x_capec_can_precede_refs": [
+        "attack-pattern--f231b993-ed39-40cf-adfb-9828ddcfc642"
+      ],
+      "x_capec_consequences": {
+        "Access_Control": [
+          "Bypass Protection Mechanism"
+        ],
+        "Authorization": [
+          "Execute Unauthorized Commands (Run Arbitrary Code)",
+          "Gain Privileges",
+          "Bypass Protection Mechanism"
+        ],
+        "Confidentiality": [
+          "Read Data"
+        ],
+        "Integrity": [
+          "Modify Data"
+        ]
+      },
+      "x_capec_domains": [
+        "Software",
+        "Hardware"
+      ],
+      "x_capec_example_instances": [
+        "\n               <xhtml:p>Improperly configured account privileges allowed unauthorized users on a hospital's network to access the medical records for over 3,000 patients. Thus compromising data integrity and confidentiality in addition to HIPAA violations.</xhtml:p>\n            "
+      ],
+      "x_capec_extended_description": "\n            <xhtml:p>If access control mechanisms are absent or misconfigured, a user may be able to access resources that are intended only for higher level users. An adversary may be able to exploit this to utilize a less trusted account to gain information and perform activities reserved for more trusted accounts.</xhtml:p>\n            <xhtml:p>This attack differs from privilege escalation and other privilege stealing attacks in that the adversary never actually escalates their privileges but instead is able to use a lesser degree of privilege to access resources that should be (but are not) reserved for higher privilege accounts. Likewise, the adversary does not exploit trust or subvert systems - all control functionality is working as configured but the configuration does not adequately protect sensitive resources at an appropriate level.</xhtml:p>\n         ",
+      "x_capec_likelihood_of_attack": "High",
+      "x_capec_parent_of_refs": [
+        "attack-pattern--92cdcd3d-d734-4442-afc3-4599f261498b",
+        "attack-pattern--9ad2c2eb-9939-4590-9683-2e789692d262",
+        "attack-pattern--aac17300-6cdd-4f50-82c3-da5a01d225ac",
+        "attack-pattern--d9717514-c621-49cd-b8e1-fd7cc1daa8d1",
+        "attack-pattern--c195a0a3-62fc-4def-9702-8938440cc9a7"
+      ],
+      "x_capec_prerequisites": [
+        "The target must have misconfigured their access control mechanisms such that sensitive information, which should only be accessible to more trusted users, remains accessible to less trusted users.",
+        "The adversary must have access to the target, albeit with an account that is less privileged than would be appropriate for the targeted resources."
+      ],
+      "x_capec_resources_required": [
+        "None: No specialized resources are required to execute this type of attack. The ability to access the target is required."
+      ],
+      "x_capec_skills_required": {
+        "Low": "Adversary can leverage privileged features they already have access to without additional effort or skill. Adversary is only required to have access to an account with improper priveleges."
+      },
+      "x_capec_status": "Draft",
+      "x_capec_typical_severity": "Medium",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "An adversary exploits a weakness enabling them to elevate their privilege and perform an action that they are not supposed to be authorized to perform.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-233",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/233.html"
+        },
+        {
+          "external_id": "CWE-269",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/269.html"
+        },
+        {
+          "external_id": "CWE-1264",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1264.html"
+        },
+        {
+          "external_id": "CWE-1311",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/1311.html"
+        },
+        {
+          "description": "Abuse Elevation Control Mechanism",
+          "external_id": "T1548",
+          "source_name": "ATTACK",
+          "url": "https://attack.mitre.org/wiki/Technique/T1548"
+        },
+        {
+          "description": "OWASP Web Security Testing Guide, The Open Web Application Security Project (OWASP)",
+          "external_id": "REF-600",
+          "source_name": "reference_from_CAPEC",
+          "url": "https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/03-Testing_for_Privilege_Escalation.html"
+        }
+      ],
+      "id": "attack-pattern--c05fff04-b965-4a11-9c18-379dac31969f",
+      "modified": "2021-10-21T00:00:00.000Z",
+      "name": "Privilege Escalation",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Meta",
+      "x_capec_can_follow_refs": [
+        "attack-pattern--9ad2c2eb-9939-4590-9683-2e789692d262"
+      ],
+      "x_capec_domains": [
+        "Software",
+        "Hardware"
+      ],
+      "x_capec_parent_of_refs": [
+        "attack-pattern--ebf5cbfb-36d8-4983-9267-9d17bff3817f",
+        "attack-pattern--9f1d96c7-fcc8-4708-b98d-23f1fd86e07b",
+        "attack-pattern--1cc991f7-9f62-4e6b-9e37-70fa23ab23e9",
+        "attack-pattern--2b8d7aaf-bd4b-424f-8df4-6d0f37b72f4b",
+        "attack-pattern--ca989a50-b24e-4917-a234-ce4788fa21c7"
+      ],
+      "x_capec_status": "Draft",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "An adversary exploits weaknesses in input validation by manipulating resource identifiers enabling the unintended modification or specification of a resource.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-240",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/240.html"
+        },
+        {
+          "external_id": "CWE-99",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/99.html"
+        },
+        {
+          "description": "Resource Injection",
+          "source_name": "OWASP Attacks",
+          "url": "https://owasp.org/www-community/attacks/Resource_Injection"
+        }
+      ],
+      "id": "attack-pattern--12de9227-495b-49b2-859f-334a20197ba3",
+      "modified": "2020-12-17T00:00:00.000Z",
+      "name": "Resource Injection",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Meta",
+      "x_capec_consequences": {
+        "Confidentiality": [
+          "Read Data"
+        ],
+        "Integrity": [
+          "Modify Data"
+        ]
+      },
+      "x_capec_domains": [
+        "Communications",
+        "Software"
+      ],
+      "x_capec_likelihood_of_attack": "High",
+      "x_capec_parent_of_refs": [
+        "attack-pattern--b5cd5231-d7ef-4366-b713-a44d3f1134b4"
+      ],
+      "x_capec_prerequisites": [
+        "The target application allows the user to both specify the identifier used to access a system resource. Through this permission, the user gains the capability to perform actions on that resource (e.g., overwrite the file)"
+      ],
+      "x_capec_status": "Stable",
+      "x_capec_typical_severity": "High",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "An adversary identifies a Rest HTTP (Get, Put, Delete) style permission method allowing them to perform various malicious actions upon server data due to lack of access control mechanisms implemented within the application service accepting HTTP messages.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-58",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/58.html"
+        },
+        {
+          "external_id": "CWE-267",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/267.html"
+        },
+        {
+          "external_id": "CWE-269",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/269.html"
+        },
+        {
+          "description": "Mark O'Neill, Security for REST Web Services, Vprde;",
+          "external_id": "REF-463",
+          "source_name": "reference_from_CAPEC",
+          "url": "http://www.vordel.com/downloads/rsa_conf_2006.pdf"
+        }
+      ],
+      "id": "attack-pattern--74bac7d9-693d-40d2-82bf-eb132f13bcaf",
+      "modified": "2022-09-29T00:00:00.000Z",
+      "name": "Restful Privilege Elevation",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Detailed",
+      "x_capec_child_of_refs": [
+        "attack-pattern--92cdcd3d-d734-4442-afc3-4599f261498b",
+        "attack-pattern--aac17300-6cdd-4f50-82c3-da5a01d225ac"
+      ],
+      "x_capec_consequences": {
+        "Access_Control": [
+          "Gain Privileges"
+        ],
+        "Authorization": [
+          "Gain Privileges"
+        ],
+        "Confidentiality": [
+          "Gain Privileges"
+        ],
+        "Integrity": [
+          "Modify Data"
+        ]
+      },
+      "x_capec_domains": [
+        "Software",
+        "Hardware",
+        "Software"
+      ],
+      "x_capec_example_instances": [
+        "The HTTP Get method is designed to retrieve resources and not to alter the state of the application or resources on the server side. However, developers can easily code programs that accept a HTTP Get request that do in fact create, update or delete data on the server. Both Flickr (http://www.flickr.com/services/api/flickr.photosets.delete.html) and del.icio.us (http://del.icio.us/api/posts/delete) have implemented delete operations using standard HTTP Get requests. These HTTP Get methods do delete data on the server side, despite being called from Get which is not supposed to alter state."
+      ],
+      "x_capec_extended_description": "\n            <xhtml:p>Rest uses standard HTTP (Get, Put, Delete) style permissions methods, but these are not necessarily correlated generally with back end programs. Strict interpretation of HTTP get methods means that these HTTP Get services should not be used to delete information on the server, but there is no access control mechanism to back up this logic. This means that unless the services are properly ACL'd and the application's service implementation are following these guidelines then an HTTP request can easily execute a delete or update on the server side. The attacker identifies a HTTP Get URL such as http://victimsite/updateOrder, which calls out to a program to update orders on a database or other resource. The URL is not idempotent so the request can be submitted multiple times by the attacker, additionally, the attacker may be able to exploit the URL published as a Get method that actually performs updates (instead of merely retrieving data). This may result in malicious or inadvertent altering of data on the server.</xhtml:p>\n         ",
+      "x_capec_likelihood_of_attack": "High",
+      "x_capec_prerequisites": [
+        "The attacker needs to be able to identify HTTP Get URLs. The Get methods must be set to call applications that perform operations other than get such as update and delete."
+      ],
+      "x_capec_skills_required": {
+        "Low": "It is relatively straightforward to identify an HTTP Get method that changes state on the server side and executes against an over-privileged system interface"
+      },
+      "x_capec_status": "Draft",
+      "x_capec_typical_severity": "High",
+      "x_capec_version": "3.9"
+    },
+    {
+      "created": "2014-06-23T00:00:00.000Z",
+      "created_by_ref": "identity--e50ab59c-5c4f-4d40-bf6a-d58418d89bcd",
+      "description": "Web Logs Tampering attacks involve an attacker injecting, deleting or otherwise tampering with the contents of web logs typically for the purposes of masking other malicious behavior. Additionally, writing malicious data to log files may target jobs, filters, reports, and other agents that process the logs in an asynchronous attack pattern. This pattern of attack is similar to \"Log Injection-Tampering-Forging\" except that in this case, the attack is targeting the logs of the web server and not the application.",
+      "external_references": [
+        {
+          "external_id": "CAPEC-81",
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/81.html"
+        },
+        {
+          "external_id": "CWE-117",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/117.html"
+        },
+        {
+          "external_id": "CWE-93",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/93.html"
+        },
+        {
+          "external_id": "CWE-75",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/75.html"
+        },
+        {
+          "external_id": "CWE-221",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/221.html"
+        },
+        {
+          "external_id": "CWE-96",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/96.html"
+        },
+        {
+          "external_id": "CWE-20",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/20.html"
+        },
+        {
+          "external_id": "CWE-150",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/150.html"
+        },
+        {
+          "external_id": "CWE-276",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/276.html"
+        },
+        {
+          "external_id": "CWE-279",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/279.html"
+        },
+        {
+          "external_id": "CWE-116",
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/116.html"
+        },
+        {
+          "description": "G. Hoglund, G. McGraw, Exploiting Software: How to Break Code, 2004--02, Addison-Wesley",
+          "external_id": "REF-1",
+          "source_name": "reference_from_CAPEC"
+        }
+      ],
+      "id": "attack-pattern--0b08a46d-d680-4f3d-91ad-f97e00878780",
+      "modified": "2022-09-29T00:00:00.000Z",
+      "name": "Web Server Logs Tampering",
+      "object_marking_refs": [
+        "marking-definition--17d82bb2-eeeb-4898-bda5-3ddbcd2b799d"
+      ],
+      "spec_version": "2.1",
+      "type": "attack-pattern",
+      "x_capec_abstraction": "Detailed",
+      "x_capec_child_of_refs": [
+        "attack-pattern--b3eaa7aa-9601-406c-ae82-0a0e2ea16116"
+      ],
+      "x_capec_consequences": {
+        "Integrity": [
+          "Modify Data"
+        ]
+      },
+      "x_capec_domains": [
+        "Software"
+      ],
+      "x_capec_example_instances": [
+        "Most web servers have a public interface, even if the majority of the site is password protected, there is usually at least a login site and brochureware that is publicly available. HTTP requests to the site are also generally logged to a Web log. From an attacker point of view, standard HTTP requests containing a malicious payload can be sent to the public website (with no other access required), when those requests appear in the log (such as http://victimsite/index.html?< malicious script> if they are followed by an administrator this may be sufficient to probe the administrator's host or local network."
+      ],
+      "x_capec_execution_flow": "<h2> Execution Flow </h2><div><h3>Explore</h3><ol><li> <p> <b>Determine Application Web Server Log File Format: </b>The attacker observes the system and looks for indicators of which logging utility is being used by the web server.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Determine logging utility being used by application web server (e.g. log4j), only possible if the application is known by the attacker or if the application returns error messages with logging utility information.</td></tr></tbody></table></ol></div><div><h3>Experiment</h3><ol><li> <p> <b>Determine Injectable Content: </b>The attacker launches various logged actions with malicious data to determine what sort of log injection is possible.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>Attacker triggers logged actions with maliciously crafted data as inputs, parameters, arguments, etc.</td></tr></tbody></table></ol></div><div><h3>Exploit</h3><ol><li> <p> <b>Manipulate Log Files: </b>The attacker alters the log contents either directly through manipulation or forging or indirectly through injection of specially crafted request that the web server will receive and write into the logs. This type of attack typically follows another attack and is used to try to cover the traces of the previous attack.</p></li><table><tbody><tr><th>Techniques</th></tr><tr><td>\n                  <xhtml:p>Indirectly through injection, use carriage return and/or line feed characters to start a new line in the log file, and then, add a fake entry.</xhtml:p>\n                  <xhtml:p>For example: The HTTP request for \"/index.html%0A%0DIP_ADDRESS- - DATE_FORMAT] \"GET /forged-path HTTP/1.1\" 200 - \"-\" USER_AGENT\" may add the log line into Apache \"access_log\" (for example). Different applications may require different encodings of the carriage return and line feed characters.</xhtml:p>\n               </td></tr><tr><td>\n                  <xhtml:p>Directly through log file or database manipulation, use carriage return and/or line feed characters to start a new line in the log file, and then, add a fake entry.</xhtml:p>\n                  <xhtml:p>For example: The HTTP request for \"/index.html%0A%0DIP_ADDRESS- - DATE_FORMAT] \"GET /forged-path HTTP/1.1\" 200 - \"-\" USER_AGENT\" may add the log line into Apache \"access_log\" (for example). Different applications may require different encodings of the carriage return and line feed characters.</xhtml:p>\n               </td></tr><tr><td>Directly through log file or database manipulation, modify existing log entries.</td></tr></tbody></table></ol></div>",
+      "x_capec_likelihood_of_attack": "Medium",
+      "x_capec_prerequisites": [
+        "Target server software must be a HTTP server that performs web logging."
+      ],
+      "x_capec_resources_required": [
+        "Ability to send specially formatted HTTP request to web server"
+      ],
+      "x_capec_skills_required": {
+        "Low": "To input faked entries into Web logs"
+      },
+      "x_capec_status": "Draft",
+      "x_capec_typical_severity": "High",
+      "x_capec_version": "3.9"
+    }
+  ]
+}

@@ -1,0 +1,294 @@
+{
+  "type": "bundle",
+  "id": "bundle--55b1e2f2-1cf6-432a-b5b1-fa7f9e957fab",
+  "objects": [
+    {
+      "common_consequences": [
+        "Access Control",
+        "Access Control",
+        "Integrity",
+        "Confidentiality",
+        "Availability",
+        "Non-Repudiation"
+      ],
+      "created": "2006-07-19T00:00:00.000Z",
+      "created_by_ref": "identity--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b",
+      "description": "The product constructs all or part of a code segment using externally-influenced input from an upstream component, but it does not neutralize or incorrectly neutralizes special elements that could modify the syntax or behavior of the intended code segment.",
+      "detection_methods": [
+        "Automated Static Analysis"
+      ],
+      "extensions": {
+        "extension-definition--31725edc-7d81-5db7-908a-9134f322284a": {
+          "extension_type": "new-sdo"
+        }
+      },
+      "external_references": [
+        {
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/94.html",
+          "external_id": "CWE-94"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/242.html",
+          "external_id": "CAPEC-242"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/35.html",
+          "external_id": "CAPEC-35"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/77.html",
+          "external_id": "CAPEC-77"
+        }
+      ],
+      "id": "weakness--bd696f33-1ee8-59eb-9d30-3bdee9553805",
+      "likelihood_of_exploit": [
+        "Medium"
+      ],
+      "modes_of_introduction": [
+        "Implementation"
+      ],
+      "modified": "2025-04-03T00:00:00.000Z",
+      "name": "Improper Control of Generation of Code ('Code Injection')",
+      "object_marking_refs": [
+        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+        "marking-definition--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b"
+      ],
+      "spec_version": "2.1",
+      "type": "weakness"
+    },
+    {
+      "common_consequences": [
+        "Confidentiality",
+        "Integrity"
+      ],
+      "created": "2006-07-19T00:00:00.000Z",
+      "created_by_ref": "identity--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b",
+      "description": "The product receives input from an upstream component, but it does not restrict or incorrectly restricts the input before it is used as an identifier for a resource that may be outside the intended sphere of control.\n-------------\n<span>\n            <p>A resource injection issue occurs when the following two conditions are met:</p>\n               <ol>\n                  <li>An attacker can specify the identifier used to access a system resource. For example, an attacker might be able to specify part of the name of a file to be opened or a port number to be used.</li>\n                  <li>By specifying the resource, the attacker gains a capability that would not otherwise be permitted. For example, the program may give the attacker the ability to overwrite the specified file, run with a configuration controlled by the attacker, or transmit sensitive information to a third-party server.</li>\n               </ol>\n            <p>This may enable an attacker to access or modify otherwise protected system resources.</p>\n         </span>",
+      "detection_methods": [
+        "Automated Static Analysis"
+      ],
+      "extensions": {
+        "extension-definition--31725edc-7d81-5db7-908a-9134f322284a": {
+          "extension_type": "new-sdo"
+        }
+      },
+      "external_references": [
+        {
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/99.html",
+          "external_id": "CWE-99"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/10.html",
+          "external_id": "CAPEC-10"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/240.html",
+          "external_id": "CAPEC-240"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/75.html",
+          "external_id": "CAPEC-75"
+        }
+      ],
+      "id": "weakness--c80522e0-a937-5dcb-846a-d5aefc1dc552",
+      "likelihood_of_exploit": [
+        "High"
+      ],
+      "modes_of_introduction": [
+        "Architecture and Design",
+        "Implementation"
+      ],
+      "modified": "2023-10-26T00:00:00.000Z",
+      "name": "Improper Control of Resource Identifiers ('Resource Injection')",
+      "object_marking_refs": [
+        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+        "marking-definition--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b"
+      ],
+      "spec_version": "2.1",
+      "type": "weakness"
+    },
+    {
+      "common_consequences": [
+        "Access Control"
+      ],
+      "created": "2006-07-19T00:00:00.000Z",
+      "created_by_ref": "identity--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b",
+      "description": "The product does not properly assign, modify, track, or check privileges for an actor, creating an unintended sphere of control for that actor.",
+      "detection_methods": [
+        "Automated Static Analysis"
+      ],
+      "extensions": {
+        "extension-definition--31725edc-7d81-5db7-908a-9134f322284a": {
+          "extension_type": "new-sdo"
+        }
+      },
+      "external_references": [
+        {
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/269.html",
+          "external_id": "CWE-269"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/122.html",
+          "external_id": "CAPEC-122"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/233.html",
+          "external_id": "CAPEC-233"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/58.html",
+          "external_id": "CAPEC-58"
+        }
+      ],
+      "id": "weakness--eb90af25-bcf1-5a0e-a162-a149ed58712a",
+      "likelihood_of_exploit": [
+        "Medium"
+      ],
+      "modes_of_introduction": [
+        "Architecture and Design",
+        "Implementation",
+        "Operation"
+      ],
+      "modified": "2024-11-19T00:00:00.000Z",
+      "name": "Improper Privilege Management",
+      "object_marking_refs": [
+        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+        "marking-definition--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b"
+      ],
+      "spec_version": "2.1",
+      "type": "weakness"
+    },
+    {
+      "common_consequences": [
+        "Confidentiality",
+        "Integrity"
+      ],
+      "created": "2006-07-19T00:00:00.000Z",
+      "created_by_ref": "identity--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b",
+      "description": "During installation, installed file permissions are set to allow anyone to modify those files.",
+      "detection_methods": [
+        "Automated Static Analysis - Binary or Bytecode",
+        "Manual Static Analysis - Binary or Bytecode",
+        "Dynamic Analysis with Automated Results Interpretation",
+        "Dynamic Analysis with Manual Results Interpretation",
+        "Manual Static Analysis - Source Code",
+        "Automated Static Analysis - Source Code",
+        "Automated Static Analysis",
+        "Architecture or Design Review"
+      ],
+      "extensions": {
+        "extension-definition--31725edc-7d81-5db7-908a-9134f322284a": {
+          "extension_type": "new-sdo"
+        }
+      },
+      "external_references": [
+        {
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/276.html",
+          "external_id": "CWE-276"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/1.html",
+          "external_id": "CAPEC-1"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/127.html",
+          "external_id": "CAPEC-127"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/81.html",
+          "external_id": "CAPEC-81"
+        }
+      ],
+      "id": "weakness--bfa2f40d-b5f0-505e-9ac5-92adfe0b6bd8",
+      "likelihood_of_exploit": [
+        "Medium"
+      ],
+      "modes_of_introduction": [
+        "Architecture and Design",
+        "Implementation",
+        "Installation",
+        "Operation"
+      ],
+      "modified": "2023-06-29T00:00:00.000Z",
+      "name": "Incorrect Default Permissions",
+      "object_marking_refs": [
+        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+        "marking-definition--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b"
+      ],
+      "spec_version": "2.1",
+      "type": "weakness"
+    },
+    {
+      "common_consequences": [
+        "Confidentiality",
+        "Integrity",
+        "Access Control",
+        "Availability"
+      ],
+      "created": "2011-05-24T00:00:00.000Z",
+      "created_by_ref": "identity--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b",
+      "description": "The product does not perform an authorization check when an actor attempts to access a resource or perform an action.",
+      "detection_methods": [
+        "Automated Static Analysis",
+        "Automated Dynamic Analysis",
+        "Manual Analysis",
+        "Manual Static Analysis - Binary or Bytecode",
+        "Dynamic Analysis with Automated Results Interpretation",
+        "Dynamic Analysis with Manual Results Interpretation",
+        "Manual Static Analysis - Source Code",
+        "Automated Static Analysis - Source Code",
+        "Architecture or Design Review"
+      ],
+      "extensions": {
+        "extension-definition--31725edc-7d81-5db7-908a-9134f322284a": {
+          "extension_type": "new-sdo"
+        }
+      },
+      "external_references": [
+        {
+          "source_name": "cwe",
+          "url": "http://cwe.mitre.org/data/definitions/862.html",
+          "external_id": "CWE-862"
+        },
+        {
+          "source_name": "capec",
+          "url": "https://capec.mitre.org/data/definitions/665.html",
+          "external_id": "CAPEC-665"
+        }
+      ],
+      "id": "weakness--e0f27140-5b49-51ea-aef0-0fed0dd082cf",
+      "likelihood_of_exploit": [
+        "High"
+      ],
+      "modes_of_introduction": [
+        "Architecture and Design",
+        "Implementation",
+        "Operation"
+      ],
+      "modified": "2024-11-19T00:00:00.000Z",
+      "name": "Missing Authorization",
+      "object_marking_refs": [
+        "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+        "marking-definition--d91de5c9-2d85-5cc9-97c0-c5ec8deb1a4b"
+      ],
+      "spec_version": "2.1",
+      "type": "weakness"
+    }
+  ]
+}
