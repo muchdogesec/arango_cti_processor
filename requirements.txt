@@ -73,7 +73,7 @@ tqdm==4.67.1 ; python_version >= "3.7"
     # via
     #   arango_cti_processor (pyproject.toml)
     #   stix2arango
-urllib3==2.6.0
+urllib3==2.6.3
     # via
     #   python-arango
     #   requests
