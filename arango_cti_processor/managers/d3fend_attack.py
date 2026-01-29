@@ -10,8 +10,8 @@ class D3fendAttack(
     STIXRelationManager, relationship_note="d3fend-attack", register=True
 ):
     priority = 8
-    edge_collection = "mitre_d3fend_edge_collection"
-    vertex_collection = "mitre_d3fend_vertex_collection"
+    edge_collection = "d3fend_edge_collection"
+    vertex_collection = "d3fend_vertex_collection"
     MAPPING_URL = (
         "https://d3fend.mitre.org/ontologies/d3fend/{}/d3fend-full-mappings.json"
     )
