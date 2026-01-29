@@ -25,6 +25,7 @@ class D3fendAttack(
     def __init__(self, processor, *args, version="", secondary_version=None, ignore_embedded_relationships=True, **kwargs):
         if not version:
             raise ValueError(f"version is required for `{self.relationship_note}` relation manager")
+        version = version.replace("_", ".").strip("v")
         super().__init__(processor, *args, version=version, secondary_version=secondary_version, ignore_embedded_relationships=ignore_embedded_relationships, **kwargs)
 
     def get_objects_from_db(self, **kwargs):
