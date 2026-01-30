@@ -49,7 +49,7 @@ RETURN [doc.external_references[0].external_id, KEEP(doc, "created", "id", "modi
         )
         return dict(self.arango.execute_raw_query(query, bind_vars=binds))
 
-    def retrieve_remote_date(self):
+    def retrieve_remote_data(self):
         url = self.MAPPING_URL.format(self.version)
         response = requests.get(url)
         response.raise_for_status()
@@ -61,7 +61,7 @@ RETURN [doc.external_references[0].external_id, KEEP(doc, "created", "id", "modi
         return uri.split("#")[-1]
 
     def get_object_chunks(self, **kwargs):
-        remote_data = self.retrieve_remote_date()
+        remote_data = self.retrieve_remote_data()
         self.primary_data = self.get_objects_from_db()
         if not self.primary_data:
             raise ValueError(f"no d3fend objects found for version `{self.version}`")
