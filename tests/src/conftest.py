@@ -20,6 +20,7 @@ def upload_all():
         ('mitre_capec', '3.7', 'capec_v3_7.json'),
         ('mitre_capec', '3.9', 'capec_v3_9.json'),
         ('mitre_attack_enterprise', '17.1', 'attack-enterprise-objects.json'),
+        ("d3fend", "1.3.0", "d3fend-artifacts-only.json"),
     ]
     for collection, version, path in data:
         path = base_file_path/path

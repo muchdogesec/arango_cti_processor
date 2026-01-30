@@ -1,0 +1,969 @@
+{
+    "results": {
+        "bindings": [
+            {
+                "query_def_tech_label": {
+                    "type": "literal",
+                    "value": "Execution Isolation"
+                },
+                "top_def_tech_label": {
+                    "type": "literal",
+                    "value": "Execution Isolation"
+                },
+                "def_tactic_label": {
+                    "type": "literal",
+                    "value": "Isolate"
+                },
+                "def_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "def_tech_label": {
+                    "type": "literal",
+                    "value": "Kernel-based Process Isolation"
+                },
+                "def_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "isolates"
+                },
+                "def_artifact_label": {
+                    "type": "literal",
+                    "value": "Process"
+                },
+                "off_artifact_label": {
+                    "type": "literal",
+                    "value": "Authentication Service"
+                },
+                "off_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "modifies"
+                },
+                "off_tech_label": {
+                    "type": "literal",
+                    "value": "Modify Authentication Process"
+                },
+                "off_tech_id": {
+                    "type": "literal",
+                    "value": "T1556"
+                },
+                "off_tech_parent_label": {
+                    "type": "literal",
+                    "value": "Persistence Technique"
+                },
+                "off_tech_parent_is_toplevel": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+                    "type": "literal",
+                    "value": "true"
+                },
+                "off_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "off_tactic_label": {
+                    "type": "literal",
+                    "value": "Persistence"
+                },
+                "def_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Isolate"
+                },
+                "def_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "def_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Kernel-basedProcessIsolation"
+                },
+                "def_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#isolates"
+                },
+                "def_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Process"
+                },
+                "off_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#AuthenticationService"
+                },
+                "off_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#modifies"
+                },
+                "off_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1556"
+                },
+                "off_tech_parent": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#PersistenceTechnique"
+                },
+                "off_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "off_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#TA0003"
+                }
+            },
+            {
+                "query_def_tech_label": {
+                    "type": "literal",
+                    "value": "File Metadata Consistency Validation"
+                },
+                "top_def_tech_label": {
+                    "type": "literal",
+                    "value": "Content Filtering"
+                },
+                "def_tactic_label": {
+                    "type": "literal",
+                    "value": "Isolate"
+                },
+                "def_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "def_tech_label": {
+                    "type": "literal",
+                    "value": "Content Filtering"
+                },
+                "def_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "filters"
+                },
+                "def_artifact_label": {
+                    "type": "literal",
+                    "value": "File"
+                },
+                "off_artifact_label": {
+                    "type": "literal",
+                    "value": "File"
+                },
+                "off_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "accesses"
+                },
+                "off_tech_label": {
+                    "type": "literal",
+                    "value": "File and Directory Discovery"
+                },
+                "off_tech_id": {
+                    "type": "literal",
+                    "value": "T1083"
+                },
+                "off_tech_parent_label": {
+                    "type": "literal",
+                    "value": "Discovery Technique"
+                },
+                "off_tech_parent_is_toplevel": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+                    "type": "literal",
+                    "value": "true"
+                },
+                "off_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "off_tactic_label": {
+                    "type": "literal",
+                    "value": "Discovery"
+                },
+                "def_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Isolate"
+                },
+                "def_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "def_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#ContentFiltering"
+                },
+                "def_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#filters"
+                },
+                "def_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#File"
+                },
+                "off_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#File"
+                },
+                "off_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#accesses"
+                },
+                "off_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1083"
+                },
+                "off_tech_parent": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#DiscoveryTechnique"
+                },
+                "off_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "off_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#TA0007"
+                }
+            },
+            {
+                "query_def_tech_label": {
+                    "type": "literal",
+                    "value": "Platform Hardening"
+                },
+                "top_def_tech_label": {
+                    "type": "literal",
+                    "value": "Platform Hardening"
+                },
+                "def_tactic_label": {
+                    "type": "literal",
+                    "value": "Harden"
+                },
+                "def_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "def_tech_label": {
+                    "type": "literal",
+                    "value": "Software Update"
+                },
+                "def_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "updates"
+                },
+                "def_artifact_label": {
+                    "type": "literal",
+                    "value": "Software"
+                },
+                "off_artifact_label": {
+                    "type": "literal",
+                    "value": "Firmware"
+                },
+                "off_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "modifies"
+                },
+                "off_tech_label": {
+                    "type": "literal",
+                    "value": "Component Firmware"
+                },
+                "off_tech_id": {
+                    "type": "literal",
+                    "value": "T1542.002"
+                },
+                "off_tech_parent_label": {
+                    "type": "literal",
+                    "value": "Pre-OS Boot"
+                },
+                "off_tech_parent_is_toplevel": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+                    "type": "literal",
+                    "value": "false"
+                },
+                "off_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "off_tactic_label": {
+                    "type": "literal",
+                    "value": "Defense Evasion"
+                },
+                "def_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Harden"
+                },
+                "def_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "def_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#SoftwareUpdate"
+                },
+                "def_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#updates"
+                },
+                "def_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Software"
+                },
+                "off_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Firmware"
+                },
+                "off_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#modifies"
+                },
+                "off_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1542.002"
+                },
+                "off_tech_parent": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1542"
+                },
+                "off_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "off_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#TA0005"
+                }
+            },
+            {
+                "query_def_tech_label": {
+                    "type": "literal",
+                    "value": "Platform Hardening"
+                },
+                "top_def_tech_label": {
+                    "type": "literal",
+                    "value": "Platform Hardening"
+                },
+                "def_tactic_label": {
+                    "type": "literal",
+                    "value": "Harden"
+                },
+                "def_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "def_tech_label": {
+                    "type": "literal",
+                    "value": "Software Update"
+                },
+                "def_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "updates"
+                },
+                "def_artifact_label": {
+                    "type": "literal",
+                    "value": "Software"
+                },
+                "off_artifact_label": {
+                    "type": "literal",
+                    "value": "Service Application"
+                },
+                "off_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "modifies"
+                },
+                "off_tech_label": {
+                    "type": "literal",
+                    "value": "Services File Permissions Weakness"
+                },
+                "off_tech_id": {
+                    "type": "literal",
+                    "value": "T1574.010"
+                },
+                "off_tech_parent_label": {
+                    "type": "literal",
+                    "value": "Hijack Execution Flow"
+                },
+                "off_tech_parent_is_toplevel": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+                    "type": "literal",
+                    "value": "false"
+                },
+                "off_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "off_tactic_label": {
+                    "type": "literal",
+                    "value": "Defense Evasion"
+                },
+                "def_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Harden"
+                },
+                "def_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "def_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#SoftwareUpdate"
+                },
+                "def_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#updates"
+                },
+                "def_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Software"
+                },
+                "off_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#ServiceApplication"
+                },
+                "off_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#modifies"
+                },
+                "off_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1574.010"
+                },
+                "off_tech_parent": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1574"
+                },
+                "off_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "off_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#TA0005"
+                }
+            },
+            {
+                "query_def_tech_label": {
+                    "type": "literal",
+                    "value": "File Format Verification"
+                },
+                "top_def_tech_label": {
+                    "type": "literal",
+                    "value": "Content Filtering"
+                },
+                "def_tactic_label": {
+                    "type": "literal",
+                    "value": "Isolate"
+                },
+                "def_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "def_tech_label": {
+                    "type": "literal",
+                    "value": "File Format Verification"
+                },
+                "def_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "analyzes"
+                },
+                "def_artifact_label": {
+                    "type": "literal",
+                    "value": "File Section"
+                },
+                "off_artifact_label": {
+                    "type": "literal",
+                    "value": "Resource Fork"
+                },
+                "off_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "may-create"
+                },
+                "off_tech_label": {
+                    "type": "literal",
+                    "value": "Resource Forking"
+                },
+                "off_tech_id": {
+                    "type": "literal",
+                    "value": "T1564.009"
+                },
+                "off_tech_parent_label": {
+                    "type": "literal",
+                    "value": "Hide Artifacts"
+                },
+                "off_tech_parent_is_toplevel": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+                    "type": "literal",
+                    "value": "false"
+                },
+                "off_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "off_tactic_label": {
+                    "type": "literal",
+                    "value": "Defense Evasion"
+                },
+                "def_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Isolate"
+                },
+                "def_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "def_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#FileFormatVerification"
+                },
+                "def_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#analyzes"
+                },
+                "def_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#FileSection"
+                },
+                "off_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#ResourceFork"
+                },
+                "off_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#may-create"
+                },
+                "off_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1564.009"
+                },
+                "off_tech_parent": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1564"
+                },
+                "off_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "off_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#TA0005"
+                }
+            },
+            {
+                "query_def_tech_label": {
+                    "type": "literal",
+                    "value": "File Format Verification"
+                },
+                "top_def_tech_label": {
+                    "type": "literal",
+                    "value": "Content Filtering"
+                },
+                "def_tactic_label": {
+                    "type": "literal",
+                    "value": "Isolate"
+                },
+                "def_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "def_tech_label": {
+                    "type": "literal",
+                    "value": "File Format Verification"
+                },
+                "def_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "analyzes"
+                },
+                "def_artifact_label": {
+                    "type": "literal",
+                    "value": "File Section"
+                },
+                "off_artifact_label": {
+                    "type": "literal",
+                    "value": "Resource Fork"
+                },
+                "off_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "may-modify"
+                },
+                "off_tech_label": {
+                    "type": "literal",
+                    "value": "Resource Forking"
+                },
+                "off_tech_id": {
+                    "type": "literal",
+                    "value": "T1564.009"
+                },
+                "off_tech_parent_label": {
+                    "type": "literal",
+                    "value": "Hide Artifacts"
+                },
+                "off_tech_parent_is_toplevel": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+                    "type": "literal",
+                    "value": "false"
+                },
+                "off_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "off_tactic_label": {
+                    "type": "literal",
+                    "value": "Defense Evasion"
+                },
+                "def_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Isolate"
+                },
+                "def_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "def_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#FileFormatVerification"
+                },
+                "def_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#analyzes"
+                },
+                "def_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#FileSection"
+                },
+                "off_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#ResourceFork"
+                },
+                "off_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#may-modify"
+                },
+                "off_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1564.009"
+                },
+                "off_tech_parent": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1564"
+                },
+                "off_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "off_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#TA0005"
+                }
+            },
+            {
+                "query_def_tech_label": {
+                    "type": "literal",
+                    "value": "Platform Monitoring"
+                },
+                "top_def_tech_label": {
+                    "type": "literal",
+                    "value": "Platform Monitoring"
+                },
+                "def_tactic_label": {
+                    "type": "literal",
+                    "value": "Detect"
+                },
+                "def_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "def_tech_label": {
+                    "type": "literal",
+                    "value": "Memory Boundary Tracking"
+                },
+                "def_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "analyzes"
+                },
+                "def_artifact_label": {
+                    "type": "literal",
+                    "value": "Process Code Segment"
+                },
+                "off_artifact_label": {
+                    "type": "literal",
+                    "value": "Process Code Segment"
+                },
+                "off_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "may-modify"
+                },
+                "off_tech_label": {
+                    "type": "literal",
+                    "value": "Exploitation for Defense Evasion"
+                },
+                "off_tech_id": {
+                    "type": "literal",
+                    "value": "T1211"
+                },
+                "off_tech_parent_label": {
+                    "type": "literal",
+                    "value": "Defense Evasion Technique"
+                },
+                "off_tech_parent_is_toplevel": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+                    "type": "literal",
+                    "value": "true"
+                },
+                "off_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "off_tactic_label": {
+                    "type": "literal",
+                    "value": "Defense Evasion"
+                },
+                "def_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Detect"
+                },
+                "def_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "def_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#MemoryBoundaryTracking"
+                },
+                "def_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#analyzes"
+                },
+                "def_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#ProcessCodeSegment"
+                },
+                "off_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#ProcessCodeSegment"
+                },
+                "off_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#may-modify"
+                },
+                "off_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1211"
+                },
+                "off_tech_parent": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#DefenseEvasionTechnique"
+                },
+                "off_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "off_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#TA0005"
+                }
+            },
+            {
+                "query_def_tech_label": {
+                    "type": "literal",
+                    "value": "Local File Permissions"
+                },
+                "top_def_tech_label": {
+                    "type": "literal",
+                    "value": "Access Policy Administration"
+                },
+                "def_tactic_label": {
+                    "type": "literal",
+                    "value": "Isolate"
+                },
+                "def_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "def_tech_label": {
+                    "type": "literal",
+                    "value": "Local File Permissions"
+                },
+                "def_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "restricts"
+                },
+                "def_artifact_label": {
+                    "type": "literal",
+                    "value": "Directory"
+                },
+                "off_artifact_label": {
+                    "type": "literal",
+                    "value": "Directory"
+                },
+                "off_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "accesses"
+                },
+                "off_tech_label": {
+                    "type": "literal",
+                    "value": "File and Directory Discovery"
+                },
+                "off_tech_id": {
+                    "type": "literal",
+                    "value": "T1083"
+                },
+                "off_tech_parent_label": {
+                    "type": "literal",
+                    "value": "Discovery Technique"
+                },
+                "off_tech_parent_is_toplevel": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+                    "type": "literal",
+                    "value": "true"
+                },
+                "off_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "off_tactic_label": {
+                    "type": "literal",
+                    "value": "Discovery"
+                },
+                "def_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Isolate"
+                },
+                "def_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "def_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#LocalFilePermissions"
+                },
+                "def_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#restricts"
+                },
+                "def_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Directory"
+                },
+                "off_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Directory"
+                },
+                "off_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#accesses"
+                },
+                "off_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1083"
+                },
+                "off_tech_parent": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#DiscoveryTechnique"
+                },
+                "off_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "off_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#TA0007"
+                }
+            },
+            {
+                "query_def_tech_label": {
+                    "type": "literal",
+                    "value": "Stack Frame Canary Validation"
+                },
+                "top_def_tech_label": {
+                    "type": "literal",
+                    "value": "Application Hardening"
+                },
+                "def_tactic_label": {
+                    "type": "literal",
+                    "value": "Harden"
+                },
+                "def_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "def_tech_label": {
+                    "type": "literal",
+                    "value": "Stack Frame Canary Validation"
+                },
+                "def_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "validates"
+                },
+                "def_artifact_label": {
+                    "type": "literal",
+                    "value": "Stack Frame"
+                },
+                "off_artifact_label": {
+                    "type": "literal",
+                    "value": "Stack Frame"
+                },
+                "off_artifact_rel_label": {
+                    "type": "literal",
+                    "value": "may-modify"
+                },
+                "off_tech_label": {
+                    "type": "literal",
+                    "value": "Exploitation for Defense Evasion"
+                },
+                "off_tech_id": {
+                    "type": "literal",
+                    "value": "T1211"
+                },
+                "off_tech_parent_label": {
+                    "type": "literal",
+                    "value": "Defense Evasion Technique"
+                },
+                "off_tech_parent_is_toplevel": {
+                    "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+                    "type": "literal",
+                    "value": "true"
+                },
+                "off_tactic_rel_label": {
+                    "type": "literal",
+                    "value": "enables"
+                },
+                "off_tactic_label": {
+                    "type": "literal",
+                    "value": "Defense Evasion"
+                },
+                "def_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#Harden"
+                },
+                "def_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "def_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#StackFrameCanaryValidation"
+                },
+                "def_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#validates"
+                },
+                "def_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#StackFrame"
+                },
+                "off_artifact": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#StackFrame"
+                },
+                "off_artifact_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#may-modify"
+                },
+                "off_tech": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#T1211"
+                },
+                "off_tech_parent": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#DefenseEvasionTechnique"
+                },
+                "off_tactic_rel": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#enables"
+                },
+                "off_tactic": {
+                    "type": "uri",
+                    "value": "http://d3fend.mitre.org/ontologies/d3fend.owl#TA0005"
+                }
+            }
+        ]
+    }
+}

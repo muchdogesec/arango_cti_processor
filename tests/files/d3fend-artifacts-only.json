@@ -1,0 +1,270 @@
+{
+    "type": "bundle",
+    "id": "bundle--86a2e46f-6e0a-4a1c-852b-fb388d2007a9",
+    "objects": [
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--9373959f-2e79-563d-b22a-044761906581",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Stack Frame",
+            "description": "A machine-dependent and application-binary-dependent (ABI-dependent) data structure containing subroutine state information including the arguments passed into the routine, the return address back to the routine's caller, and space for local variables of the routine.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:StackFrame",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:StackFrame",
+                    "external_id": "d3f:StackFrame"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "dbr:Call_stack"
+                },
+                {
+                    "source_name": "rdfs-defined-by",
+                    "url": "http://dbpedia.org/resource/Call_stack#Structure"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--960e5015-f2f3-5362-ad83-64735984f5c5",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Process Code Segment",
+            "description": "A process code segment, also known as a text segment or simply as text, is a portion of the program's virtual address space that contains executable instructions and corresponds to the loaded image code segment. Includes additional sections such as an import table.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:ProcessCodeSegment",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:ProcessCodeSegment",
+                    "external_id": "d3f:ProcessCodeSegment"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "d3f:ImageCodeSegment"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "dbr:Code_segment"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--973dd2b1-cbad-50eb-b8c1-2b11b20ba2cd",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Firmware",
+            "description": "In electronic systems and computing, firmware is a type of software that provides control, monitoring and data manipulation of engineered products and systems. Typical examples of devices containing firmware are embedded systems (such as traffic lights, consumer appliances, remote controls and digital watches), computers, computer peripherals, mobile phones, and digital cameras. The firmware contained in these devices provides the low-level control program for the device.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:Firmware",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:Firmware",
+                    "external_id": "d3f:Firmware"
+                },
+                {
+                    "source_name": "rdfs-defined-by",
+                    "url": "http://dbpedia.org/resource/Firmware"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--60884624-43e9-5eb3-8e47-a352837deb96",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "File",
+            "description": "A file maintained in computer-readable form.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:File",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:File",
+                    "external_id": "d3f:File"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "http://wordnet-rdf.princeton.edu/id/06521201-n"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--5848db63-d9ad-5a34-b307-345b5013bc76",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Resource Fork",
+            "description": "The resource fork is a fork or section of a file on Apple's classic Mac OS operating system, which was also carried over to the modern macOS for compatibility, used to store structured data along with the unstructured data stored within the data fork.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:ResourceFork",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:ResourceFork",
+                    "external_id": "d3f:ResourceFork"
+                },
+                {
+                    "source_name": "rdfs-defined-by",
+                    "url": "http://dbpedia.org/resource/Resource_fork"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--c6ebdf79-dcef-5dae-a400-c09f76f7530a",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Service Application",
+            "description": "An application that provides a set of software functionalities so that multiple clients who can reuse the functionality, provided they are authorized for use of the service.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:ServiceApplication",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:ServiceApplication",
+                    "external_id": "d3f:ServiceApplication"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "dbr:Server_(computing)"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "dbr:Service_(systems_architecture)"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--5a0e32f1-e049-58cc-bf2a-ecd0faca0210",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Authentication Service",
+            "description": "An authentication service is a mechanism, analogous to the use of passwords on time-sharing systems, for the secure authentication of the identity of network clients by servers and vice versa, without presuming the operating system integrity of either (e.g., Kerberos).",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:AuthenticationService",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:AuthenticationService",
+                    "external_id": "d3f:AuthenticationService"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "dbr:Authentication"
+                },
+                {
+                    "source_name": "rdfs-defined-by",
+                    "url": "https://www.gartner.com/en/information-technology/glossary/authentication-service"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--87311e16-ccf7-5e2c-bf41-fc2115a7140f",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Directory",
+            "description": "In computing, a directory is a file system cataloging structure which contains references to other computer files, and possibly other directories. On many computers, directories are known as folders, or drawers to provide some relevancy to a workbench or the traditional office file cabinet.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:Directory",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:Directory",
+                    "external_id": "d3f:Directory"
+                },
+                {
+                    "source_name": "rdfs-defined-by",
+                    "url": "http://dbpedia.org/resource/Directory_(computing)"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        }
+    ]
+}
