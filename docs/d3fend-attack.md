@@ -225,8 +225,8 @@ So we need to join the Artifact to the ATT&CK object like so...
 {
   "type": "relationship",
   "id": "relationship--<UUID v5>",
-  "created": "<source.created>",
-  "modified": "<source.modified>",
+  "created": "<target.created>",
+  "modified": "<target.modified>",
   "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
   "relationship_type": "<off_artifact_rel>",
   "source_ref": "attack-pattern--<ATTACK TECHNIQUE OBJECT>",
