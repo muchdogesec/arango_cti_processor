@@ -113,8 +113,11 @@ def test_get_secondary_objects(session_processor, remote_data):
             },
         ],
         "created": "2018-04-18T17:59:24.739Z",
-        "_id": "mitre_attack_enterprise_vertex_collection/attack-pattern--fe926152-f431-4baf-956c-4ad3cb0bf23b+2025-10-07T11:06:12.949358Z",
+        "_id": secondary_objects["T1211"]["_id"],
     }
+    assert secondary_objects["T1211"]["_id"].startswith(
+        "mitre_attack_enterprise_vertex_collection/attack-pattern--fe926152-f431-4baf-956c-4ad3cb0bf23b"
+    )
 
 
 @patch("arango_cti_processor.managers.d3fend_attack.requests.get")
@@ -209,7 +212,7 @@ def test_relate_single(mock_get, session_processor, raw_remote_data, remote_data
         ],
         "description": "Modify Authentication Process (T1556) modifies Authentication Service",
         "_arango_cti_processor_note": "d3fend-attack",
-        "_from": "mitre_attack_enterprise_vertex_collection/attack-pattern--f4c1826f-a322-41cd-9557-562100848c84+2025-10-07T11:06:12.949399Z",
+        "_from": manager.secondary_data["T1556"]["_id"],
         "_is_ref": False,
         "external_references": [
             {
@@ -225,3 +228,10 @@ def test_relate_single(mock_get, session_processor, raw_remote_data, remote_data
         ],
         "_to": manager.primary_data["d3f:AuthenticationService"]["_id"],
     }
+
+    assert manager.primary_data["d3f:AuthenticationService"]["_id"].startswith(
+        "d3fend_vertex_collection/indicator--5a0e32f1-e049-58cc-bf2a-ecd0faca0210"
+    )
+    assert manager.secondary_data["T1556"]["_id"].startswith(
+        "mitre_attack_enterprise_vertex_collection/attack-pattern--f4c1826f-a322-41cd-9557-562100848c84"
+    )

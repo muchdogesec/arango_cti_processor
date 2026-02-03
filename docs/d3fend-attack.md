@@ -1,6 +1,6 @@
-## D3fend Attack Pattern -> MITRE Attack Pattern relationship (`cwe-capec`)
+## D3fend Attack Pattern -> MITRE Attack Pattern relationship (`d3fend-attack`)
 
-* Source collection: `mitre_def3nd_vertex_collection` (`type==weakness` objects only)
+* Source collection: `def3nd_vertex_collection` (`type==weakness` objects only)
 * Destination collections: `mitre_attack_enterprise_vertex_collection`, `mitre_attack_mobile_vertex_collection`, `mitre_attack_ics_vertex_collection` (`type==attack-pattern` objects only)
 
 #### d3fend API 
@@ -225,8 +225,8 @@ So we need to join the Artifact to the ATT&CK object like so...
 {
   "type": "relationship",
   "id": "relationship--<UUID v5>",
-  "created": "<source.created>",
-  "modified": "<target.created>",
+  "created": "<target.created>",
+  "modified": "<target.modified>",
   "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
   "relationship_type": "<off_artifact_rel>",
   "source_ref": "attack-pattern--<ATTACK TECHNIQUE OBJECT>",
@@ -237,7 +237,12 @@ So we need to join the Artifact to the ATT&CK object like so...
       "source_name": "mitre-attack",
       "url": "https://attack.mitre.org/techniques/<ID>",
       "external_id": "<ID>"
-    }
+    },
+    {
+      "source_name": "mitre-d3fend",
+      "url": "https://d3fend.mitre.org/dao/artifact/<ID>",
+      "external_id": "<ID>",
+            },
   ],
   "object_marking_refs": [
     "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
