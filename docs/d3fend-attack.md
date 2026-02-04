@@ -1,4 +1,4 @@
-## D3fend Attack Pattern -> MITRE Attack Pattern relationship (`d3fend-attack`)
+## D3fend Attack Pattern -> MITRE Attack Pattern relationship (`d3fend-knowledgebases`)
 
 * Source collection: `def3nd_vertex_collection` (`type==weakness` objects only)
 * Destination collections: `mitre_attack_enterprise_vertex_collection`, `mitre_attack_mobile_vertex_collection`, `mitre_attack_ics_vertex_collection` (`type==attack-pattern` objects only)

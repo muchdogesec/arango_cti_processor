@@ -5,31 +5,23 @@
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--9373959f-2e79-563d-b22a-044761906581",
+            "id": "indicator--1ba220fa-dc29-5c39-9995-f917fa9b2858",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2025-12-16T00:12:00.000Z",
             "modified": "2025-12-16T00:12:00.000Z",
-            "name": "Stack Frame",
-            "description": "A machine-dependent and application-binary-dependent (ABI-dependent) data structure containing subroutine state information including the arguments passed into the routine, the return address back to the routine's caller, and space for local variables of the routine.",
+            "name": "User Input Function",
+            "description": "Generic function that receives direct user input from an untrusted source.",
             "indicator_types": [
                 "unknown"
             ],
-            "pattern": "d3f:StackFrame",
+            "pattern": "d3f:UserInputFunction",
             "pattern_type": "d3fend",
             "valid_from": "2025-12-16T00:12:00Z",
             "external_references": [
                 {
                     "source_name": "mitre-d3fend",
-                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:StackFrame",
-                    "external_id": "d3f:StackFrame"
-                },
-                {
-                    "source_name": "rdfs-seeAlso",
-                    "url": "dbr:Call_stack"
-                },
-                {
-                    "source_name": "rdfs-defined-by",
-                    "url": "http://dbpedia.org/resource/Call_stack#Structure"
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:UserInputFunction",
+                    "external_id": "d3f:UserInputFunction"
                 }
             ],
             "object_marking_refs": [
@@ -40,31 +32,35 @@
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--960e5015-f2f3-5362-ad83-64735984f5c5",
+            "id": "indicator--40363060-34e7-5a88-8991-683705a3cfc1",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2025-12-16T00:12:00.000Z",
             "modified": "2025-12-16T00:12:00.000Z",
-            "name": "Process Code Segment",
-            "description": "A process code segment, also known as a text segment or simply as text, is a portion of the program's virtual address space that contains executable instructions and corresponds to the loaded image code segment. Includes additional sections such as an import table.",
+            "name": "Digital Artifact",
+            "description": "An information-bearing artifact (object) that is, or is encoded to be used with, a digital computer system. This concept is broad to include the literal instances of an artifact, or an implicit summarization of changes to or properties of other artifacts.",
             "indicator_types": [
                 "unknown"
             ],
-            "pattern": "d3f:ProcessCodeSegment",
+            "pattern": "d3f:DigitalArtifact",
             "pattern_type": "d3fend",
             "valid_from": "2025-12-16T00:12:00Z",
             "external_references": [
                 {
                     "source_name": "mitre-d3fend",
-                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:ProcessCodeSegment",
-                    "external_id": "d3f:ProcessCodeSegment"
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:DigitalArtifact",
+                    "external_id": "d3f:DigitalArtifact"
                 },
                 {
                     "source_name": "rdfs-seeAlso",
-                    "url": "d3f:ImageCodeSegment"
+                    "url": "http://dbpedia.org/resource/Digital_artifactual_value"
                 },
                 {
                     "source_name": "rdfs-seeAlso",
-                    "url": "dbr:Code_segment"
+                    "url": "http://dbpedia.org/resource/Virtual_artifact"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "https://www.iso.org/obp/ui/#iso:std:iso-iec:19770:-1:ed-3:v1:en"
                 }
             ],
             "object_marking_refs": [
@@ -75,58 +71,23 @@
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--973dd2b1-cbad-50eb-b8c1-2b11b20ba2cd",
+            "id": "indicator--50e1bc01-2bce-5596-9d39-71447e24822c",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2025-12-16T00:12:00.000Z",
             "modified": "2025-12-16T00:12:00.000Z",
-            "name": "Firmware",
-            "description": "In electronic systems and computing, firmware is a type of software that provides control, monitoring and data manipulation of engineered products and systems. Typical examples of devices containing firmware are embedded systems (such as traffic lights, consumer appliances, remote controls and digital watches), computers, computer peripherals, mobile phones, and digital cameras. The firmware contained in these devices provides the low-level control program for the device.",
+            "name": "JavaScript Blob",
+            "description": "A JavaScript Blob is a Blob that was created by a JavaScript Blob() constructor call or equivalent function.",
             "indicator_types": [
                 "unknown"
             ],
-            "pattern": "d3f:Firmware",
+            "pattern": "d3f:JavaScriptBlob",
             "pattern_type": "d3fend",
             "valid_from": "2025-12-16T00:12:00Z",
             "external_references": [
                 {
                     "source_name": "mitre-d3fend",
-                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:Firmware",
-                    "external_id": "d3f:Firmware"
-                },
-                {
-                    "source_name": "rdfs-defined-by",
-                    "url": "http://dbpedia.org/resource/Firmware"
-                }
-            ],
-            "object_marking_refs": [
-                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
-            ]
-        },
-        {
-            "type": "indicator",
-            "spec_version": "2.1",
-            "id": "indicator--60884624-43e9-5eb3-8e47-a352837deb96",
-            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-            "created": "2025-12-16T00:12:00.000Z",
-            "modified": "2025-12-16T00:12:00.000Z",
-            "name": "File",
-            "description": "A file maintained in computer-readable form.",
-            "indicator_types": [
-                "unknown"
-            ],
-            "pattern": "d3f:File",
-            "pattern_type": "d3fend",
-            "valid_from": "2025-12-16T00:12:00Z",
-            "external_references": [
-                {
-                    "source_name": "mitre-d3fend",
-                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:File",
-                    "external_id": "d3f:File"
-                },
-                {
-                    "source_name": "rdfs-seeAlso",
-                    "url": "http://wordnet-rdf.princeton.edu/id/06521201-n"
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:JavaScriptBlob",
+                    "external_id": "d3f:JavaScriptBlob"
                 }
             ],
             "object_marking_refs": [
@@ -168,31 +129,27 @@
         {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--c6ebdf79-dcef-5dae-a400-c09f76f7530a",
+            "id": "indicator--5848db63-d9ad-5a34-b307-345b5013bc76",
             "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
             "created": "2025-12-16T00:12:00.000Z",
             "modified": "2025-12-16T00:12:00.000Z",
-            "name": "Service Application",
-            "description": "An application that provides a set of software functionalities so that multiple clients who can reuse the functionality, provided they are authorized for use of the service.",
+            "name": "Resource Fork",
+            "description": "The resource fork is a fork or section of a file on Apple's classic Mac OS operating system, which was also carried over to the modern macOS for compatibility, used to store structured data along with the unstructured data stored within the data fork.",
             "indicator_types": [
                 "unknown"
             ],
-            "pattern": "d3f:ServiceApplication",
+            "pattern": "d3f:ResourceFork",
             "pattern_type": "d3fend",
             "valid_from": "2025-12-16T00:12:00Z",
             "external_references": [
                 {
                     "source_name": "mitre-d3fend",
-                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:ServiceApplication",
-                    "external_id": "d3f:ServiceApplication"
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:ResourceFork",
+                    "external_id": "d3f:ResourceFork"
                 },
                 {
-                    "source_name": "rdfs-seeAlso",
-                    "url": "dbr:Server_(computing)"
-                },
-                {
-                    "source_name": "rdfs-seeAlso",
-                    "url": "dbr:Service_(systems_architecture)"
+                    "source_name": "rdfs-defined-by",
+                    "url": "http://dbpedia.org/resource/Resource_fork"
                 }
             ],
             "object_marking_refs": [
@@ -223,11 +180,69 @@
                 },
                 {
                     "source_name": "rdfs-seeAlso",
-                    "url": "dbr:Authentication"
+                    "url": "http://dbpedia.org/resource/Authentication"
                 },
                 {
                     "source_name": "rdfs-defined-by",
                     "url": "https://www.gartner.com/en/information-technology/glossary/authentication-service"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--60884624-43e9-5eb3-8e47-a352837deb96",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "File",
+            "description": "A file maintained in computer-readable form.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:File",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:File",
+                    "external_id": "d3f:File"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "http://wordnet-rdf.princeton.edu/id/06521201-n"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--6e72eb45-9f30-584d-9ab2-a7c5b924fa1a",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Application Installer",
+            "description": "An application installer is a user application designed to install, configure, and deploy another application.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:ApplicationInstaller",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:ApplicationInstaller",
+                    "external_id": "d3f:ApplicationInstaller"
                 }
             ],
             "object_marking_refs": [
@@ -259,6 +274,169 @@
                 {
                     "source_name": "rdfs-defined-by",
                     "url": "http://dbpedia.org/resource/Directory_(computing)"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--9373959f-2e79-563d-b22a-044761906581",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Stack Frame",
+            "description": "A machine-dependent and application-binary-dependent (ABI-dependent) data structure containing subroutine state information including the arguments passed into the routine, the return address back to the routine's caller, and space for local variables of the routine.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:StackFrame",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:StackFrame",
+                    "external_id": "d3f:StackFrame"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "http://dbpedia.org/resource/Call_stack"
+                },
+                {
+                    "source_name": "rdfs-defined-by",
+                    "url": "http://dbpedia.org/resource/Call_stack#Structure"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--960e5015-f2f3-5362-ad83-64735984f5c5",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Process Code Segment",
+            "description": "A process code segment, also known as a text segment or simply as text, is a portion of the program's virtual address space that contains executable instructions and corresponds to the loaded image code segment. Includes additional sections such as an import table.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:ProcessCodeSegment",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:ProcessCodeSegment",
+                    "external_id": "d3f:ProcessCodeSegment"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "d3f:ImageCodeSegment"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "http://dbpedia.org/resource/Code_segment"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--973dd2b1-cbad-50eb-b8c1-2b11b20ba2cd",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Firmware",
+            "description": "In electronic systems and computing, firmware is a type of software that provides control, monitoring and data manipulation of engineered products and systems. Typical examples of devices containing firmware are embedded systems (such as traffic lights, consumer appliances, remote controls and digital watches), computers, computer peripherals, mobile phones, and digital cameras. The firmware contained in these devices provides the low-level control program for the device.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:Firmware",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:Firmware",
+                    "external_id": "d3f:Firmware"
+                },
+                {
+                    "source_name": "rdfs-defined-by",
+                    "url": "http://dbpedia.org/resource/Firmware"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--b056c430-1231-5561-8381-450c59a30732",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Eval Function",
+            "description": "Takes inputs of strings and evaluations them as expressions.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:EvalFunction",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:EvalFunction",
+                    "external_id": "d3f:EvalFunction"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ]
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--c6ebdf79-dcef-5dae-a400-c09f76f7530a",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Service Application",
+            "description": "An application that provides a set of software functionalities so that multiple clients who can reuse the functionality, provided they are authorized for use of the service.",
+            "indicator_types": [
+                "unknown"
+            ],
+            "pattern": "d3f:ServiceApplication",
+            "pattern_type": "d3fend",
+            "valid_from": "2025-12-16T00:12:00Z",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/dao/artifact/d3f:ServiceApplication",
+                    "external_id": "d3f:ServiceApplication"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "http://dbpedia.org/resource/Server_(computing)"
+                },
+                {
+                    "source_name": "rdfs-seeAlso",
+                    "url": "http://dbpedia.org/resource/Service_(systems_architecture)"
                 }
             ],
             "object_marking_refs": [
