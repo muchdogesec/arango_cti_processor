@@ -7,13 +7,8 @@ from arango_cti_processor.managers.d3fend_attack import D3fendAttack
 
 # Sample mock data for D3FEND remote mapping
 @pytest.fixture
-def raw_remote_data():
+def remote_data():
     return json.loads(Path("tests/files/d3fend-mock-remote-data.json").read_text())
-
-
-@pytest.fixture
-def remote_data(raw_remote_data):
-    return raw_remote_data["results"]["bindings"]
 
 
 def test_init_requires_version(session_processor):
@@ -26,7 +21,7 @@ def test_init_with_version(session_processor):
     """Test that D3fendAttack initializes with a version."""
     manager = D3fendAttack(session_processor, version="1.3.0")
     assert manager.version == "1.3.0"
-    assert manager.relationship_note == "d3fend-attack"
+    assert manager.relationship_note == "d3fend-knowledgebases"
 
 
 def test_init_version_normalization(session_processor):
@@ -85,8 +80,8 @@ def test_get_secondary_objects(session_processor, remote_data):
     # Mock some remote data to extract technique IDs
     secondary_objects = manager.get_secondary_objects(remote_data)
 
-    assert "T1542.002" in secondary_objects
-    assert secondary_objects["T1211"] == {
+    assert "d3f:T1542.002" in secondary_objects
+    assert secondary_objects["d3f:T1211"] == {
         "ext_id": "T1211",
         "id": "attack-pattern--fe926152-f431-4baf-956c-4ad3cb0bf23b",
         "modified": "2025-04-15T19:59:24.778Z",
@@ -113,21 +108,19 @@ def test_get_secondary_objects(session_processor, remote_data):
             },
         ],
         "created": "2018-04-18T17:59:24.739Z",
-        "_id": secondary_objects["T1211"]["_id"],
+        "_id": secondary_objects["d3f:T1211"]["_id"],
     }
-    assert secondary_objects["T1211"]["_id"].startswith(
+    assert secondary_objects["d3f:T1211"]["_id"].startswith(
         "mitre_attack_enterprise_vertex_collection/attack-pattern--fe926152-f431-4baf-956c-4ad3cb0bf23b"
     )
 
 
 @patch("arango_cti_processor.managers.d3fend_attack.requests.get")
-def test_retrieve_remote_date(
-    mock_get, session_processor, raw_remote_data, remote_data
-):
+def test_retrieve_remote_date(mock_get, session_processor, remote_data):
     """Test fetching remote D3FEND mapping data."""
     # Mock the response
     mock_response = MagicMock()
-    mock_response.json.return_value = raw_remote_data
+    mock_response.json.return_value = remote_data
     mock_get.return_value = mock_response
 
     manager = D3fendAttack(session_processor, version="1.3.0")
@@ -135,16 +128,16 @@ def test_retrieve_remote_date(
 
     assert data == remote_data
     mock_get.assert_called_once_with(
-        "https://d3fend.mitre.org/ontologies/d3fend/1.3.0/d3fend-full-mappings.json"
+        "https://downloads.ctibutler.com/d3fend2stix-manual-output/d3fend-v1_3_0-external-relationships.json"
     )
 
 
 @patch("arango_cti_processor.managers.d3fend_attack.requests.get")
-def test_get_object_chunks(mock_get, session_processor, raw_remote_data, remote_data):
+def test_get_object_chunks(mock_get, session_processor, remote_data):
     """Test get_object_chunks fetches and prepares data correctly."""
     # Mock the remote data
     mock_response = MagicMock()
-    mock_response.json.return_value = raw_remote_data
+    mock_response.json.return_value = remote_data
     mock_get.return_value = mock_response
 
     manager = D3fendAttack(session_processor, version="1.3.0")
@@ -161,13 +154,11 @@ def test_get_object_chunks(mock_get, session_processor, raw_remote_data, remote_
 
 
 @patch("arango_cti_processor.managers.d3fend_attack.requests.get")
-def test_get_object_chunks_no_d3fend_objects(
-    mock_get, session_processor, raw_remote_data
-):
+def test_get_object_chunks_no_d3fend_objects(mock_get, session_processor, remote_data):
     """Test that ValueError is raised when no D3FEND objects are found."""
     # Mock the remote data
     mock_response = MagicMock()
-    mock_response.json.return_value = raw_remote_data
+    mock_response.json.return_value = remote_data
     mock_get.return_value = mock_response
 
     # Use a non-existent version
@@ -178,11 +169,11 @@ def test_get_object_chunks_no_d3fend_objects(
 
 
 @patch("arango_cti_processor.managers.d3fend_attack.requests.get")
-def test_relate_single(mock_get, session_processor, raw_remote_data, remote_data):
+def test_relate_single__attack_artifact(mock_get, session_processor, remote_data):
     """Test creating a relationship between ATT&CK technique and D3FEND artifact."""
     # Mock the remote data
     mock_response = MagicMock()
-    mock_response.json.return_value = raw_remote_data
+    mock_response.json.return_value = remote_data
     mock_get.return_value = mock_response
 
     manager = D3fendAttack(session_processor, version="1.3.0")
@@ -192,7 +183,12 @@ def test_relate_single(mock_get, session_processor, raw_remote_data, remote_data
     manager.secondary_data = manager.get_secondary_objects(remote_data)
 
     relationships = manager.relate_single(
-        remote_data[0]
+        {
+            "source": "d3f:T1556",
+            "target": "d3f:AuthenticationService",
+            "type": "d3f:modifies",
+            "description": "Modify Authentication Process modifies Authentication Service: blah blah blah",
+        }
     )  # Use the first mapping object
 
     assert len(relationships) == 1
@@ -210,9 +206,9 @@ def test_relate_single(mock_get, session_processor, raw_remote_data, remote_data
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
         ],
-        "description": "Modify Authentication Process (T1556) modifies Authentication Service",
-        "_arango_cti_processor_note": "d3fend-attack",
-        "_from": manager.secondary_data["T1556"]["_id"],
+        "description": "Modify Authentication Process modifies Authentication Service: blah blah blah",
+        "_arango_cti_processor_note": "d3fend-knowledgebases",
+        "_from": manager.secondary_data["d3f:T1556"]["_id"],
         "_is_ref": False,
         "external_references": [
             {
@@ -232,6 +228,71 @@ def test_relate_single(mock_get, session_processor, raw_remote_data, remote_data
     assert manager.primary_data["d3f:AuthenticationService"]["_id"].startswith(
         "d3fend_vertex_collection/indicator--5a0e32f1-e049-58cc-bf2a-ecd0faca0210"
     )
-    assert manager.secondary_data["T1556"]["_id"].startswith(
+    assert manager.secondary_data["d3f:T1556"]["_id"].startswith(
         "mitre_attack_enterprise_vertex_collection/attack-pattern--f4c1826f-a322-41cd-9557-562100848c84"
+    )
+
+
+@patch("arango_cti_processor.managers.d3fend_attack.requests.get")
+def test_relate_single__cwe_artifact(mock_get, session_processor, remote_data):
+    """Test creating a relationship between ATT&CK technique and D3FEND artifact."""
+    # Mock the remote data
+    mock_response = MagicMock()
+    mock_response.json.return_value = remote_data
+    mock_get.return_value = mock_response
+
+    manager = D3fendAttack(session_processor, version="1.3.0")
+
+    # Set up the data
+    manager.primary_data = manager.get_objects_from_db()
+    manager.secondary_data = manager.get_secondary_objects(remote_data)
+
+    relationships = manager.relate_single(
+        {
+            "source": "d3f:CWE-276",
+            "target": "d3f:ApplicationInstaller",
+            "type": "d3f:weakness-of",
+            "description": "",
+        }
+    )
+
+    assert len(relationships) == 1
+    rel = relationships[0]
+    assert rel == {
+        "id": "relationship--a1261161-0520-5cef-be8b-a3b61be9a045",
+        "type": "relationship",
+        "created": "2006-07-19T00:00:00.000Z",
+        "modified": "2023-06-29T00:00:00.000Z",
+        "relationship_type": "weakness-of",
+        "source_ref": "weakness--bfa2f40d-b5f0-505e-9ac5-92adfe0b6bd8",
+        "target_ref": "indicator--6e72eb45-9f30-584d-9ab2-a7c5b924fa1a",
+        "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+        "object_marking_refs": [
+            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+            "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
+        ],
+        "description": "",
+        "_arango_cti_processor_note": "d3fend-knowledgebases",
+        "_from": manager.secondary_data["d3f:CWE-276"]["_id"],
+        "_is_ref": False,
+        "external_references": [
+            {
+                "source_name": "cwe",
+                "url": "http://cwe.mitre.org/data/definitions/276.html",
+                "external_id": "CWE-276",
+            },
+            {
+                "source_name": "mitre-d3fend",
+                "url": "https://d3fend.mitre.org/dao/artifact/d3f:ApplicationInstaller",
+                "external_id": "d3f:ApplicationInstaller",
+            },
+        ],
+        "_to": manager.primary_data["d3f:ApplicationInstaller"]["_id"],
+    }
+
+    assert manager.primary_data["d3f:ApplicationInstaller"]["_id"].startswith(
+        "d3fend_vertex_collection/indicator--6e72eb45-9f30-584d-9ab2-a7c5b924fa1a"
+    )
+    assert manager.secondary_data["d3f:CWE-276"]["_id"].startswith(
+        "mitre_cwe_vertex_collection/weakness--bfa2f40d-b5f0-505e-9ac5-92adfe0b6bd8"
     )

@@ -14,8 +14,8 @@ def validate_modes(modes: str):
     for mode in modes:
         if mode not in RELATION_MANAGERS:
             raise argparse.ArgumentTypeError(f"unsupported mode `{mode}`, must be one or more of {list(RELATION_MANAGERS)}")
-    if "d3fend-attack" in modes and len(modes) > 1:
-        raise argparse.ArgumentTypeError(f"`d3fend-attack` mode cannot be combined with other modes")
+    if "d3fend-knowledgebases" in modes and len(modes) > 1:
+        raise argparse.ArgumentTypeError(f"`d3fend-knowledgebases` mode cannot be combined with other modes")
     return modes
 
 def parse_arguments():
@@ -49,8 +49,8 @@ def parse_arguments():
         help="By default arango_cti_processor will consider all objects in the database specified with the property `_is_latest==true` (that is; the latest version of the object). Using this flag will allow actip to only consider objects where `_stix2arango_note == 'version=VERSION'`")
     
     args = parser.parse_args()
-    if args.modes == ["d3fend-attack"] and not args.version:
-        parser.error("the `--version` argument is required when using the `d3fend-attack` mode")
+    if args.modes == ["d3fend-knowledgebases"] and not args.version:
+        parser.error("the `--version` argument is required when using the `d3fend-knowledgebases` mode")
     return args
 
 def run_all(database=None, modes: list[str]=None, **kwargs):
