@@ -3,6 +3,88 @@
     "id": "bundle--86a2e46f-6e0a-4a1c-852b-fb388d2007a9",
     "objects": [
         {
+            "type": "course-of-action",
+            "spec_version": "2.1",
+            "id": "course-of-action--0a6a1fbb-1a1d-5b52-978f-ef3fd4abd927",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Decoy Object",
+            "description": "A Decoy Object is created and deployed for the purposes of deceiving attackers.\n\n## Technique Overview\nDecoy objects are typically configured with detectable means of communication but do not have any legitimate business purpose. Any communication via or to these objects should be logged and analyzed to find potential indicators of compromise for a possible past or future attack against other systems.",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/technique/d3f:DecoyObject",
+                    "external_id": "D3-DO"
+                },
+                {
+                    "source_name": "mitre-d3fend",
+                    "description": "This technique enables the tactic Deceive",
+                    "url": "https://d3fend.mitre.org/tactic/d3f:Deceive",
+                    "external_id": "d3f:Deceive"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ],
+            "x_aliases": [
+                "Lure"
+            ],
+            "x_mitre_attack_spec_version": "3.3.0",
+            "x_mitre_deprecated": false,
+            "x_mitre_domains": [
+                "d3fend"
+            ],
+            "x_mitre_is_subtechnique": false,
+            "x_mitre_modified_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "x_mitre_platforms": [
+                "-"
+            ],
+            "x_mitre_version": "0.1"
+        },
+        {
+            "type": "course-of-action",
+            "spec_version": "2.1",
+            "id": "course-of-action--b1b43b54-b6fd-5d3c-a424-a964421084a8",
+            "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "created": "2025-12-16T00:12:00.000Z",
+            "modified": "2025-12-16T00:12:00.000Z",
+            "name": "Decoy Environment",
+            "description": "A Decoy Environment comprises hosts and networks for the purposes of deceiving an attacker.\n\n## Technique Overview\n\nSystems in a decoy environment are typically configured so that some detectable means of communication does not have any legitimate business purpose.  Any communication via these means should be logged and analyzed to find potential indicators of compromise for a possible past or future attack against other systems.",
+            "external_references": [
+                {
+                    "source_name": "mitre-d3fend",
+                    "url": "https://d3fend.mitre.org/technique/d3f:DecoyEnvironment",
+                    "external_id": "D3-DE"
+                },
+                {
+                    "source_name": "mitre-d3fend",
+                    "description": "This technique enables the tactic Deceive",
+                    "url": "https://d3fend.mitre.org/tactic/d3f:Deceive",
+                    "external_id": "d3f:Deceive"
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+                "marking-definition--6923e7d4-e142-508c-aefc-b5f4dd27dc22"
+            ],
+            "x_aliases": [
+                "Honeypot"
+            ],
+            "x_mitre_attack_spec_version": "3.3.0",
+            "x_mitre_deprecated": false,
+            "x_mitre_domains": [
+                "d3fend"
+            ],
+            "x_mitre_is_subtechnique": false,
+            "x_mitre_modified_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+            "x_mitre_platforms": [
+                "-"
+            ],
+            "x_mitre_version": "0.1"
+        },
+        {
             "type": "indicator",
             "spec_version": "2.1",
             "id": "indicator--1ba220fa-dc29-5c39-9995-f917fa9b2858",

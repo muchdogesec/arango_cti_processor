@@ -66,13 +66,16 @@ class D3fendAttack(
 
         query = """
 FOR doc IN @@vertex_collection
-FILTER doc.type == "indicator"
+FILTER doc.type in ["indicator", "course-of-action", "x-mitre-matrix", "x-mitre-tactic"]
 #VERSION
 RETURN [doc.external_references[0].external_id, KEEP(doc, "created", "id", "modified", "_id", "name", "external_references")]
         """.replace(
             "#VERSION", version_filter
         )
-        return dict(self.arango.execute_raw_query(query, bind_vars=binds))
+        data = dict(self.arango.execute_raw_query(query, bind_vars=binds))
+        for k, v in data.items():
+            v["ext_id"] = k
+        return data
 
     def retrieve_remote_data(self):
         url = self.MAPPING_URL.format(self.version.replace(".", "_"))
@@ -99,12 +102,12 @@ RETURN [doc.external_references[0].external_id, KEEP(doc, "created", "id", "modi
         if not source_obj or not target_obj:
             return []
         
-
+        relationship_type = object['type'][4:]
         rel = self.create_relationship(
             source_obj,
             target_obj["id"],
-            relationship_type=object['type'][4:],
-            description=object['description'],
+            relationship_type=relationship_type,
+            description=f"{source_obj['name']} ({source_obj['ext_id']}) {relationship_type} {target_obj['name']} ({target_obj['ext_id']})",
             external_references=[
                 source_obj["external_references"][0],
                 target_obj["external_references"][0],
@@ -129,7 +132,7 @@ RETURN [doc.external_references[0].external_id, KEEP(doc, "created", "id", "modi
 FOR doc IN @@vertex_collection
 FILTER doc.external_references[0].external_id IN @external_ids AND doc._is_latest == TRUE
 LET ext_id = doc.external_references[0].external_id
-RETURN MERGE({ext_id}, KEEP(doc, "id", "_id", "external_references", "created", "modified"))
+RETURN MERGE({ext_id}, KEEP(doc, "id", "_id", "external_references", "created", "modified", "name"))
         """
         ext_id_map = {}
         for collection in self.attack_collections + [self.cwe_collection]:
