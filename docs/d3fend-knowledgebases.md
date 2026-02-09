@@ -13,17 +13,7 @@ This file is versioned and hosted on Cloudflare:
 https://downloads.ctibutler.com/d3fend2stix-manual-output/d3fend-v{}-external-relationships.json
 ```
 
-ATT&CK Tactics
-
-```json
-    {
-        "source": "d3f:CommandAndControlTechnique",
-        "target": "d3f:TA0011",
-        "type": "d3f:enables",
-        "description": "Command and Control Technique enables Command And Control: A top level technique Command and Control Technique enables a tactic Command And Control, that is, the property indicates that a technique Command and Control Technique is used to put a particular tactic Command And Control into action. In other words, Command and Control Technique renders Command And Control capable or able for some task."
-    },
-```
- Mitigations
+Mitigations
 
 ```json
     {
@@ -58,40 +48,6 @@ Weaknesses
 
 ## ATT&CK Mappings
 
-Tactics
-
-```json
-{
-  "type": "relationship",
-  "id": "relationship--<UUID v5>",
-  "created": "<source.created>",
-  "modified": "<source.modified>",
-  "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
-  "relationship_type": "<off_artifact_rel>",
-  "source_ref": "indicator--<D3FEND ARTIFACT>",
-  "target_ref": "x-mitre-tactic--<ATTACK OBJECT>",
-  "description": "<D3FEND ID> <D3FEND NAME> <relationship_type> <ATT&CK ID> <ATT&CK NAME>",
-  "external_references": [
-    {
-      "source_name": "mitre-attack",
-      "url": "https://attack.mitre.org/tactics/<ID>",
-      "external_id": "<ID>"
-    },
-    {
-      "source_name": "mitre-d3fend",
-      "url": "https://d3fend.mitre.org/dao/artifact/<ID>",
-      "external_id": "<ID>",
-            },
-  ],
-  "object_marking_refs": [
-    "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
-    "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3"
-  ]
-}
-```
-
-To generate the id of SRO, a UUIDv5 is generated using the namespace `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` and the `relationship_type+source_collection_name/source_ref+target_collection_name/target_ref` values.
-
 Techniques/Subtechniques
 
 ```json
@@ -123,6 +79,8 @@ Techniques/Subtechniques
   ]
 }
 ```
+
+To generate the id of SRO, a UUIDv5 is generated using the namespace `2e51a631-99d8-52a5-95a6-8314d3f4fbf3` and the `relationship_type+source_collection_name/source_ref+target_collection_name/target_ref` values.
 
 Mitigations
 
@@ -187,4 +145,3 @@ Mitigations
   ]
 }
 ```
-
