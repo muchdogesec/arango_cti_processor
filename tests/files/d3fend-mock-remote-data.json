@@ -18,6 +18,18 @@
         "description": ""
     },
     {
+        "source": "d3f:M1056",
+        "target": "D3-DE",
+        "type": "d3f:related",
+        "description": "Pre-compromise related Decoy Environment: Pre-compromise has a symmetric associative relation to Decoy Environment."
+    },
+    {
+        "source": "d3f:M1056",
+        "target": "D3-DO",
+        "type": "d3f:related",
+        "description": "Pre-compromise related Decoy Object: Pre-compromise has a symmetric associative relation to Decoy Object."
+    },
+    {
         "source": "d3f:T1027.006",
         "target": "d3f:DigitalArtifact",
         "type": "d3f:hides",
