@@ -50,10 +50,6 @@ def test_get_objects_from_db(session_processor):
     assert isinstance(objects, dict)
     assert len(objects) > 0
 
-    # Check that keys are d3f: prefixed
-    for key in objects.keys():
-        assert key.startswith("d3f:")
-
     # Check structure of returned objects
     for obj in objects.values():
         assert "id" in obj
@@ -85,6 +81,7 @@ def test_get_secondary_objects(session_processor, remote_data):
         "ext_id": "T1211",
         "id": "attack-pattern--fe926152-f431-4baf-956c-4ad3cb0bf23b",
         "modified": "2025-04-15T19:59:24.778Z",
+        "name": "Exploitation for Defense Evasion",
         "external_references": [
             {
                 "source_name": "mitre-attack",
@@ -168,19 +165,25 @@ def test_get_object_chunks_no_d3fend_objects(mock_get, session_processor, remote
         list(manager.get_object_chunks())
 
 
+@pytest.fixture
+def remote_response(remote_data):
+    """Fixture to mock the requests.get response for D3FEND remote data."""
+    with patch("arango_cti_processor.managers.d3fend_attack.requests.get") as mock_get:
+        mock_response = MagicMock()
+        mock_response.json.return_value = remote_data
+        mock_get.return_value = mock_response
+        yield remote_data
+
+
 @patch("arango_cti_processor.managers.d3fend_attack.requests.get")
-def test_relate_single__attack_artifact(mock_get, session_processor, remote_data):
+def test_relate_single__attack_artifact(mock_get, session_processor, remote_response):
     """Test creating a relationship between ATT&CK technique and D3FEND artifact."""
     # Mock the remote data
-    mock_response = MagicMock()
-    mock_response.json.return_value = remote_data
-    mock_get.return_value = mock_response
-
     manager = D3fendAttack(session_processor, version="1.3.0")
 
     # Set up the data
     manager.primary_data = manager.get_objects_from_db()
-    manager.secondary_data = manager.get_secondary_objects(remote_data)
+    manager.secondary_data = manager.get_secondary_objects(remote_response)
 
     relationships = manager.relate_single(
         {
@@ -206,7 +209,7 @@ def test_relate_single__attack_artifact(mock_get, session_processor, remote_data
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
         ],
-        "description": "Modify Authentication Process modifies Authentication Service: blah blah blah",
+        "description": "Modify Authentication Process (T1556) modifies Authentication Service (d3f:AuthenticationService)",
         "_arango_cti_processor_note": "d3fend-knowledgebases",
         "_from": manager.secondary_data["d3f:T1556"]["_id"],
         "_is_ref": False,
@@ -234,18 +237,13 @@ def test_relate_single__attack_artifact(mock_get, session_processor, remote_data
 
 
 @patch("arango_cti_processor.managers.d3fend_attack.requests.get")
-def test_relate_single__cwe_artifact(mock_get, session_processor, remote_data):
+def test_relate_single__cwe_artifact(mock_get, session_processor, remote_response):
     """Test creating a relationship between ATT&CK technique and D3FEND artifact."""
-    # Mock the remote data
-    mock_response = MagicMock()
-    mock_response.json.return_value = remote_data
-    mock_get.return_value = mock_response
-
     manager = D3fendAttack(session_processor, version="1.3.0")
 
     # Set up the data
     manager.primary_data = manager.get_objects_from_db()
-    manager.secondary_data = manager.get_secondary_objects(remote_data)
+    manager.secondary_data = manager.get_secondary_objects(remote_response)
 
     relationships = manager.relate_single(
         {
@@ -271,7 +269,7 @@ def test_relate_single__cwe_artifact(mock_get, session_processor, remote_data):
             "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
             "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
         ],
-        "description": "",
+        "description": 'Incorrect Default Permissions (CWE-276) weakness-of Application Installer (d3f:ApplicationInstaller)',
         "_arango_cti_processor_note": "d3fend-knowledgebases",
         "_from": manager.secondary_data["d3f:CWE-276"]["_id"],
         "_is_ref": False,
@@ -296,3 +294,58 @@ def test_relate_single__cwe_artifact(mock_get, session_processor, remote_data):
     assert manager.secondary_data["d3f:CWE-276"]["_id"].startswith(
         "mitre_cwe_vertex_collection/weakness--bfa2f40d-b5f0-505e-9ac5-92adfe0b6bd8"
     )
+
+
+@patch("arango_cti_processor.managers.d3fend_attack.requests.get")
+def test_relate_single__mitigation(mock_get, session_processor, remote_response):
+    """Test creating a relationship between ATT&CK technique and D3FEND artifact."""
+    # Mock the remote data
+    manager = D3fendAttack(session_processor, version="1.3.0")
+
+    # Set up the data
+    manager.primary_data = manager.get_objects_from_db()
+    manager.secondary_data = manager.get_secondary_objects(remote_response)
+
+    relationships = manager.relate_single(
+        {
+            "source": "d3f:M1056",
+            "target": "D3-DO",
+            "type": "d3f:related",
+            "description": "Pre-compromise related Decoy Object: Pre-compromise has a symmetric associative relation to Decoy Object.",
+        }
+    )  # Use the first mapping object
+    assert (
+        len(relationships) == 1
+    )  # No relationship should be created since D3-DO is not in primary or secondary data
+    rel = relationships[0]
+    assert rel == {
+        "id": "relationship--0294dfe2-d3d8-5fb2-b956-f016acc2cbdc",
+        "type": "relationship",
+        "created": "2020-10-19T14:57:58.771Z",
+        "modified": "2024-12-18T18:24:37.835Z",
+        "relationship_type": "related",
+        "source_ref": "course-of-action--78bb71be-92b4-46de-acd6-5f998fedf1cc",
+        "target_ref": "course-of-action--0a6a1fbb-1a1d-5b52-978f-ef3fd4abd927",
+        "created_by_ref": "identity--9779a2db-f98c-5f4b-8d08-8ee04e02dbb5",
+        "object_marking_refs": [
+            "marking-definition--94868c89-83c2-464b-929b-a1a8aa3c8487",
+            "marking-definition--2e51a631-99d8-52a5-95a6-8314d3f4fbf3",
+        ],
+        "description": "Pre-compromise (M1056) related Decoy Object (D3-DO)",
+        "_arango_cti_processor_note": "d3fend-knowledgebases",
+        "_from": manager.secondary_data["d3f:M1056"]["_id"],
+        "_is_ref": False,
+        "external_references": [
+            {
+                "source_name": "mitre-attack",
+                "url": "https://attack.mitre.org/mitigations/M1056",
+                "external_id": "M1056",
+            },
+            {
+                "source_name": "mitre-d3fend",
+                "url": "https://d3fend.mitre.org/technique/d3f:DecoyObject",
+                "external_id": "D3-DO",
+            },
+        ],
+        "_to": manager.primary_data["D3-DO"]["_id"],
+    }
