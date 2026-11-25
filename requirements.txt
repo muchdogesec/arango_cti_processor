@@ -42,7 +42,7 @@ referencing==0.36.2
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.32.4 ; python_version >= "3.7"
+requests==2.33.0 ; python_version >= "3.7"
     # via
     #   arango_cti_processor (pyproject.toml)
     #   python-arango
